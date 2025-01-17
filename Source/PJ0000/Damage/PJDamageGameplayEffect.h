@@ -15,4 +15,8 @@ class PJ0000_API UPJDamageGameplayEffect : public UGameplayEffect
 	GENERATED_BODY()
 
 public:
+
+	virtual void PostInitProperties() override;
+
+	
 };

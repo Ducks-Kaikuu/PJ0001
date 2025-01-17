@@ -45,12 +45,11 @@ void USNAbilitySystemComponent::LoadedAbility()
 
 			if (Class != nullptr)
 			{
-				UGameplayAbility* Task = NewObject<UGameplayAbility>(GetOwner(), Class, TEXT("AbilityTask"));
+				FGameplayAbilitySpec Spec(FGameplayAbilitySpec(Class->GetDefaultObject<UGameplayAbility>()));
 
-				if (Task != nullptr)
-				{
-					AddAbility(Task);
-				}
+				FGameplayAbilitySpecHandle Handle = GiveAbility(Spec);
+
+				AbilityTaskList.Add(Class, Handle);
 			}
 		}
 	}
@@ -75,20 +74,20 @@ void USNAbilitySystemComponent::AddAbility(UGameplayAbility* AbilityTask)
 {
 	if (AbilityTask != nullptr)
 	{
-		FGameplayAbilitySpecHandle Handle = GiveAbility(FGameplayAbilitySpec(AbilityTask));
+		//FGameplayAbilitySpecHandle Handle = GiveAbility(FGameplayAbilitySpec(AbilityTask));
 
-		AbilityTaskList.Add(AbilityTask, Handle);
+		//AbilityTaskList.Add(AbilityTask, Handle);
 	}
 }
 
 void USNAbilitySystemComponent::RemoveAbility(UGameplayAbility* AbilityTask)
 {
-	if (AbilityTaskList.Contains(AbilityTask) == true)
+	if (AbilityTaskList.Contains(AbilityTask->GetClass()) == true)
 	{
-		FGameplayAbilitySpecHandle Handle(AbilityTaskList[AbilityTask]);
+		FGameplayAbilitySpecHandle Handle(AbilityTaskList[AbilityTask->GetClass()]);
 
 		SetRemoveAbilityOnEnd(Handle);
 
-		AbilityTaskList.Remove(AbilityTask);
+		AbilityTaskList.Remove(AbilityTask->GetClass());
 	} 
 }

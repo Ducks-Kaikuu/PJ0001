@@ -46,7 +46,7 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 //		return;
 	}
 
-	TArray<const FDamageTable*> DamageList(DamageData->GetDamageList(ActivationOwnedTags));
+	//TArray<const FDamageTable*> DamageList(DamageData->GetDamageList(ActivationOwnedTags));
 
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo->OwnerActor));
 

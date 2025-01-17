@@ -48,6 +48,6 @@ private:
 	TArray<TSoftClassPtr<UGameplayAbility>> AbilityTasks;
 	
 	UPROPERTY()
-	TMap<TObjectPtr<UGameplayAbility>, FGameplayAbilitySpecHandle> AbilityTaskList;
+	TMap<TObjectPtr<UClass>, FGameplayAbilitySpecHandle> AbilityTaskList;
 };
 

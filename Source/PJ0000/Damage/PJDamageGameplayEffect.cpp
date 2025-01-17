@@ -2,3 +2,12 @@
 
 
 #include "PJ0000/Damage/PJDamageGameplayEffect.h"
+
+void UPJDamageGameplayEffect::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	
+
+	
+}
