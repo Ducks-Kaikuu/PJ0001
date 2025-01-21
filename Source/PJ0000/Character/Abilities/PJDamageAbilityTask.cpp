@@ -52,6 +52,30 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 	if (Character != nullptr)
 	{
+		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
+
+		if (AbilitySystemComponent != nullptr)
+		{
+			for (auto& Effect : EffectList)
+			{
+				FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 1.0f, AbilitySystemComponent->MakeEffectContext());
+
+				if (SpecHandle.Data != nullptr)
+				{
+					DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
+
+					if (DamageAttributeTag.Num() > 0)
+					{
+						FGameplayTag DamageTag = DamageAttributeTag.First();
+						// ここでダメージ計算
+						SpecHandle.Data->SetSetByCallerMagnitude(DamageTag, 22.0f);
+					}
+
+					AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+				}
+			}
+		}
+		
 		float PlayRate = 1.0f;
 		float StartTime = 0.0f;
 		
@@ -68,47 +92,10 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 				MontageProxy->OnBlendOut.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 			}
 		}
-
-		CommitAbility(Handle, ActorInfo, ActivationInfo);
-		
-		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
-
-		if (AbilitySystemComponent != nullptr)
-		{
-			UClass* Damage = nullptr;
-
-			if (DamageEffect.IsNull() == false)
-			{
-				Damage = Cast<UClass>(DamageEffect.LoadSynchronous());
-			}
-
-			if (Damage)
-			{
-				SNPLUGIN_LOG(TEXT("Class is null."));
-			}
-
-			FGameplayEffectSpecHandle SpecHandle(nullptr);
-			
-			//if (Damage)
-			{
-				UGameplayEffect* GameplayEffect = Damage->GetDefaultObject<UGameplayEffect>();
-
-				FGameplayEffectSpec* NewSpec = new FGameplayEffectSpec(GameplayEffect, AbilitySystemComponent->MakeEffectContext(), 1.0f);
-				
-				SpecHandle =  FGameplayEffectSpecHandle(NewSpec);
-			}
-			
-			//FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Damage, 1.0f, AbilitySystemComponent->MakeEffectContext());
-
-			FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
-
-			if (Spec != nullptr)
-			{
-				Spec->AddDynamicAssetTag(TAG_Gameplay_DamageSelfDestruct);
-			}
-		}
 	}
 
+	//CommitAbility(Handle, ActorInfo, ActivationInfo);
+	
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage is comming."));
 }
 

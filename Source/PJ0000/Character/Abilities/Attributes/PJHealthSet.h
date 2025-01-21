@@ -59,11 +59,11 @@ private:
 	float MaxHealthBeforeAttributeChange;
 	float HealthBeforeAttributeChange;
 	
-	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Health, Category="Health")
-	FGameplayAttributeData Health;
-
 	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_MaxHealth, Category="Health")
 	FGameplayAttributeData MaxHealth;
+
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Health, Category="Health")
+	FGameplayAttributeData Health;
 
 	UPROPERTY(EditAnywhere, Category="Health", Meta=(AllowPrivateAccess=true))
 	FGameplayAttributeData Damage;

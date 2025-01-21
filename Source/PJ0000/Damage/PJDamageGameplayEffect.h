@@ -6,6 +6,7 @@
 #include "GameplayEffectExecutionCalculation.h"
 #include "PJDamageGameplayEffect.generated.h"
 
+class UPJGameplayEffectComponent;
 /**
  * 
  */
@@ -18,5 +19,12 @@ public:
 
 	virtual void PostInitProperties() override;
 
+	virtual void PostLoad() override;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Damage")
+	TSubclassOf<UPJGameplayEffectComponent> DamageComponentClass = nullptr;
 	
+	UPROPERTY()
+	TObjectPtr<UGameplayEffectComponent> Component = nullptr;
 };
