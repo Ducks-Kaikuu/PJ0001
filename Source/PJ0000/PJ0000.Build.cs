@@ -20,6 +20,15 @@ public class PJ0000 : ModuleRules
 			"PoseSearch",
 			"MotionWarping",
 			// ↑↑ここまで
+			"StateTreeModule",
+			"UMG",
+			"Slate",
+			"SlateCore",
+		});
+		
+		PrivateIncludePaths.AddRange(new string[]
+		{
+			"PJ0000",
 		});
 
 		// Uncomment if you are using Slate UI

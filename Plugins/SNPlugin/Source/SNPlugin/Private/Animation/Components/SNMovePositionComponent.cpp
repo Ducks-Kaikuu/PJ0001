@@ -10,6 +10,7 @@ USNMovePositionComponent::USNMovePositionComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	PrimaryComponentTick.bStartWithTickEnabled = false;
 	// ...
 }
 
@@ -19,6 +20,7 @@ void USNMovePositionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetComponentTickEnabled(false);
 	// ...
 	
 }
@@ -32,70 +34,30 @@ void USNMovePositionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	// ...
 }
 
-void USNMovePositionComponent::AddTargetTransform(const FName& Name, const FTransform& Transform)
+void USNMovePositionComponent::AddTransform(const FName& Name, const FTransform& Transform, float StartTime)
 {
 	if (TransformMap.Contains(Name))
 	{
-		TransformMap[Name].DestTransform = Transform;
+		TransformMap[Name].StartTransform = Transform;
+
+		TransformMap[Name].StartTime = StartTime;
 	} else
 	{
 		FTransformData TransformData;
 
-		TransformData.DestTransform = Transform;
+		TransformData.StartTransform = Transform;
 		
 		TransformMap.Add(Name, TransformData);
 	}
 }
 
-void USNMovePositionComponent::AddSourceTransform(const FName& Name, const FTransform& Transform)
+const FTransformData* USNMovePositionComponent::GetTransformData(const FName& Name) const
 {
 	if (TransformMap.Contains(Name))
 	{
-		TransformMap[Name].SrcTransform = Transform;
-	} else
-	{
-		FTransformData TransformData;
-
-		TransformData.SrcTransform = Transform;
-		
-		TransformMap.Add(Name, TransformData);
-	}
-}
-
-void USNMovePositionComponent::SetStateTotalDuration(const FName& Name, float Duration)
-{
-	if (TransformMap.Contains(Name)){
-		TransformMap[Name].TotalDuration = Duration;
-	}
-}
-
-float USNMovePositionComponent::GetStateTotalDuration(const FName& Name) const
-{
-	if (TransformMap.Contains(Name))
-	{
-		return TransformMap[Name].TotalDuration;
-	}
-	
-	return 0.0f;
-}
-
-const FTransform& USNMovePositionComponent::GetDestTransform(const FName& Name) const
-{
-	if (TransformMap.Contains(Name))
-	{
-		return TransformMap[Name].DestTransform;
+		return &TransformMap[Name];
 	}
 
-	return FTransform::Identity;
-}
-
-const FTransform& USNMovePositionComponent::GetSrcTransform(const FName& Name) const
-{
-	if (TransformMap.Contains(Name))
-	{
-		return TransformMap[Name].SrcTransform;
-	}
-
-	return FTransform::Identity;
+	return nullptr;
 }
 

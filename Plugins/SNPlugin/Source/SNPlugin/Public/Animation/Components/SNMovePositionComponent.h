@@ -10,12 +10,10 @@ USTRUCT(BlueprintType)
 struct FTransformData
 {
 	GENERATED_BODY()
-
-	float TotalDuration = 0.0001f;
-	
-	FTransform SrcTransform = FTransform::Identity;
-
-	FTransform DestTransform = FTransform::Identity;
+	// 移動開始時のトランスフォーム情報
+	FTransform StartTransform = FTransform::Identity;
+	// 合成開始時間
+	float StartTime = 0.0f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -29,17 +27,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void AddTargetTransform(const FName& Name, const FTransform& Transform);
-
-	void AddSourceTransform(const FName& Name, const FTransform& Transform);
-
-	void SetStateTotalDuration(const FName& Name, float Duration);
-
-	float GetStateTotalDuration(const FName& Name) const;
-
-	const FTransform& GetDestTransform(const FName& Name) const ;
-
-	const FTransform& GetSrcTransform(const FName& Name) const ;
+	void AddTransform(const FName& Name, const FTransform& Transform, float StartTime);
+	
+	const FTransformData* GetTransformData(const FName& Name) const;
 	
 protected:
 	// Called when the game starts

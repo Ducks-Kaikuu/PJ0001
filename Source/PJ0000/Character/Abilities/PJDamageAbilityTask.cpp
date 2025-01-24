@@ -9,6 +9,7 @@
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "PJ0000/Character/NPC/PJEnemy.h"
 #include "PJ0000/Damage/PJDamageData.h"
 #include "PJ0000/Damage/PJDamageGameplayEffect.h"
 #include "PJ0000/System/PJGameInstance.h"
@@ -41,14 +42,16 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 	if (DamageData == nullptr)
 	{
-//		SNPLUGIN_ERROR(TEXT("DataTable is null!"));
+		SNPLUGIN_ERROR(TEXT("DataTable is null!"));
 
-//		return;
+		return;
 	}
 
-	//TArray<const FDamageTable*> DamageList(DamageData->GetDamageList(ActivationOwnedTags));
+	TArray<const FDamageTable*> DamageList(DamageData->GetDamageList(ActivationOwnedTags));
 
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo->OwnerActor));
+
+	DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
 
 	if (Character != nullptr)
 	{
@@ -56,24 +59,15 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 		if (AbilitySystemComponent != nullptr)
 		{
-			for (auto& Effect : EffectList)
+			ApplyGameplayEffectsToSelf(AbilitySystemComponent, [&](FGameplayEffectSpec* Spec)
 			{
-				FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 1.0f, AbilitySystemComponent->MakeEffectContext());
-
-				if (SpecHandle.Data != nullptr)
+				if (Spec != nullptr)
 				{
-					DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
+					FGameplayTag DamageTag = FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"));
 
-					if (DamageAttributeTag.Num() > 0)
-					{
-						FGameplayTag DamageTag = DamageAttributeTag.First();
-						// ここでダメージ計算
-						SpecHandle.Data->SetSetByCallerMagnitude(DamageTag, 22.0f);
-					}
-
-					AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+					Spec->SetSetByCallerMagnitude(DamageTag, 22.0f);
 				}
-			}
+			});
 		}
 		
 		float PlayRate = 1.0f;
@@ -91,6 +85,13 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 				MontageProxy->OnInterrupted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 				MontageProxy->OnBlendOut.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 			}
+		}
+
+		APJEnemy* Enemy = Cast<APJEnemy>(Character);
+
+		if (Enemy != nullptr)
+		{
+			Enemy->DrawDamage(22);
 		}
 	}
 

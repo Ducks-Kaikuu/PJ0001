@@ -3,6 +3,7 @@
 
 #include "PJ0000/Character/Action/PJActionSlow.h"
 
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 void UPJActionSlow::ExecAction(const FInputActionValue& InputActionValue)
@@ -13,5 +14,9 @@ void UPJActionSlow::ExecAction(const FInputActionValue& InputActionValue)
 
 	Value = FMath::Clamp(1.0f - InputValue, SlowSpeed, 1.0f);
 	
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Value);
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Value);
+
+	ACharacter* Character = GetOwner<ACharacter>();
+
+	Character->CustomTimeDilation = Value;
 }

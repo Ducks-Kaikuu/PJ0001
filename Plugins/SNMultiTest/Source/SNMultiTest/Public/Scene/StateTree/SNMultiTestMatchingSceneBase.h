@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "StateTree/SNSceneStateTreeTaskBase.h"
+#include "Scene/StateTree/SNSceneStateTreeTaskBase.h"
 #include "SNMultiTestMatchingSceneBase.generated.h"
 
 /**

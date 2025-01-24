@@ -38,6 +38,7 @@ public class SNPlugin : ModuleRules
 				"GameplayTags",
 				"GameplayTasks",
 				"StateTreeModule",
+				"GameplayStateTreeModule",
 				"UMG", 
 				"EnhancedInput", 
 				"GameplayAbilities",

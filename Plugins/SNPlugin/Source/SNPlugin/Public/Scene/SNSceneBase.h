@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "SNSceneBase.generated.h"
 
+class UStateTreeComponent;
 class USNMasterWidget;
 
 //----------------------------------------------------------------------//
@@ -30,7 +31,7 @@ public:
 	//! @{@name マスターウィジェットを取得
 	USNMasterWidget* GetMasterWidget();
 	//! @}
-	
+
 protected:
 	
 	//! @{@name ゲーム開始時またはスポーン時にコールされる
@@ -49,6 +50,10 @@ private:
 	//!< マスターウィジェットのインスタンス
 	UPROPERTY()
 	TObjectPtr<USNMasterWidget> MasterWidget = nullptr;
+	
+	UPROPERTY(EditAnywhere, Category = "Scene|StateTree")
+	TObjectPtr<UStateTreeComponent> StateTree = nullptr;
+
 };
 
 //----------------------------------------------------------------------//

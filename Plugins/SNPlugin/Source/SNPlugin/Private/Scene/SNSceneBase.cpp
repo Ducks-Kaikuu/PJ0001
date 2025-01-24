@@ -4,9 +4,11 @@
 #include "Scene/SNSceneBase.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Scene/StateTree/SNSceneStateTreeTaskBase.h"
 #include "System/SNGameInstance.h"
 #include "UI/Widget/SNMasterWidget.h"
 #include "Utility/SNUtility.h"
+#include "Components/StateTreeComponent.h"
 
 // Sets default values
 //----------------------------------------------------------------------//
@@ -25,6 +27,8 @@ ASNSceneBase::ASNSceneBase()
 	SetActorTickEnabled(false);
 	// ルートコンポーネントを設定
 	SetRootComponent(CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent")));
+
+	StateTree = CreateDefaultSubobject<UStateTreeComponent>(TEXT("StateTreeComponent"));
 }
 
 //----------------------------------------------------------------------//

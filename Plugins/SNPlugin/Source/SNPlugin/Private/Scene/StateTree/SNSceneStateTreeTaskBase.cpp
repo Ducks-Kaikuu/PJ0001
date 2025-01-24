@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "StateTree/SNSceneStateTreeTaskBase.h"
+#include "Scene/StateTree/SNSceneStateTreeTaskBase.h"
 
 #include "SNDef.h"
 #include "Scene/SNSceneBase.h"

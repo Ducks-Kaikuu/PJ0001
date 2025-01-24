@@ -8,7 +8,7 @@ void UPJGameInstance::Init()
 {
 	Super::Init();
 
-	if (DamageDataObject.IsValid())
+	if (DamageDataObject.IsNull() == false)
 	{
 		DamageData = DamageDataObject.LoadSynchronous();
 	}
