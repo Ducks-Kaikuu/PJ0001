@@ -16,7 +16,7 @@ class PJ0000_API UPJAttackAction : public USNActionBase
 	GENERATED_BODY()
 
 public:
-	virtual void ExecAction(const FInputActionValue& InputActionValue) override;
+	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
 
 private:
 	UPROPERTY(EditAnywhere, Category="SN|Attack")

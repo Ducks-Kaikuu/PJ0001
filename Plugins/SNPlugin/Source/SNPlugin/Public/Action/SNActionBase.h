@@ -128,7 +128,7 @@ public:
 protected:
 	
 	//! @{@name 各アクションの実行処理
-	virtual void ExecAction(const FInputActionValue& InputActionValue){};
+	virtual bool ExecAction(const FInputActionValue& InputActionValue){ return false; };
 	//! @}
 	
 	//! @{@name サーバーでアクションを実行するかのフラグを設定

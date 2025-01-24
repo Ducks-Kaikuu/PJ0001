@@ -86,10 +86,11 @@ public:
 	void PlayMontage(const FName& Name, float PlayRate=1.0f, float StartTime=0.0f);
 	//! @}
 
-
+	void AddActionTagContainer(const FGameplayTagContainer& TagContainer);
 	void AddActionTag(const FGameplayTag& Tag);
 
 	void RemoveActionTag(const FGameplayTag& Tag);
+	void RemoveActionTagContainer(const FGameplayTagContainer& TagContainer);
 
 	void ResetAllActionTags();
 

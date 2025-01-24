@@ -93,22 +93,26 @@ void	USNActionBase::InputAction(const FInputActionValue& InputActionValue){
 		
 		return;
 	}
+
+	bool Result = false;
 	
 	if(SNUtility::IsServer(GetWorld()) == true){
-		
-		if(bExecOnBoth == true){
-			
-			ISNPlayablePawnInterface* PlayablePawn(GetOwner<ISNPlayablePawnInterface>());
-			
-			if(PlayablePawn != nullptr){
-				PlayablePawn->ExecuteActionOnMulticast(GetActionTag(), InputActionValue);
-			}
-		}
-		// 実行処理
-		ExecAction(InputActionValue);
 
-		Character->AddActionTag(GetActionTag());;
-		
+		Result = ExecAction(InputActionValue);
+
+		if (Result == true)
+		{
+			if(bExecOnBoth == true){
+			
+				ISNPlayablePawnInterface* PlayablePawn(GetOwner<ISNPlayablePawnInterface>());
+			
+				if(PlayablePawn != nullptr){
+					PlayablePawn->ExecuteActionOnMulticast(GetActionTag(), InputActionValue);
+				}
+			}
+
+			Character->AddActionTag(GetActionTag());;
+		}
 	} else {
 		
 		if((bExecOnServer == true) || (bExecOnBoth == true)){
@@ -119,12 +123,17 @@ void	USNActionBase::InputAction(const FInputActionValue& InputActionValue){
 				PlayablePawn->ExecuteActionOnServer(GetActionTag(), InputActionValue);
 			} else {
 				// 実行処理
-				ExecAction(InputActionValue);
+				Result = ExecAction(InputActionValue);
 			}
 			
 		} else {
 			// 実行処理
-			ExecAction(InputActionValue);
+			Result = ExecAction(InputActionValue);
 		}
+	}
+
+	if ((Result == true) && (Character->IsLocallyControlled() == true))
+	{
+		Character->AddActionTag(GetActionTag());;
 	}
 }

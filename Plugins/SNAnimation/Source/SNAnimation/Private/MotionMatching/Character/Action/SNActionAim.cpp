@@ -6,7 +6,7 @@
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 #include "MotionMatching/Traversal/Component/SNTraversalComponent.h"
 
-void USNActionAim::ExecAction(const FInputActionValue& InputActionValue)
+bool USNActionAim::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -25,5 +25,10 @@ void USNActionAim::ExecAction(const FInputActionValue& InputActionValue)
 				TraversalComponent->SetWantsToStrafe(true);
 			}
 		}
+	} else
+	{
+		return false;
 	}
+
+	return true;
 }

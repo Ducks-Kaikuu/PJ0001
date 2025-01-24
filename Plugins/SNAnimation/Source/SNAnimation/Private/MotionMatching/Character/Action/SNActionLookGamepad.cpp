@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 
-void USNActionLookGamepad::ExecAction(const FInputActionValue& InputActionValue)
+bool USNActionLookGamepad::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -21,5 +21,9 @@ void USNActionLookGamepad::ExecAction(const FInputActionValue& InputActionValue)
 		Player->AddControllerYawInput(Vector.X);
 
 		Player->AddControllerPitchInput(Vector.Y);
+
+		return true;
 	}
+
+	return false;
 }

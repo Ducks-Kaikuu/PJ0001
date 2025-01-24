@@ -17,7 +17,7 @@ class PJ0000_API UPJUpperAttackAction : public USNActionBase
 
 public:
 	
-	virtual void ExecAction(const FInputActionValue& InputActionValue) override;
+	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
 
 	UFUNCTION()
 	void OnMontagePlayEnd(FName NotifyName);

@@ -12,7 +12,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PJ0000/Character/Components/SNComboComponent.h"
 
-void UPJAttackAction::ExecAction(const FInputActionValue& InputActionValue)
+bool UPJAttackAction::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -89,8 +89,12 @@ void UPJAttackAction::ExecAction(const FInputActionValue& InputActionValue)
 					ComboComponent->SetAdvancedInput(true);
 
 					Character->GetAbilitySystemComponent()->RemoveLooseGameplayTag(AdvancedInput);
+
+					return true;
 				}
 			} 
 		}
 	}
+
+	return false;
 }

@@ -52,22 +52,34 @@ void ASNCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 //	DOREPLIFETIME(ASNCharacterBase, FullBodyPreStateName);
 }
 
-void ASNCharacterBase::AddActionTag(const FGameplayTag& Tag)
-{
-	if (SNUtility::IsServer(GetWorld()))
-	{
-		if (ActionTags.HasTag(Tag) == false)
-		{
+void ASNCharacterBase::AddActionTagContainer(const FGameplayTagContainer& TagContainer){
+	
+	if (IsLocallyControlled() == true){
+		ActionTags.AppendTags(TagContainer);
+	}
+}
+
+void ASNCharacterBase::AddActionTag(const FGameplayTag& Tag){
+	
+	if (IsLocallyControlled() == true){
+		
+		if(ActionTags.HasTag(Tag) == false){
 			ActionTags.AddTag(Tag);
 		}
 	}
 }
 
-void ASNCharacterBase::RemoveActionTag(const FGameplayTag& Tag)
-{
-	if (SNUtility::IsServer(GetWorld()))
-	{
+void ASNCharacterBase::RemoveActionTag(const FGameplayTag& Tag){
+	
+	if (IsLocallyControlled() == true){
 		ActionTags.RemoveTag(Tag);
+	}
+}
+
+void ASNCharacterBase::RemoveActionTagContainer(const FGameplayTagContainer& TagContainer){
+
+	if (IsLocallyControlled() == true){
+		ActionTags.RemoveTags(TagContainer);
 	}
 }
 

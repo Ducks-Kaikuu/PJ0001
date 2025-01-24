@@ -7,6 +7,8 @@
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "SNAnimNotify_GenerateAttack.generated.h"
 
+//!@{@defgroup アニメーションノーティファイ
+//!@{
 /**
  * 
  */
@@ -52,3 +54,5 @@ public:
 	UPROPERTY(EditAnywhere, Category = "SN|Attack")
 	FGameplayTagContainer DamageAttribetes;
 };
+//! @}
+//! @}

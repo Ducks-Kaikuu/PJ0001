@@ -7,7 +7,7 @@
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 #include "MotionMatching/Traversal/Component/SNTraversalComponent.h"
 
-void USNActionJump::ExecAction(const FInputActionValue& InputActionValue)
+bool USNActionJump::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -42,5 +42,10 @@ void USNActionJump::ExecAction(const FInputActionValue& InputActionValue)
 				}
 			}
 		}
+	} else
+	{
+		return false;
 	}
+
+	return true;
 }

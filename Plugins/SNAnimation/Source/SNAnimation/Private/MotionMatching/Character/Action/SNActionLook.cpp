@@ -5,7 +5,7 @@
 
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 
-void USNActionLook::ExecAction(const FInputActionValue& InputActionValue)
+bool USNActionLook::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -16,5 +16,10 @@ void USNActionLook::ExecAction(const FInputActionValue& InputActionValue)
 		Player->AddControllerYawInput(InputActionValue[0]);
 
 		Player->AddControllerPitchInput(InputActionValue[1]);
+	} else
+	{
+		return false;
 	}
+
+	return true;
 }

@@ -15,7 +15,7 @@ class PJ0000_API UPJActionSlow : public USNActionAim
 	GENERATED_BODY()
 
 public:
-	virtual void ExecAction(const FInputActionValue& InputActionValue) override;
+	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "SN|Action")

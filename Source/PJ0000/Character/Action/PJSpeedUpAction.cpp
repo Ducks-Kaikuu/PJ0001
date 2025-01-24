@@ -8,7 +8,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "PJ0000/Character/Components/SNComboComponent.h"
 
-void UPJSpeedUpAction::ExecAction(const FInputActionValue& InputActionValue)
+bool UPJSpeedUpAction::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -18,15 +18,5 @@ void UPJSpeedUpAction::ExecAction(const FInputActionValue& InputActionValue)
 	
 	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Speed up: %f"), InputValue), true, false);
 
-	ACharacter* Character(GetOwner<ACharacter>());
-
-	if (Character != nullptr)
-	{
-		USNComboComponent* ComboComponent = Character->FindComponentByClass<USNComboComponent>();
-
-		if (ComboComponent != nullptr)
-		{
-			ComboComponent->SetComboTag(FGameplayTag());
-		}
-	}
+	return true;
 }

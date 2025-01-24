@@ -9,11 +9,11 @@
 #include "GameFramework/Character.h"
 #include "PJ0000/Character/Components/SNComboComponent.h"
 
-void UPJUpperAttackAction::ExecAction(const FInputActionValue& InputActionValue)
+bool UPJUpperAttackAction::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
-	ACharacter* Character(Cast<ACharacter>(GetOwner<ACharacter>()));
+	ASNCharacterBase* Character(GetOwner<ASNCharacterBase>());
 
 	if (Character != nullptr)
 	{
@@ -32,9 +32,15 @@ void UPJUpperAttackAction::ExecAction(const FInputActionValue& InputActionValue)
 				PlayMontage->OnCompleted.AddDynamic(this, &UPJUpperAttackAction::OnMontagePlayEnd);
 				PlayMontage->OnInterrupted.AddDynamic(this, &UPJUpperAttackAction::OnMontagePlayEnd);
 				PlayMontage->OnBlendOut.AddDynamic(this, &UPJUpperAttackAction::OnMontagePlayEnd);
+
+				return true;
+			} else {
+				SNPLUGIN_LOG(TEXT("--------- Can't Find Motion ----------"));
 			}
 		}
 	}
+
+	return false;
 }
 
 void UPJUpperAttackAction::OnMontagePlayEnd(FName NotifyName)

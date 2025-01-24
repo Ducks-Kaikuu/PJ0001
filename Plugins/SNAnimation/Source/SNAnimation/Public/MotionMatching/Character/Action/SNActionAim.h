@@ -15,5 +15,5 @@ class SNANIMATION_API USNActionAim : public USNActionBase
 	GENERATED_BODY()
 
 public:
-	virtual void ExecAction(const FInputActionValue& InputActionValue) override;
+	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
 };

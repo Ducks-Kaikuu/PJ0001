@@ -6,7 +6,7 @@
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 #include "MotionMatching/Traversal/Component/SNTraversalComponent.h"
 
-void USNActionWalk::ExecAction(const FInputActionValue& InputActionValue)
+bool USNActionWalk::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -25,7 +25,11 @@ void USNActionWalk::ExecAction(const FInputActionValue& InputActionValue)
 				bool bWantsToWalk = TraversalComponent->GetWantsToWalk() != true;
 
 				TraversalComponent->SetWantsToWalk(bWantsToWalk);
+
+				return true;
 			}
 		}
 	}
+
+	return false;
 }

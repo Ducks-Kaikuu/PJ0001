@@ -7,7 +7,7 @@
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 #include "MotionMatching/Traversal/Component/SNTraversalComponent.h"
 
-void USNActionMoveWorldSpace::ExecAction(const FInputActionValue& InputActionValue)
+bool USNActionMoveWorldSpace::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -24,6 +24,10 @@ void USNActionMoveWorldSpace::ExecAction(const FInputActionValue& InputActionVal
 		if(USNTraversalComponent* TraversalComponent = Player->GetTraversalComponent())
 		{
 			TraversalComponent->SetStride(InputActionValue.Get<FVector2D>());
+
+			return true;
 		}
 	}
+
+	return false;
 }

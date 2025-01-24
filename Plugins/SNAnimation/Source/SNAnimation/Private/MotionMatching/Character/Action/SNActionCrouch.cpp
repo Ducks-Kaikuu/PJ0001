@@ -5,7 +5,7 @@
 
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 
-void USNActionCrouch::ExecAction(const FInputActionValue& InputActionValue)
+bool USNActionCrouch::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -20,5 +20,10 @@ void USNActionCrouch::ExecAction(const FInputActionValue& InputActionValue)
 		{
 			Player->Crouch();
 		}
+	} else
+	{
+		return false;
 	}
+
+	return true;
 }

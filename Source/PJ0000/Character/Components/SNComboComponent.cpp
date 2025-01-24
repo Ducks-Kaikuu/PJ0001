@@ -136,20 +136,23 @@ bool USNComboComponent::IsLanded() const
 
 UPlayMontageCallbackProxy* USNComboComponent::PerformMotionMatching(ACharacter* Character)
 {
-	if (AttackAnimationChooser != nullptr)
-	{
-		float PlayRate = 1.0f;
-		float StartTime = 0.0f;
+	if(AttackAnimationChooser != nullptr){
+		
+		float PlayRate	= 1.0f;
+		float StartTime	= 0.0f;
 		
 		UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooser(Character, AttackAnimationChooser, this, PlayRate, StartTime);
-	
-		const UAnimMontage* ClimbMontage = Cast<const UAnimMontage>(AnimMontage);
-		// モンタージュを再生
-		UPlayMontageCallbackProxy* MontageProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(Character->GetMesh(), const_cast<UAnimMontage*>(ClimbMontage), PlayRate, StartTime, NAME_None);
-
-		return MontageProxy;
+		
+		if(AnimMontage != nullptr){
+			
+			const UAnimMontage* ClimbMontage = Cast<const UAnimMontage>(AnimMontage);
+			// モンタージュを再生
+			UPlayMontageCallbackProxy* MontageProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(Character->GetMesh(), const_cast<UAnimMontage*>(ClimbMontage), PlayRate, StartTime, NAME_None);
+			
+			return MontageProxy;
+		}
 	}
-
+	
 	return nullptr;
 }
 

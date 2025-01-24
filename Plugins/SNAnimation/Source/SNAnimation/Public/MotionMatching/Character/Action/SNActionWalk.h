@@ -16,5 +16,5 @@ class SNANIMATION_API USNActionWalk : public USNActionBase
 
 public:
 	
-	virtual void ExecAction(const FInputActionValue& InputActionValue) override;
+	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
 };

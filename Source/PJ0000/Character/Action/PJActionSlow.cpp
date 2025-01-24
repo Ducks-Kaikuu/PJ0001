@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
-void UPJActionSlow::ExecAction(const FInputActionValue& InputActionValue)
+bool UPJActionSlow::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
@@ -19,4 +19,6 @@ void UPJActionSlow::ExecAction(const FInputActionValue& InputActionValue)
 	ACharacter* Character = GetOwner<ACharacter>();
 
 	Character->CustomTimeDilation = Value;
+
+	return true;
 }
