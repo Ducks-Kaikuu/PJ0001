@@ -141,7 +141,7 @@ UPlayMontageCallbackProxy* USNComboComponent::PerformMotionMatching(ACharacter* 
 		float PlayRate	= 1.0f;
 		float StartTime	= 0.0f;
 		
-		UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooser(Character, AttackAnimationChooser, this, PlayRate, StartTime);
+		UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooserWithDB(Character, AttackAnimationChooser, this, PlayRate, StartTime);
 		
 		if(AnimMontage != nullptr){
 			

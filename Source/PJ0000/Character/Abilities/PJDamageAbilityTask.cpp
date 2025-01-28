@@ -73,7 +73,7 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		float PlayRate = 1.0f;
 		float StartTime = 0.0f;
 		
-		UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooser(Character, DamageAnimationChooser, this, PlayRate, StartTime);
+		UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooserWithDB(Character, DamageAnimationChooser, this, PlayRate, StartTime);
 
 		if (AnimMontage != nullptr)
 		{

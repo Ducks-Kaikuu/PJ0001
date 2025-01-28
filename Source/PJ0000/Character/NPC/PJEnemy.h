@@ -7,6 +7,9 @@
 #include "UI/Widget/SNUserWidgetBase.h"
 #include "PJEnemy.generated.h"
 
+class UChooserTable;
+class UAIPerceptionComponent;
+class UPawnSensingComponent;
 class USNMovePositionComponent;
 class USNUserWidgetBase;
 struct FGameplayEffectSpec;
@@ -22,25 +25,47 @@ class PJ0000_API APJEnemy : public ASNCharacterBase
 {
 	GENERATED_BODY()
 public:
+	
 	APJEnemy(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Tick(float DeltaSeconds) override;
 
 	void DrawDamage(int Damage);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
+	float GetVelocity2D() const ;
 	
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 private:
+	UFUNCTION()
+	void OnSeePlayer(APawn* Pawn);
 	
 	void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
 
 	UPROPERTY()
+	TObjectPtr<UPawnSensingComponent> PawnSensingComponent = nullptr;;
+	
+	UPROPERTY()
 	TObjectPtr<USNMovePositionComponent> MovePositionComponent = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UAIPerceptionComponent> PerceptionComponent = nullptr;;
 	
 	UPROPERTY()
 	TObjectPtr<UPJHealthSet> HealthSet;
 
 	UPROPERTY(EditAnywhere)
+	TObjectPtr<UChooserTable> ChooserTable = nullptr;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<USNUserWidgetBase> DamaageWidget = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	float VisionAngle = 60.0f;
 };
+
+

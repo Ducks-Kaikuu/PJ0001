@@ -39,4 +39,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="SN|Motion Matching")
 	static UAnimMontage* GetAnimMontageFromChooser(ACharacter* Character, UChooserTable* ChooserTable, UObject* Parameter, UPARAM(ref) float& PlayRate, UPARAM(ref) float& StartTime);
+	
+	UFUNCTION(BlueprintCallable, Category="SN|Motion Matching")
+	static UAnimMontage* GetAnimMontageFromChooserWithDB(ACharacter* Character, UChooserTable* ChooserTable, UObject* Parameter, UPARAM(ref) float& PlayRate, UPARAM(ref) float& StartTime);
 };

@@ -125,6 +125,42 @@ UAnimMontage* USNBlueprintFunctionLibrary::GetAnimMontageFromChooser(ACharacter*
 		
 		return nullptr;
 	}
+	
+	UAnimMontage* AnimMontage = Cast<UAnimMontage>(Assets[0]);
+	
+	return AnimMontage;
+}
+
+UAnimMontage* USNBlueprintFunctionLibrary::GetAnimMontageFromChooserWithDB(ACharacter* Character, UChooserTable* ChooserTable, UObject* Parameter, float& PlayRate, float& StartTime)
+{
+	if(Character == nullptr){
+		
+		SNPLUGIN_LOG(TEXT("GetAnimMontageFromChooser : Character is nullptr."));
+		
+		return nullptr;
+	}
+	
+	if(ChooserTable == nullptr){
+		
+		SNPLUGIN_LOG(TEXT("GetAnimMontageFromChooser : ChooserTable is nullptr."));
+		
+		return nullptr;
+	}
+	//! チューザーを評価する
+	FChooserEvaluationContext Context = UChooserFunctionLibrary::MakeChooserEvaluationContext();
+	//! ChooserTable評価用の構造体を設定(ChooserTable側に設定している構造体の型と同じもの)
+	Context.AddObjectParam(Parameter);
+	
+	FInstancedStruct ChooserInstance = UChooserFunctionLibrary::MakeEvaluateChooser(ChooserTable);
+	//! 評価を実行
+	TArray<UObject*> Assets(UChooserFunctionLibrary::EvaluateObjectChooserBaseMulti(Context, ChooserInstance, UAnimMontage::StaticClass()));
+	
+	if(Assets.Num() <= 0){
+		
+		SNPLUGIN_WARNING(TEXT("Motion is not find."));
+		
+		return nullptr;
+	}
 	UAnimInstance* AnimInstanceBase = Cast<UAnimInstance>(Character->GetMesh()->GetAnimInstance());
 	
 	FPoseSearchBlueprintResult PoseSearchResult;

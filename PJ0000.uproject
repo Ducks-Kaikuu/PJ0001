@@ -12,7 +12,8 @@
 				"SNPlugin",
 				"Engine",
 				"GameplayAbilities",
-				"SNAnimation"
+				"SNAnimation",
+				"AIModule"
 			]
 		}
 	],
