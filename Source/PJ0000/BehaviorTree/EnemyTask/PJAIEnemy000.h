@@ -27,7 +27,7 @@ public:
 
 	UBehaviorTreeComponent* GetBehaviorTreeComponent();
 
-	virtual UBlackboardComponent* GetBlackboardComponent() override;
+	virtual UBlackboardComponent* GetBlackboardComponent();
 
 	void Restart();
 	
