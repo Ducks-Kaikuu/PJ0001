@@ -19,6 +19,18 @@ public:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere)
+	bool bDebugDraw = false;
+#endif
+	
+	UPROPERTY(EditAnywhere)
+	FGameplayTag IdleTag;
+	
+	UPROPERTY(EditAnywhere)
+	FGameplayTag WalkTag;
+	
 	UPROPERTY(EditAnywhere)
 	float ChaseDistance=-1.0f;
 };

@@ -6,7 +6,7 @@
 #include "AIController.h"
 #include "SNDef.h"
 #include "Character/Base/SNPlayerBase.h"
-#include "GameFramework/Character.h"
+#include "Character/NPC/PJEnemy.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Utility/SNUtility.h"
 
@@ -15,28 +15,55 @@ EBTNodeResult::Type UPJEnemyMoveToPlayerTask::ExecuteTask(UBehaviorTreeComponent
 	EBTNodeResult::Type Result =Super::ExecuteTask(OwnerComp, NodeMemory); 
 
 	AAIController* AiController(Cast<AAIController>(OwnerComp.GetAIOwner()));
-
-	if(AiController != nullptr)
-	{
+	
+	if(AiController != nullptr){
+		
+		APJEnemy* Character = Cast<APJEnemy>(AiController->GetPawn());
+		
+		if(Character != nullptr)
+		{
 			ASNPlayerBase* Player(SNUtility::GetCurrentPlayer<ASNPlayerBase>());
 
 			if(Player != nullptr)
 			{
-				EPathFollowingRequestResult::Type MoveResult = AiController->MoveToActor(Player, ChaseDistance);
+				EPathFollowingRequestResult::Type MoveResult = AiController->MoveToActor(Player, ChaseDistance, false, false);
 
 				if(MoveResult == EPathFollowingRequestResult::Type::Failed)
 				{
+					Character->RemoveActionTag(WalkTag);
+					Character->AddActionTag(IdleTag);
+					
 					Result = EBTNodeResult::Type::Failed;
-				} else
-					if(MoveResult == EPathFollowingRequestResult::Type::AlreadyAtGoal){
-						Result = EBTNodeResult::Type::Succeeded;
-
-						SNPLUGIN_LOG(TEXT("Move Task is Finished."));
-					} else
+#if WITH_EDITORONLY_DATA
+					if (bDebugDraw == true)
 					{
-						Result = EBTNodeResult::Type::InProgress;
+						SNPLUGIN_LOG(TEXT("Move Task is Failed."));
 					}
+#endif
+				} else
+				if(MoveResult == EPathFollowingRequestResult::Type::AlreadyAtGoal){
+
+					Character->RemoveActionTag(WalkTag);
+					Character->AddActionTag(IdleTag);
+					
+					Result = EBTNodeResult::Type::Succeeded;
+#if WITH_EDITORONLY_DATA
+					if (bDebugDraw == true)
+					{
+						SNPLUGIN_LOG(TEXT("Move Task is Finished."));
+					}
+#endif
+				} else
+				{
+					Character->RemoveActionTag(IdleTag);
+					Character->AddActionTag(WalkTag);
+					
+					Result = EBTNodeResult::Type::InProgress;
+				}
+				
+				Character->PlayAnimMontageByActionTag();
 			}
+		}
 	}
 
 	return Result;

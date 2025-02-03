@@ -85,7 +85,7 @@ void ASNCharacterBase::RemoveActionTagContainer(const FGameplayTagContainer& Tag
 
 void ASNCharacterBase::ResetAllActionTags()
 {
-	if (SNUtility::IsServer(GetWorld()))
+	if (IsLocallyControlled() == true)
 	{
 		ActionTags.Reset();
 	}
@@ -534,6 +534,19 @@ void ASNCharacterBase::PlayMontage(const FName& Name, float PlayRate, float Star
 		// サーバーに通知
 		PlayMontage_OnServer(Name, PlayRate, StartTime);
 	}
+}
+
+void ASNCharacterBase::SetActinTag(const FGameplayTag& Tag)
+{
+	// カレントのタグをリセット
+	ResetAllActionTags();
+	// タグを追加
+	ActionTags.AddTag(Tag);
+}
+
+void ASNCharacterBase::SetActionTagContainer(const FGameplayTagContainer& TagContainer)
+{
+	ActionTags = TagContainer;
 }
 
 //----------------------------------------------------------------------//

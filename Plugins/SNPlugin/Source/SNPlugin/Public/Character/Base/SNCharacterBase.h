@@ -86,6 +86,9 @@ public:
 	void PlayMontage(const FName& Name, float PlayRate=1.0f, float StartTime=0.0f);
 	//! @}
 
+	void SetActinTag(const FGameplayTag& Tag);
+	void SetActionTagContainer(const FGameplayTagContainer& TagContainer);
+
 	void AddActionTagContainer(const FGameplayTagContainer& TagContainer);
 	void AddActionTag(const FGameplayTag& Tag);
 
@@ -94,6 +97,7 @@ public:
 
 	void ResetAllActionTags();
 
+	UFUNCTION(BlueprintCallable, Category="SN|Action", meta=(BlueprintThreadSafe))
 	FGameplayTagContainer GetActionTags() const;
 		
 	//! @{@name モンタージュのセクションへのジャンプ
@@ -105,6 +109,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="SN|Animation")
 	void SetBlendspaceParam(const FName& Key, const FVector& param);
 	//! @}
+	
+	//!@ Satoshi Nishimura 2025/01/31 アクセッサを用意してもうまく動作せず、変数をBlueprintに出してやるとうまくいく…意味不明なChooser
+	UPROPERTY(BlueprintReadOnly, Replicated)
+	FGameplayTagContainer ActionTags;
 	
 protected:
 	
@@ -137,9 +145,6 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USNAbilitySystemComponent> AbilitySystemComponent = nullptr;
-
-	UPROPERTY(Replicated)
-	FGameplayTagContainer ActionTags;
 	
 private:
 	

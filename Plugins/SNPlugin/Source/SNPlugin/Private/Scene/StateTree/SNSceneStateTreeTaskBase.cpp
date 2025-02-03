@@ -40,7 +40,7 @@ EStateTreeRunStatus USNSceneStateTreeTaskBase::EnterState(FStateTreeExecutionCon
 //----------------------------------------------------------------------//
 void USNSceneStateTreeTaskBase::ExitState(FStateTreeExecutionContext& Context, const FStateTreeTransitionResult& Transition){
 	
-	Super::EnterState(Context, Transition);
+	Super::ExitState(Context, Transition);
 	
 	USNMasterWidget* MasterWidget(nullptr);
 	// シーン情報を取得

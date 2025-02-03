@@ -10,6 +10,7 @@
 #include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "Channels/MovieSceneTimeWarpChannel.h"
 #include "Character/Base/SNPlayerBase.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -97,24 +98,13 @@ void APJEnemy::OnSeePlayer(APawn* Pawn)
 		if (Dist > 50.f)
 		{
 			AIController->Restart();
+
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Restart Tree"));	
 		}
 		
-		AIController->SetPlayerKey(Player);
+//		AIController->SetPlayerKey(Player);
 
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("See"));
-	}
-
-	if (ChooserTable != nullptr)
-	{
-		float PlayRate = 1.0f;
-		float StartTime = 0.0f;
-		
-		UAnimMontage* AnimMontage(USNBlueprintFunctionLibrary::GetAnimMontageFromChooser(this, ChooserTable, this, PlayRate, StartTime));
-
-		if (AnimMontage != nullptr)
-		{
-			UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(GetMesh(), const_cast<UAnimMontage*>(AnimMontage), 1.0f, 0.0f, NAME_None);
-		}
 	}
 }
 
@@ -160,6 +150,38 @@ void APJEnemy::DrawDamage(int Damage)
 			}
 		}
 	}
+}
+
+UPlayMontageCallbackProxy* APJEnemy::PlayAnimMontageByActionTag()
+{
+	if (ChooserTable == nullptr)
+	{
+		return nullptr;
+	}
+
+	float PlayRate = 1.0f;
+	float StartTime = 0.0f;
+	
+ 	UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooser(this, ChooserTable, this, PlayRate, StartTime);
+
+	if (AnimMontage != nullptr)
+	{
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+		if (AnimInstance != nullptr)
+		{
+			if (AnimInstance->Montage_IsPlaying(AnimMontage) == false)
+			{
+				MontageProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(GetMesh(), AnimMontage, 1.0f, 0.0f);
+				
+				SNPLUGIN_LOG(TEXT("Motion is %s"), *AnimMontage->GetName());
+			}
+		}
+		
+		return MontageProxy;
+	}
+
+	return nullptr;
 }
 
 void APJEnemy::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue)

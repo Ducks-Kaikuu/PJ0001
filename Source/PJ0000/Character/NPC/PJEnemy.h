@@ -7,6 +7,7 @@
 #include "UI/Widget/SNUserWidgetBase.h"
 #include "PJEnemy.generated.h"
 
+class UPlayMontageCallbackProxy;
 class UChooserTable;
 class UAIPerceptionComponent;
 class UPawnSensingComponent;
@@ -31,6 +32,8 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	void DrawDamage(int Damage);
+
+	UPlayMontageCallbackProxy* PlayAnimMontageByActionTag();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
 	float GetVelocity2D() const ;
@@ -66,6 +69,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float VisionAngle = 60.0f;
+
+	UPROPERTY()
+	TObjectPtr<UPlayMontageCallbackProxy> MontageProxy = nullptr;
 };
 
 
