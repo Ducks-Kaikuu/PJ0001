@@ -102,6 +102,7 @@ void UPJDamageAbilityTask::OnEndPlayMontage(FName NotifyName)
 
 		DamageAttributeTag.Reset();
 	}
+	
 	K2_EndAbility();
 	
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On End Play Montage."));

@@ -31,6 +31,8 @@ APJEnemy::APJEnemy(const FObjectInitializer& ObjectInitializer):Super(ObjectInit
 	MovePositionComponent = CreateDefaultSubobject<USNMovePositionComponent>(TEXT("PositionComponent"));
 
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("SensingComponent"));
+
+	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 }
 
 void APJEnemy::Tick(float DeltaSeconds)
@@ -61,7 +63,12 @@ void APJEnemy::BeginPlay()
 			PawnSensingComponent->OnSeePawn.AddDynamic(this, &APJEnemy::OnSeePlayer);
 		}
 	}
-	
+
+	if (PerceptionComponent != nullptr)
+	{
+		PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &APJEnemy::OnPerceptionUpdated);
+	}
+
 	if (AbilitySystemComponent != nullptr)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
@@ -85,8 +92,30 @@ void APJEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 }
 
+void APJEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+{
+	for (auto& Actor: UpdatedActors)
+	{
+		FActorPerceptionBlueprintInfo PerceptionInfo;
+		
+		PerceptionComponent->GetActorsPerception(Actor, PerceptionInfo);
+		
+		if (PerceptionInfo.LastSensedStimuli.Num() > 0)
+		{
+			for (auto& Stimulus: PerceptionInfo.LastSensedStimuli)
+			{
+				if (Stimulus.WasSuccessfullySensed() == true)
+				{
+					UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Percept"));
+				}
+			}
+		}
+	}
+}
+
 void APJEnemy::OnSeePlayer(APawn* Pawn)
 {
+#if 0
 	APJAIEnemy000* AIController = Cast<APJAIEnemy000>(GetController());
 
 	ASNPlayerBase* Player = Cast<ASNPlayerBase>(Pawn);
@@ -97,7 +126,7 @@ void APJEnemy::OnSeePlayer(APawn* Pawn)
 
 		if (Dist > 50.f)
 		{
-			AIController->Restart();
+			//AIController->Restart();
 
 			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Restart Tree"));	
 		}
@@ -106,6 +135,7 @@ void APJEnemy::OnSeePlayer(APawn* Pawn)
 
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("See"));
 	}
+#endif
 }
 
 void APJEnemy::DrawDamage(int Damage)

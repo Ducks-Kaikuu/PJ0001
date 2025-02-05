@@ -21,10 +21,4 @@ public:
 
 	virtual void PostLoad() override;
 
-private:
-	UPROPERTY(EditAnywhere, Category = "Damage")
-	TSubclassOf<UPJGameplayEffectComponent> DamageComponentClass = nullptr;
-	
-	UPROPERTY()
-	TObjectPtr<UGameplayEffectComponent> Component = nullptr;
 };

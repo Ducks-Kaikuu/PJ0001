@@ -46,6 +46,9 @@ protected:
 private:
 	UFUNCTION()
 	void OnSeePlayer(APawn* Pawn);
+
+	UFUNCTION()
+	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	
 	void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
 
@@ -56,11 +59,11 @@ private:
 	TObjectPtr<USNMovePositionComponent> MovePositionComponent = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UAIPerceptionComponent> PerceptionComponent = nullptr;;
-	
-	UPROPERTY()
 	TObjectPtr<UPJHealthSet> HealthSet;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UAIPerceptionComponent> PerceptionComponent = nullptr;;
+	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UChooserTable> ChooserTable = nullptr;
 
@@ -73,5 +76,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UPlayMontageCallbackProxy> MontageProxy = nullptr;
 };
+
 
 
