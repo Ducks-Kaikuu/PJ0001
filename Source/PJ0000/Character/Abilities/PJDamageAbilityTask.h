@@ -19,9 +19,6 @@ class PJ0000_API UPJDamageAbilityTask : public UPJGameplayAbility
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta =(NotBlueprintThreadSafe))
-	FGameplayEventData GetDamageTags();
-	
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 private:

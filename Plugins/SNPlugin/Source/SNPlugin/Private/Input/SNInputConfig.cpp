@@ -85,14 +85,13 @@ bool	USNInputConfig::InitializeInput(FName Name, UObject* OwnerObject){
 					FSNInputAction& Input(action);
 					// アクション名を設定
 					// Action->SetActionName(*(Input.InputAction->GetName()));
-					Action->SetActionTag(Input.InputTag);
-
-					Action->SetExclusiveActionTag(Input.ExclusiveTags);
+					//Action->SetActionTag(Input.InputTag);
+					//Action->SetExclusiveActionTag(Input.ExclusiveTags);
 					
 					if(PlayablePawn != nullptr){
-						
-						// PlayablePawn->AddInputAction(Action->GetActionName(), Action);
+
 						PlayablePawn->AddInputAction(Input.InputTag, Action);
+						
 						SNPLUGIN_LOG(TEXT("AddInputAction : %s"), *Action->GetActionTag().ToString());
 					}  else {
 						SNPLUGIN_LOG(TEXT("Failed to AddInputAction."));

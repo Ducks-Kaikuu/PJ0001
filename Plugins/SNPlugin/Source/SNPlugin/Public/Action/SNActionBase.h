@@ -16,6 +16,8 @@ class AActor;
 
 struct FInputActionValue;
 
+//!@{@defgroup アクション
+//!@{
 //----------------------------------------------------------------------//
 //
 //! @brief 入力されたパラメータへアクセスするためのプロキシ
@@ -87,6 +89,10 @@ public:
 	virtual ~USNActionBase();
 	//! @}
 	
+	//! @{@name BehaiviorTreeから呼ばれるExecuteTaskのオーバーライド
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	//! @}
+	
 	//! @{@name 初期化処理
 	virtual void Initialize(UEnhancedInputComponent* InputComponent, const UInputAction* InputAction, UObject* Object);
 	//! @}
@@ -110,11 +116,23 @@ public:
 	//! @{@name アクションタグの設定
 	void SetActionTag(const FGameplayTag& Tag);
 	//! @}
-
-	void SetExclusiveActionTag(const FGameplayTagContainer& Tags);
 	
 	//! @{@name アクションタグを取得
 	FGameplayTag GetActionTag() const ;
+	//! @}
+	
+	//! @{@name 排他用ゲームプレイタグリストを設定
+	void SetExclusiveActionTag(const FGameplayTagContainer& Tags);
+	void SetExclusiveActionTag(const FGameplayTag& Tag);
+	//! @}
+	
+	//! @{@name 排他用ゲームプレイタグリストに追加
+	void AddExclusiveActionTag(const FGameplayTagContainer& Tags);
+	void AddExclusiveActionTag(const FGameplayTag& Tag);
+	//! @}
+	
+	//! @{@name 排他用ゲームプレイタグリストを取得
+	FGameplayTagContainer GetExclusiveActionTag() const ;
 	//! @}
 	
 	//! @{@name サーバーとクライアント両方で実行するかチェック
@@ -131,9 +149,21 @@ protected:
 	virtual bool ExecAction(const FInputActionValue& InputActionValue){ return false; };
 	//! @}
 	
+	//! @{@name BehaiviorTreeのExecTaskからの呼び出し処理
+	virtual bool ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory){ return false; };
+	//! @}
+	
 	//! @{@name サーバーでアクションを実行するかのフラグを設定
 	void SetExecOnServer(bool bFlag);
 	//! @}
+
+	//!< アクションタグ
+	UPROPERTY(EditAnywhere, Category="Action")
+	FGameplayTag ActionTag;
+	
+	//!< 排他用アクションタグリスト
+	UPROPERTY(EditAnywhere, Category="Action")
+	FGameplayTagContainer ExclusiveTags;
 	
 private:
 	
@@ -143,20 +173,11 @@ private:
 	
 	//!< サーバーとクライアントの両方でアクションを実行するかのフラグ
 	UPROPERTY(EditAnywhere, Category="Online")
-	bool bExecOnBoth = false;
-	
-	//!< アクション名
-	FName ActionName;
-
-	UPROPERTY()
-	FGameplayTag ActionTag;
-
-	UPROPERTY()
-	FGameplayTagContainer ExclusiveTags;
+	bool bExecOnMulticast = false;
 	
 	//!< オーナー
 	UPROPERTY()
-	UObject*	Owner;
+	TObjectPtr<UObject>		Owner = nullptr;
 };
 
 //----------------------------------------------------------------------//
@@ -180,14 +201,63 @@ FORCEINLINE void	USNActionBase::SetOwner(AActor* Object){
 //! @param Tag アクションタグ
 //
 //----------------------------------------------------------------------//
-FORCEINLINE void USNActionBase::SetActionTag(const FGameplayTag& Tag)
-{
+FORCEINLINE void USNActionBase::SetActionTag(const FGameplayTag& Tag){
 	ActionTag = Tag;
 }
 
-FORCEINLINE void USNActionBase::SetExclusiveActionTag(const FGameplayTagContainer& Tags)
-{
+//----------------------------------------------------------------------//
+//
+//! @brief 排他用ゲームプレイタグリストを設定
+//
+//! @param Tags ゲームプレイタグリスト
+//
+//----------------------------------------------------------------------//
+FORCEINLINE void USNActionBase::SetExclusiveActionTag(const FGameplayTagContainer& Tags){
 	ExclusiveTags = Tags;
+}
+
+//----------------------------------------------------------------------//
+//
+//! @brief 排他用ゲームプレイタグリストを設定
+//
+//! @param Tags ゲームプレイタグ
+//
+//----------------------------------------------------------------------//
+FORCEINLINE void USNActionBase::SetExclusiveActionTag(const FGameplayTag& Tag){
+	ExclusiveTags = FGameplayTagContainer(Tag);
+}
+
+//----------------------------------------------------------------------//
+//
+//! @brief 排他用ゲームプレイタグリストを追加
+//
+//! @param Tags ゲームプレイタグリスト
+//
+//----------------------------------------------------------------------//
+FORCEINLINE void USNActionBase::AddExclusiveActionTag(const FGameplayTagContainer& Tags){
+	ExclusiveTags.AppendTags(Tags);
+}
+
+//----------------------------------------------------------------------//
+//
+//! @brief 排他用ゲームプレイタグリストを追加
+//
+//! @param Tags ゲームプレイタグ
+//
+//----------------------------------------------------------------------//
+FORCEINLINE void USNActionBase::AddExclusiveActionTag(const FGameplayTag& Tag){
+	ExclusiveTags.AddTag(Tag);
+}
+	
+//----------------------------------------------------------------------//
+//
+//! @brief 排他用ゲームプレイタグリストを取得
+//
+//! @retval 排他用ゲームプレイタグリスト
+//
+//----------------------------------------------------------------------//
+FORCEINLINE FGameplayTagContainer USNActionBase::GetExclusiveActionTag() const {
+	return ExclusiveTags;
 }
 
 //----------------------------------------------------------------------//
@@ -197,10 +267,10 @@ FORCEINLINE void USNActionBase::SetExclusiveActionTag(const FGameplayTagContaine
 //! @retval アクションタグ
 //
 //----------------------------------------------------------------------//
-FORCEINLINE FGameplayTag USNActionBase::GetActionTag() const
-{
+FORCEINLINE FGameplayTag USNActionBase::GetActionTag() const {
 	return ActionTag;
 }
+
 //----------------------------------------------------------------------//
 //
 //! @brief サーバーでアクションを実行するかのフラグを設定
@@ -246,7 +316,7 @@ FORCEINLINE const T* USNActionBase::GetOwner() const {
 //
 //----------------------------------------------------------------------//
 FORCEINLINE bool USNActionBase::IsExecOnBoth() const {
-	return bExecOnBoth;
+	return bExecOnMulticast;
 }
 
 //----------------------------------------------------------------------//
@@ -259,3 +329,5 @@ FORCEINLINE bool USNActionBase::IsExecOnBoth() const {
 FORCEINLINE bool USNActionBase::IsExecOnServer() const {
 	return bExecOnServer;
 }
+//! @}
+//! @}

@@ -15,6 +15,8 @@ class SNANIMATION_API USNActionLook : public USNActionBase
 	GENERATED_BODY()
 
 public:
+
+	virtual void Initialize(UEnhancedInputComponent* InputComponent, const UInputAction* InputAction, UObject* Object) override;
 	
 	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
 };

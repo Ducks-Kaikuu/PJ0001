@@ -6,6 +6,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 
+void USNActionLookGamepad::Initialize(UEnhancedInputComponent* InputComponent, const UInputAction* InputAction, UObject* Object)
+{
+	Super::Initialize(InputComponent, InputAction, Object);
+
+	ActionTag = FGameplayTag::RequestGameplayTag(TEXT("Input.Normal.SNLook_Gamepad"));
+}
+
 bool USNActionLookGamepad::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);

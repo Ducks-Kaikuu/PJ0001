@@ -94,8 +94,11 @@ public:
 
 	void RemoveActionTag(const FGameplayTag& Tag);
 	void RemoveActionTagContainer(const FGameplayTagContainer& TagContainer);
-
 	void ResetAllActionTags();
+
+	bool HasActionTag(const FGameplayTag& Tag) const;
+	bool HasAnyActionTags(const FGameplayTagContainer& TagContainer) const ;
+	bool HasAllActionTags(const FGameplayTagContainer& TagContainer) const ;
 
 	UFUNCTION(BlueprintCallable, Category="SN|Action", meta=(BlueprintThreadSafe))
 	FGameplayTagContainer GetActionTags() const;
@@ -204,4 +207,18 @@ private:
 FORCEINLINE USNAbilitySystemComponent* ASNCharacterBase::GetAbilitySystemComponent() const 
 {
 	return AbilitySystemComponent;
+}
+
+FORCEINLINE bool ASNCharacterBase::HasActionTag(const FGameplayTag& Tag) const
+{
+	return ActionTags.HasTag(Tag);
+}
+FORCEINLINE bool ASNCharacterBase::HasAnyActionTags(const FGameplayTagContainer& TagContainer) const
+{
+	return ActionTags.HasAny(TagContainer);
+}
+
+FORCEINLINE bool ASNCharacterBase::HasAllActionTags(const FGameplayTagContainer& TagContainer) const
+{
+	return ActionTags.HasAll(TagContainer);
 }

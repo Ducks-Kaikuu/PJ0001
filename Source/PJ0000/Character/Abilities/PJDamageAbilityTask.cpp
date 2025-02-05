@@ -8,22 +8,13 @@
 #include "Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
+#include "Character/Components/SNDamageWithChooserComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PJ0000/Character/NPC/PJEnemy.h"
 #include "PJ0000/Damage/PJDamageData.h"
 #include "PJ0000/Damage/PJDamageGameplayEffect.h"
 #include "PJ0000/System/PJGameInstance.h"
-#include "System/SNBlueprintFunctionLibrary.h"
 #include "Utility/SNUtility.h"
-
-FGameplayEventData UPJDamageAbilityTask::GetDamageTags()
-{
-	FGameplayEventData DamageTags;
-
-	DamageTags.TargetTags = ActivationOwnedTags;
-	
-	return DamageTags;
-}
 
 void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -51,10 +42,23 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo->OwnerActor));
 
-	DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
+	USNDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<USNDamageWithChooserComponent>();
 
 	if (Character != nullptr)
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage is comming."));
+		
+		DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
+
+		Character->SetActionTagContainer(DamageAttributeTag);
+
+		APJEnemy* Enemy = Cast<APJEnemy>(Character);
+
+		if (Enemy != nullptr)
+		{
+			Enemy->DrawDamage(22);
+		}
+		
 		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
 
 		if (AbilitySystemComponent != nullptr)
@@ -70,38 +74,34 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			});
 		}
 		
-		float PlayRate = 1.0f;
-		float StartTime = 0.0f;
-		
-		UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooserWithDB(Character, DamageAnimationChooser, this, PlayRate, StartTime);
-
-		if (AnimMontage != nullptr)
+		if (DamageComponent != nullptr)
 		{
-			UPlayMontageCallbackProxy* MontageProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(Character->GetMesh(), const_cast<UAnimMontage*>(AnimMontage), 1.0f, 0.0f, NAME_None);
-
+			UPlayMontageCallbackProxy* MontageProxy = DamageComponent->PlayDamageAnimation(DamageAttributeTag);
+			
 			if (MontageProxy != nullptr)
 			{
 				MontageProxy->OnCompleted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 				MontageProxy->OnInterrupted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 				MontageProxy->OnBlendOut.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
+
+				return;
 			}
 		}
-
-		APJEnemy* Enemy = Cast<APJEnemy>(Character);
-
-		if (Enemy != nullptr)
-		{
-			Enemy->DrawDamage(22);
-		}
 	}
-
-	//CommitAbility(Handle, ActorInfo, ActivationInfo);
-	
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage is comming."));
 }
 
 void UPJDamageAbilityTask::OnEndPlayMontage(FName NotifyName)
 {
+	FGameplayAbilityActorInfo ActorInfo(GetActorInfo());
+
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo.OwnerActor));
+
+	if ((Character != nullptr) && (DamageAttributeTag.IsValid() == true))
+	{
+		Character->RemoveActionTagContainer(DamageAttributeTag);
+
+		DamageAttributeTag.Reset();
+	}
 	K2_EndAbility();
 	
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On End Play Montage."));

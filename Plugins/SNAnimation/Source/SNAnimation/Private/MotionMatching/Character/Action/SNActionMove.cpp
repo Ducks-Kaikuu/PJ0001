@@ -7,6 +7,13 @@
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 #include "MotionMatching/Traversal/Component/SNTraversalComponent.h"
 
+void USNActionMove::Initialize(UEnhancedInputComponent* InputComponent, const UInputAction* InputAction, UObject* Object){
+	
+	Super::Initialize(InputComponent, InputAction, Object);
+
+	ActionTag = FGameplayTag::RequestGameplayTag(TEXT("Input.Normal.SNMove"));
+}
+
 bool USNActionMove::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);

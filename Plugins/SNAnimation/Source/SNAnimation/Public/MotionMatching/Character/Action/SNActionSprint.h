@@ -17,5 +17,4 @@ class SNANIMATION_API USNActionSprint : public USNActionBase
 public:
 
 	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
-	
 };

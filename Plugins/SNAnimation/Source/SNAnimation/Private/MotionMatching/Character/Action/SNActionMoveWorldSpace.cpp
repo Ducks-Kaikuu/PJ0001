@@ -7,6 +7,13 @@
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 #include "MotionMatching/Traversal/Component/SNTraversalComponent.h"
 
+void USNActionMoveWorldSpace::Initialize(UEnhancedInputComponent* InputComponent, const UInputAction* InputAction, UObject* Object)
+{
+	Super::Initialize(InputComponent, InputAction, Object);
+
+	ActionTag = FGameplayTag::RequestGameplayTag(TEXT("Input.Normal.SNMove_WorldSpace"));
+}
+
 bool USNActionMoveWorldSpace::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);

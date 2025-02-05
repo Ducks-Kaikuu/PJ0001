@@ -66,7 +66,11 @@ public class SNPlugin : ModuleRules
 				"AIModule",
 				"EnhancedInput",
 				"ModularGameplay",
-				"OnlineSubsystemUtils", "GameplayAbilities", "Chooser", "PoseSearch", 
+				"OnlineSubsystemUtils",
+				"GameplayAbilities",
+				"Chooser",
+				"PoseSearch",
+				"AnimGraphRuntime",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

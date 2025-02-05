@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Action/SNActionBase.h"
 #include "BehaviorTree/BTTaskNode.h"
 #include "PJEnemyMoveToPlayerTask.generated.h"
 
@@ -10,14 +11,14 @@
  * 
  */
 UCLASS()
-class PJ0000_API UPJEnemyMoveToPlayerTask : public UBTTaskNode
+class PJ0000_API UPJEnemyMoveToPlayerTask : public USNActionBase
 {
 	GENERATED_BODY()
 
 public:
 
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
+	virtual bool ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	
 private:
 
 #if WITH_EDITORONLY_DATA
@@ -27,9 +28,6 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	FGameplayTag IdleTag;
-	
-	UPROPERTY(EditAnywhere)
-	FGameplayTag WalkTag;
 	
 	UPROPERTY(EditAnywhere)
 	float ChaseDistance=-1.0f;

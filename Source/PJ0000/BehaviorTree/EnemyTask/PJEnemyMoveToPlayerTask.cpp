@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "BehaviorTree/EnemyTask/PJEnemyMoveToPlayerTask.h"
@@ -10,10 +10,10 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "Utility/SNUtility.h"
 
-EBTNodeResult::Type UPJEnemyMoveToPlayerTask::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+bool UPJEnemyMoveToPlayerTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	EBTNodeResult::Type Result =Super::ExecuteTask(OwnerComp, NodeMemory); 
-
+	bool Result = true;
+	
 	AAIController* AiController(Cast<AAIController>(OwnerComp.GetAIOwner()));
 	
 	if(AiController != nullptr){
@@ -28,12 +28,30 @@ EBTNodeResult::Type UPJEnemyMoveToPlayerTask::ExecuteTask(UBehaviorTreeComponent
 			{
 				EPathFollowingRequestResult::Type MoveResult = AiController->MoveToActor(Player, ChaseDistance, false, false);
 
+#if WITH_EDITORONLY_DATA
+				if (bDebugDraw == true)
+				{
+					FString TmpString(TEXT(""));
+					
+					switch (MoveResult)
+					{
+						case EPathFollowingRequestResult::Failed: TmpString = TEXT("EPathFollowingRequestResult::Failed"); break;
+						case EPathFollowingRequestResult::RequestSuccessful: TmpString = TEXT("EPathFollowingRequestResult::RequestSuccessful"); break;
+						case EPathFollowingRequestResult::AlreadyAtGoal: TmpString = TEXT("EPathFollowingRequestResult::AlreadyAtGoal"); break;
+						default: TmpString = TEXT("Unknown PathFollowingRequestResult"); break;
+					}
+					
+					SNPLUGIN_LOG(TEXT("MoveAI : %s"), *TmpString);	
+				}
+#endif
+				
+				
 				if(MoveResult == EPathFollowingRequestResult::Type::Failed)
 				{
-					Character->RemoveActionTag(WalkTag);
+					Character->RemoveActionTag(GetActionTag());
 					Character->AddActionTag(IdleTag);
 					
-					Result = EBTNodeResult::Type::Failed;
+					Result = false;
 #if WITH_EDITORONLY_DATA
 					if (bDebugDraw == true)
 					{
@@ -41,30 +59,30 @@ EBTNodeResult::Type UPJEnemyMoveToPlayerTask::ExecuteTask(UBehaviorTreeComponent
 					}
 #endif
 				} else
-				if(MoveResult == EPathFollowingRequestResult::Type::AlreadyAtGoal){
+					if(MoveResult == EPathFollowingRequestResult::Type::AlreadyAtGoal){
 
-					Character->RemoveActionTag(WalkTag);
-					Character->AddActionTag(IdleTag);
+						Character->RemoveActionTag(GetActionTag());
+						Character->AddActionTag(IdleTag);
 					
-					Result = EBTNodeResult::Type::Succeeded;
+						Result = true;
 #if WITH_EDITORONLY_DATA
-					if (bDebugDraw == true)
-					{
-						SNPLUGIN_LOG(TEXT("Move Task is Finished."));
-					}
+						if (bDebugDraw == true)
+						{
+							SNPLUGIN_LOG(TEXT("Move Task is Finished."));
+						}
 #endif
-				} else
-				{
-					Character->RemoveActionTag(IdleTag);
-					Character->AddActionTag(WalkTag);
+					} else
+					{
+						Character->RemoveActionTag(IdleTag);
+						Character->AddActionTag(GetActionTag());
 					
-					Result = EBTNodeResult::Type::InProgress;
-				}
+						Result = false;
+					}
 				
 				Character->PlayAnimMontageByActionTag();
 			}
 		}
 	}
-
+	
 	return Result;
 }
