@@ -7,6 +7,7 @@
 #include "SNDef.h"
 #include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
+#include "Character/Components/PJDamageWithChooserComponent.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNDamageWithChooserComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -47,20 +48,13 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		
 		DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
 
+		Character->SetActionTagContainer(DamageAttributeTag);
+		
 		if (DamageState.IsValid())
 		{
-			DamageAttributeTag.AddTag(DamageState);
+			Character->AddActionTag(DamageState);
 		}
-		
-		Character->SetActionTagContainer(DamageAttributeTag);
-
-		APJEnemy* Enemy = Cast<APJEnemy>(Character);
-
-		if (Enemy != nullptr)
-		{
-			Enemy->DrawDamage(22);
-		}
-		
+				
 		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
 
 		if (AbilitySystemComponent != nullptr)
@@ -76,10 +70,12 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			});
 		}
 		
-		USNDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<USNDamageWithChooserComponent>();
+		UPJDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<UPJDamageWithChooserComponent>();
 		
 		if (DamageComponent != nullptr)
 		{
+			DamageComponent->DrawDamage(22);
+			
 			UPlayMontageCallbackProxy* MontageProxy = DamageComponent->PlayDamageAnimation(DamageAttributeTag);
 			
 			if (MontageProxy != nullptr)

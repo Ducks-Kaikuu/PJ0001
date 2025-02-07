@@ -26,7 +26,7 @@
 
 APJEnemy::APJEnemy(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
-	HealthSet = CreateDefaultSubobject<UPJHealthSet>(TEXT("Health"));
+	//HealthSet = CreateDefaultSubobject<UPJHealthSet>(TEXT("Health"));
 
 	MovePositionComponent = CreateDefaultSubobject<USNMovePositionComponent>(TEXT("PositionComponent"));
 
@@ -43,7 +43,7 @@ void APJEnemy::Tick(float DeltaSeconds)
 	{
 		FString Str = FString(TEXT("Health : "))  +  FString::SanitizeFloat(Health->GetHealth());
 		
-		//UKismetSystemLibrary::PrintString(GetWorld(), *Str);
+		UKismetSystemLibrary::PrintString(GetWorld(), *Str);
 	}
 #endif
 
@@ -63,18 +63,20 @@ void APJEnemy::BeginPlay()
 	{
 		PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &APJEnemy::OnPerceptionUpdated);
 	}
+	
+	
 
-	if (AbilitySystemComponent != nullptr)
-	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+//	if (AbilitySystemComponent != nullptr)
+//	{
+//		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 		
-		const UPJHealthSet* Health = AbilitySystemComponent->GetSet<UPJHealthSet>();
+		const UPJHealthSet* Health = GetGameAttribute<UPJHealthSet>();
 
 		if (Health != nullptr)
 		{
 			Health->OnHealthChanged.AddUObject(this, &ThisClass::HandleHealthChanged);
 		}
-	}
+//	}
 }
 
 void APJEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -107,6 +109,7 @@ void APJEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 
 void APJEnemy::DrawDamage(int Damage)
 {
+#if 1
 	USNGameInstance* GameInstance = SNUtility::GetGameInstance<USNGameInstance>();
 	
 	UPJDamageWidget* DamageWidget = CreateWidget<UPJDamageWidget>(GameInstance, DamaageWidget, TEXT("Damage"));
@@ -137,16 +140,20 @@ void APJEnemy::DrawDamage(int Damage)
 
 				DamageWidget->SetVisibility(ESlateVisibility::Visible);
 
-				int HP = (int)HealthSet->GetHealth();
-				
-				DamageWidget->PlayDamage(HP, ScreenPosition);
+				UPJHealthSet* AAA = Cast<UPJHealthSet>(GetGameAttribute<UPJHealthSet>());
 
-				
+				if (AAA != nullptr)
+				{
+					int HP = (int)AAA->GetHealth();
 
+					DamageWidget->PlayDamage(HP, ScreenPosition);
+				}
+				
 				SNPLUGIN_LOG(TEXT("Damage Effect is Enabled."));
 			}
 		}
 	}
+#endif
 }
 
 UPlayMontageCallbackProxy* APJEnemy::PlayAnimMontageByActionTag()

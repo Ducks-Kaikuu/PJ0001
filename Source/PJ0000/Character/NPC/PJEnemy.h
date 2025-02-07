@@ -53,9 +53,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<USNMovePositionComponent> MovePositionComponent = nullptr;
 
-	UPROPERTY()
-	TObjectPtr<UPJHealthSet> HealthSet;
-
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UAIPerceptionComponent> PerceptionComponent = nullptr;;
 	

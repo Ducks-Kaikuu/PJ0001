@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
 #include "GameFramework/Character.h"
 #include "Character/SNCharacterDef.h"
+#include "Character/AbilitySystem/SNAttributeSet.h"
 
 #include "SNCharacterBase.generated.h"
 
+class USNAttributeSet;
 class USNAbilitySystemComponent;
 class USNLocomotionComponent;
 
@@ -112,11 +113,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category="SN|Animation")
 	void SetBlendspaceParam(const FName& Key, const FVector& param);
 	//! @}
+
+	template<class T>
+	T* GetGameAttribute();
+
+	template<class T>
+	const T* GetGameAttribute() const ;
 	
 	//!@ Satoshi Nishimura 2025/01/31 アクセッサを用意してもうまく動作せず、変数をBlueprintに出してやるとうまくいく…意味不明なChooser
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FGameplayTagContainer ActionTags;
-	
+
 protected:
 	
 	// Called when the game starts or when spawned
@@ -146,10 +153,16 @@ protected:
 	UPROPERTY()
 	FName FullBodyPreStateName = NAME_None;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="SN|Ability")
 	TObjectPtr<USNAbilitySystemComponent> AbilitySystemComponent = nullptr;
 	
 private:
+
+	UPROPERTY(EditAnywhere, Category="SN|Ability")
+	TArray<TSubclassOf<USNAttributeSet>> AttributeSetClass;
+
+	UPROPERTY()
+	TArray<TObjectPtr<USNAttributeSet>> AttributeSets;
 	
 	//! @{@name ステートの変更
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -221,4 +234,30 @@ FORCEINLINE bool ASNCharacterBase::HasAnyActionTags(const FGameplayTagContainer&
 FORCEINLINE bool ASNCharacterBase::HasAllActionTags(const FGameplayTagContainer& TagContainer) const
 {
 	return ActionTags.HasAll(TagContainer);
+}
+
+template<class T>
+FORCEINLINE T* ASNCharacterBase::GetGameAttribute()
+{
+	for (auto& GameAttribute : AttributeSets)
+	{
+		if ((GameAttribute != nullptr) && (GameAttribute->GetClass() == T::StaticClass())){
+			return Cast<T>(GameAttribute);
+		}
+	}
+
+	return nullptr;
+}
+
+template<class T>
+FORCEINLINE const T* ASNCharacterBase::GetGameAttribute() const
+{
+	for (auto& GameAttribute : AttributeSets)
+	{
+		if ((GameAttribute != nullptr) && (GameAttribute->GetClass() == T::StaticClass())){
+			return Cast<T>(GameAttribute);
+		}
+	}
+
+	return nullptr;
 }

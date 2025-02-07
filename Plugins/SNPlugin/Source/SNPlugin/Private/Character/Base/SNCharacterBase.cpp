@@ -7,6 +7,7 @@
 #include "SNDef.h"
 #include "Animation/SNAnimInstanceBase.h"
 #include "Animation/Components/SNLocomotionComponent.h"
+#include "Character/AbilitySystem/SNAttributeSet.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Utility/SNUtility.h"
@@ -28,6 +29,16 @@ ASNCharacterBase::ASNCharacterBase(const FObjectInitializer& Initializer)
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
 	SetNetUpdateFrequency(100.0f);
+
+	for (auto& Attribute:AttributeSetClass)
+	{
+		USNAttributeSet* GameAttribute = Cast<USNAttributeSet>(CreateDefaultSubobject(TEXT("Attribute"), Attribute->GetClass(),  Attribute->GetClass(), true, false));
+
+		if (GameAttribute != nullptr)
+		{
+			AttributeSets.Add(GameAttribute);
+		}
+	}
 }
 
 //----------------------------------------------------------------------//
@@ -107,6 +118,28 @@ void ASNCharacterBase::BeginPlay(){
 	
 	// 移動、回転などの動きをレプリケート
 	SetReplicateMovement(true);
+
+	for (auto& Attribute:AttributeSetClass)
+	{
+		USNAttributeSet* GameAttribute = NewObject<USNAttributeSet>(this, Attribute, TEXT("AttributeSet"));
+
+		AbilitySystemComponent->SetAttribute(Attribute);
+		
+		if (GameAttribute != nullptr)
+		{
+			AttributeSets.Add(GameAttribute);
+		}
+	}
+
+	if (AbilitySystemComponent != nullptr)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		
+		for (auto& GameAttribute:AttributeSets)
+		{
+			AbilitySystemComponent->AddSpawnedAttribute(GameAttribute);
+		}
+	}
 }
 
 //----------------------------------------------------------------------//

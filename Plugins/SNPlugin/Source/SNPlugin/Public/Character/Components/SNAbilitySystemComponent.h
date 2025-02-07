@@ -6,7 +6,9 @@
 #include "AbilitySystemComponent.h"
 #include "SNAbilitySystemComponent.generated.h"
 
+class USNAttributeSet;
 struct FStreamableHandle;
+class USNAttribute;
 /**
  * 
  */
@@ -33,7 +35,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "SN|AbilitySystem")
 	void RemoveAbility(UGameplayAbility* AbilityTask);
-	
+
+	void SetAttribute(TSubclassOf<USNAttributeSet> Attribute);
 protected:
 	virtual void BeginPlay() override;
 	

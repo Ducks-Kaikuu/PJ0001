@@ -3,9 +3,9 @@
 
 #include "Character/Components/SNAbilitySystemComponent.h"
 
-#include "SNDef.h"
 #include "Abilities/Tasks/AbilityTask.h"
 #include "Utility/SNUtility.h"
+#include "Character/AbilitySystem/SNAttributeSet.h"
 
 USNAbilitySystemComponent::USNAbilitySystemComponent(const FObjectInitializer& ObjectInitializer)
 {
@@ -90,4 +90,9 @@ void USNAbilitySystemComponent::RemoveAbility(UGameplayAbility* AbilityTask)
 
 		AbilityTaskList.Remove(AbilityTask->GetClass());
 	} 
+}
+
+void USNAbilitySystemComponent::SetAttribute(TSubclassOf<USNAttributeSet> Attribute)
+{
+	GetAttributeSubobject(Attribute);
 }
