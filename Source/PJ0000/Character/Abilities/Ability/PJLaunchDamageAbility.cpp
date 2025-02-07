@@ -7,9 +7,12 @@
 #include "SNDef.h"
 #include "Channels/MovieSceneTimeWarpChannel.h"
 #include "Character/Base/SNCharacterBase.h"
+#include "Character/Components/SNDamageWithChooserComponent.h"
 #include "System/PJGameInstance.h"
 #include "System/SNBlueprintFunctionLibrary.h"
 #include "Utility/SNUtility.h"
+
+class USNDamageWithChooserComponent;
 
 void UPJLaunchDamageAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -32,37 +35,43 @@ void UPJLaunchDamageAbility::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 
 		return;
 	}
-
-	DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
 	
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo->OwnerActor));
 
 	if (Character != nullptr)
 	{
-		float PlayRate = 1.0f;
-		float StartTime= 0.0f;
+		DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
+
+		Character->SetActionTagContainer(DamageAttributeTag);
 		
-		UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooserWithDB(Character, DamageAnimationChooser, this, PlayRate, StartTime);
+		USNDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<USNDamageWithChooserComponent>();
 
-		if (AnimMontage != nullptr)
+		UPlayMontageCallbackProxy* MontageProxy = DamageComponent->PlayDamageAnimation(DamageAttributeTag);
+		
+		if (MontageProxy != nullptr)
 		{
-			UPlayMontageCallbackProxy* MontageProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(Character->GetMesh(), const_cast<UAnimMontage*>(AnimMontage), 1.0f, 0.0f, NAME_None);
-
-			if (MontageProxy != nullptr)
-			{
-				MontageProxy->OnCompleted.AddDynamic(this, &UPJLaunchDamageAbility::OnMontageNotify);
-				MontageProxy->OnInterrupted.AddDynamic(this, &UPJLaunchDamageAbility::OnMontageNotify);
-				MontageProxy->OnNotifyBegin.AddDynamic(this, &UPJLaunchDamageAbility::OnMontageNotify);
-			}
+			MontageProxy->OnCompleted.AddDynamic(this, &UPJLaunchDamageAbility::OnMontageNotify);
+			MontageProxy->OnInterrupted.AddDynamic(this, &UPJLaunchDamageAbility::OnMontageNotify);
+			MontageProxy->OnNotifyBegin.AddDynamic(this, &UPJLaunchDamageAbility::OnMontageNotify);
 		}
 	}
-	
 }
 
 void UPJLaunchDamageAbility::OnMontageNotify(FName NotifyName)
 {
 	if (NotifyName == TEXT("EndAbility"))
 	{
+		FGameplayAbilityActorInfo ActorInfo(GetActorInfo());
+
+		ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo.OwnerActor));
+
+		if ((Character != nullptr) && (DamageAttributeTag.IsValid() == true))
+		{
+			Character->RemoveActionTagContainer(DamageAttributeTag);
+
+			DamageAttributeTag.Reset();
+		}
+		
 		K2_EndAbility();	
 	}
 	

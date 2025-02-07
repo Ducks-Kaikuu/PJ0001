@@ -29,6 +29,9 @@ public:
 
 	virtual UBlackboardComponent* GetBlackboardComponent();
 
+	UFUNCTION(BlueprintCallable, Category = "AI")
+	bool IsBehaviorTreeRunning() const ;
+	
 	void Restart();
 	
 protected:

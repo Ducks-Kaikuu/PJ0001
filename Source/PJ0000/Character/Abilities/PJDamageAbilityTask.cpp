@@ -42,8 +42,6 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo->OwnerActor));
 
-	USNDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<USNDamageWithChooserComponent>();
-
 	if (Character != nullptr)
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage is comming."));
@@ -73,6 +71,8 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 				}
 			});
 		}
+		
+		USNDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<USNDamageWithChooserComponent>();
 		
 		if (DamageComponent != nullptr)
 		{

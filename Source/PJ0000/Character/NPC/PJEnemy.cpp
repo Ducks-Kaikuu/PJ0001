@@ -30,8 +30,6 @@ APJEnemy::APJEnemy(const FObjectInitializer& ObjectInitializer):Super(ObjectInit
 
 	MovePositionComponent = CreateDefaultSubobject<USNMovePositionComponent>(TEXT("PositionComponent"));
 
-	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("SensingComponent"));
-
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 }
 
@@ -48,21 +46,18 @@ void APJEnemy::Tick(float DeltaSeconds)
 		//UKismetSystemLibrary::PrintString(GetWorld(), *Str);
 	}
 #endif
+
+	APJAIEnemy000* AIController = Cast<APJAIEnemy000>(GetController());
+
+	if (AIController != nullptr)
+	{
+		//AIController->Restart();
+	}
 }
 
 void APJEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (PawnSensingComponent != nullptr)
-	{
-		PawnSensingComponent->SetPeripheralVisionAngle(VisionAngle);
-
-		if (PawnSensingComponent->OnSeePawn.Contains(this, TEXT("OnSeePlayer")) == false)
-		{
-			PawnSensingComponent->OnSeePawn.AddDynamic(this, &APJEnemy::OnSeePlayer);
-		}
-	}
 
 	if (PerceptionComponent != nullptr)
 	{
@@ -86,10 +81,7 @@ void APJEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	if (PawnSensingComponent != nullptr)
-	{
-		PawnSensingComponent->OnSeePawn.RemoveDynamic(this, &APJEnemy::OnSeePlayer);
-	}
+	PerceptionComponent->OnPerceptionUpdated.RemoveDynamic(this, &APJEnemy::OnPerceptionUpdated);
 }
 
 void APJEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
@@ -111,31 +103,6 @@ void APJEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 			}
 		}
 	}
-}
-
-void APJEnemy::OnSeePlayer(APawn* Pawn)
-{
-#if 0
-	APJAIEnemy000* AIController = Cast<APJAIEnemy000>(GetController());
-
-	ASNPlayerBase* Player = Cast<ASNPlayerBase>(Pawn);
-
-	if ((AIController != nullptr) && (Player != nullptr))
-	{
-		float Dist = FVector::Distance(GetActorLocation(), Player->GetActorLocation());
-
-		if (Dist > 50.f)
-		{
-			//AIController->Restart();
-
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Restart Tree"));	
-		}
-		
-//		AIController->SetPlayerKey(Player);
-
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("See"));
-	}
-#endif
 }
 
 void APJEnemy::DrawDamage(int Damage)

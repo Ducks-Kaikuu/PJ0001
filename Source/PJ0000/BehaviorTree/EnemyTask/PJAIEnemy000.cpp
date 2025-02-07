@@ -64,6 +64,16 @@ void APJAIEnemy000::BeginPlay()
 	Super::BeginPlay();
 }
 
+bool APJAIEnemy000::IsBehaviorTreeRunning() const
+{
+	if(BehaviorComponent != nullptr)
+	{
+		return BehaviorComponent->IsRunning();
+	}
+
+	return false;
+}
+
 void APJAIEnemy000::Restart()
 {
 	if(BehaviorComponent != nullptr)

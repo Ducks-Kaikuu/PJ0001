@@ -93,7 +93,12 @@ void	USNActionBase::InputAction(const FInputActionValue& InputActionValue){
 	
 	if(bExclusive == true){
 		
-		SNPLUGIN_LOG(TEXT("USNActionBase::InputAction Exclusive Tag Contained."));
+#if WITH_EDITORONLY_DATA
+		
+		if(bDebugDraw == true){
+			SNPLUGIN_LOG(TEXT("USNActionBase::InputAction Exclusive Tag Contained."));
+		}
+#endif	
 		
 		return;
 	}
@@ -142,8 +147,8 @@ void	USNActionBase::InputAction(const FInputActionValue& InputActionValue){
 	}
 }
 
-EBTNodeResult::Type USNActionBase::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
-{
+EBTNodeResult::Type USNActionBase::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory){
+	
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 	
 	AAIController* Controller(Cast<AAIController>(OwnerComp.GetAIOwner()));
@@ -156,17 +161,28 @@ EBTNodeResult::Type USNActionBase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 			// 排他チェック
 			bool bExclusive = Character->GetActionTags().HasAny(ExclusiveTags);
 			
-			if (bExclusive == false)
-			{
+			if (bExclusive == false){
+				
+#if WITH_EDITORONLY_DATA
+				
+				if(bDebugDraw == true){
+					SNPLUGIN_LOG(TEXT("USNActionBase::ExecuteTask : %s"), *GetName());
+				}
+#endif
 				bool bSuccess = ExecAIAction(OwnerComp, NodeMemory);
 				
 				Result = (bSuccess == true) ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
-
-				if (GetActionTag().IsValid() == true)
-				{
-					Character->AddActionTag(GetActionTag());	
+				
+				if((bSuccess == true) && (GetActionTag().IsValid() == true)){
+					Character->AddActionTag(GetActionTag());
 				}
 			} else {
+				
+#if WITH_EDITORONLY_DATA
+				if(bDebugDraw == true){
+					SNPLUGIN_LOG(TEXT("USNActionBase::ExecuteTask Exclusive Tag Contained.[%s]"), *GetName());
+				}
+#endif
 				Result = EBTNodeResult::Type::Succeeded;
 			}
 		}

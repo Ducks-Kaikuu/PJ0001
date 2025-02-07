@@ -157,6 +157,11 @@ protected:
 	void SetExecOnServer(bool bFlag);
 	//! @}
 
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, Category="Action")
+	bool bDebugDraw = false;
+#endif
+	
 	//!< アクションタグ
 	UPROPERTY(EditAnywhere, Category="Action")
 	FGameplayTag ActionTag;

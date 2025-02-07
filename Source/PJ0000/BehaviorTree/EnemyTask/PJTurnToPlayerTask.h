@@ -4,26 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Action/SNActionBase.h"
-#include "BehaviorTree/BTTaskNode.h"
-#include "PJEnemyMoveToPlayerTask.generated.h"
+#include "PJTurnToPlayerTask.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PJ0000_API UPJEnemyMoveToPlayerTask : public USNActionBase
+class PJ0000_API UPJTurnToPlayerTask : public USNActionBase
 {
 	GENERATED_BODY()
-
 public:
 
 	virtual bool ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 private:
-
 	UPROPERTY(EditAnywhere)
-	FGameplayTag IdleTag;
-	
-	UPROPERTY(EditAnywhere)
-	float ChaseDistance=-1.0f;
+	float LimitAngle = 30.0f;
 };

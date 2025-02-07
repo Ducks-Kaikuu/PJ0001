@@ -22,9 +22,7 @@ private:
 
 	UFUNCTION()
 	void OnEndplayMontage(FName NotifyName);
-
-#if WITH_EDITORONLY_DATA
+	
 	UPROPERTY(EditAnywhere)
-	bool bDebugDraw = false;
-#endif
+	float AttackRagen=100.0f;
 };

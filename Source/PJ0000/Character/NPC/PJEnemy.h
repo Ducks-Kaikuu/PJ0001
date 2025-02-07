@@ -44,17 +44,12 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 private:
-	UFUNCTION()
-	void OnSeePlayer(APawn* Pawn);
 
 	UFUNCTION()
 	void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 	
 	void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
 
-	UPROPERTY()
-	TObjectPtr<UPawnSensingComponent> PawnSensingComponent = nullptr;;
-	
 	UPROPERTY()
 	TObjectPtr<USNMovePositionComponent> MovePositionComponent = nullptr;
 
