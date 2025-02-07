@@ -15,12 +15,4 @@ class PJ0000_API UPJGameplayAbility : public USNGameplayAbility
 {
 	GENERATED_BODY()
 	
-public:
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PJ|Damage")
-	FGameplayTagContainer DamageAttributeTag;
-
-protected:
-	UPROPERTY(EditDefaultsOnly, Category = "PJ|Damage")
-	TObjectPtr<UChooserTable> DamageAnimationChooser = nullptr;
 };

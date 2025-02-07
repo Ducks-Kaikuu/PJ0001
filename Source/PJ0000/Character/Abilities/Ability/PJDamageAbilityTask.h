@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Ability/PJGameplayAbility.h"
+#include "Character//Abilities/Ability/PJGameplayAbility.h"
 #include "Abilities/Tasks/AbilityTask.h"
 #include "PJDamageAbilityTask.generated.h"
 
@@ -21,9 +21,14 @@ public:
 
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PJ|Damage")
+	FGameplayTagContainer DamageAttributeTag;
+	
 private:
 
 	UFUNCTION()
 	void OnEndPlayMontage(FName NotifyName);
-	
+
+	UPROPERTY(EditAnywhere, Category="PJ|Damage")
+	FGameplayTag DamageState;
 };

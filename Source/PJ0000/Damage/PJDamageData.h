@@ -16,6 +16,9 @@ struct FDamageTable:public FTableRowBase
 	
 	UPROPERTY(EditAnywhere)
 	float Damage = 1.0f;
+	
+	UPROPERTY(EditAnywhere)
+	float Duration = 1.0f;
 };
 
 USTRUCT(BlueprintType)

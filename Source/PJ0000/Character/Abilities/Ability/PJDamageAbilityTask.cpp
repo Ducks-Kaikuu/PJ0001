@@ -1,18 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PJ0000/Character/Abilities/PJDamageAbilityTask.h"
+#include "PJ0000/Character/Abilities/Ability//PJDamageAbilityTask.h"
 
 #include "PlayMontageCallbackProxy.h"
 #include "SNDef.h"
-#include "Attributes/PJHealthSet.h"
+#include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNDamageWithChooserComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PJ0000/Character/NPC/PJEnemy.h"
 #include "PJ0000/Damage/PJDamageData.h"
-#include "PJ0000/Damage/PJDamageGameplayEffect.h"
 #include "PJ0000/System/PJGameInstance.h"
 #include "Utility/SNUtility.h"
 
@@ -48,6 +47,11 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		
 		DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
 
+		if (DamageState.IsValid())
+		{
+			DamageAttributeTag.AddTag(DamageState);
+		}
+		
 		Character->SetActionTagContainer(DamageAttributeTag);
 
 		APJEnemy* Enemy = Cast<APJEnemy>(Character);
