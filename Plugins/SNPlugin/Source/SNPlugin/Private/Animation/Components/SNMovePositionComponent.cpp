@@ -3,6 +3,8 @@
 
 #include "Animation/Components/SNMovePositionComponent.h"
 
+#include "Online/Auth.h"
+
 // Sets default values for this component's properties
 USNMovePositionComponent::USNMovePositionComponent()
 {
@@ -48,6 +50,14 @@ void USNMovePositionComponent::AddTransform(const FName& Name, const FTransform&
 		TransformData.StartTransform = Transform;
 		
 		TransformMap.Add(Name, TransformData);
+	}
+}
+
+void USNMovePositionComponent::RemoveTransform(const FName& Name)
+{
+	if (TransformMap.Contains(Name))
+	{
+		TransformMap.Remove(Name);
 	}
 }
 

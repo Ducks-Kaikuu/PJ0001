@@ -38,7 +38,9 @@ void USNAnimNotify_GenerateAttack::Notify(USkeletalMeshComponent* MeshComp, UAni
 
 		if (AttackComponent != nullptr)
 		{
-			AttackComponent->GenerateSphereSweep(Attacker, Time, StartPos, EndPos, Radius, DamageAttribetes, TArray<AActor*>(), bPenetrate, bBomb);
+			TArray<AActor*> IgnoreList({Attacker});
+			
+			AttackComponent->GenerateSphereSweep(Attacker, Time, StartPos, EndPos, Radius, DamageAttribetes, IgnoreList, bPenetrate, bBomb);
 		}
 	}
 }

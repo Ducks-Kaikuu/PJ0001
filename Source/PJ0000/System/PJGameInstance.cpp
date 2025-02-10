@@ -11,6 +11,11 @@ void UPJGameInstance::Init()
 	if (DamageDataObject.IsNull() == false)
 	{
 		DamageData = DamageDataObject.LoadSynchronous();
+
+		if (DamageData != nullptr)
+		{
+			DamageData->Initialize();
+		}
 	}
 }
 

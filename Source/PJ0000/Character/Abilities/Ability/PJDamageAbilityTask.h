@@ -27,8 +27,14 @@ public:
 private:
 
 	UFUNCTION()
+	void OnNotifyBegin(FName NotifyName);
+
+	UFUNCTION()
 	void OnEndPlayMontage(FName NotifyName);
 
 	UPROPERTY(EditAnywhere, Category="PJ|Damage")
 	FGameplayTag DamageState;
+
+	UPROPERTY()
+	FTimerHandle DamageTimers;
 };

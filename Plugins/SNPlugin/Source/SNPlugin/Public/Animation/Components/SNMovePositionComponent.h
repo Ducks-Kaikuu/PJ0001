@@ -28,6 +28,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void AddTransform(const FName& Name, const FTransform& Transform, float StartTime);
+
+	void RemoveTransform(const FName& Name);
 	
 	const FTransformData* GetTransformData(const FName& Name) const;
 	

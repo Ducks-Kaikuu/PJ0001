@@ -38,8 +38,6 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		return;
 	}
 
-	TArray<const FDamageTable*> DamageList(DamageData->GetDamageList(ActivationOwnedTags));
-
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo->OwnerActor));
 
 	if (Character != nullptr)
@@ -47,14 +45,20 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage is comming."));
 		
 		DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));
-
+		
 		Character->SetActionTagContainer(DamageAttributeTag);
 		
 		if (DamageState.IsValid())
 		{
 			Character->AddActionTag(DamageState);
 		}
-				
+
+		TArray<const FDamageTable*> DamageList(DamageData->GetDamageList(ActivationOwnedTags));
+		// ダメージの属性は1個だけ...。ダメージの持続時間が複数個に対応できるなら...複数個にしても大丈夫ですが...。
+		SNPLUGIN_ASSERT(DamageList.Num() ==1, TEXT("Invalidate damage attributes."));
+
+		const FDamageTable* Damage = DamageList[0];
+		
 		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
 
 		if (AbilitySystemComponent != nullptr)
@@ -65,7 +69,7 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 				{
 					FGameplayTag DamageTag = FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"));
 
-					Spec->SetSetByCallerMagnitude(DamageTag, 22.0f);
+					Spec->SetSetByCallerMagnitude(DamageTag, Damage->Damage);
 				}
 			});
 		}
@@ -74,7 +78,7 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		
 		if (DamageComponent != nullptr)
 		{
-			DamageComponent->DrawDamage(22);
+			DamageComponent->DrawDamage(Damage->Damage);
 			
 			UPlayMontageCallbackProxy* MontageProxy = DamageComponent->PlayDamageAnimation(DamageAttributeTag);
 			
@@ -83,9 +87,29 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 				MontageProxy->OnCompleted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 				MontageProxy->OnInterrupted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 				MontageProxy->OnBlendOut.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
+				MontageProxy->OnNotifyBegin.AddDynamic(this, &UPJDamageAbilityTask::OnNotifyBegin);
 
 				return;
 			}
+		}
+	}
+}
+
+void UPJDamageAbilityTask::OnNotifyBegin(FName NotifyName)
+{
+	if (NotifyName == FName(TEXT("EndDamage")))
+	{
+		FGameplayAbilityActorInfo ActorInfo(GetActorInfo());
+
+		ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo.OwnerActor));
+
+		if (Character != nullptr)
+		{
+			Character->RemoveActionTagContainer(DamageAttributeTag);
+
+			DamageAttributeTag.Reset();
+			
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On Notify Begin."));
 		}
 	}
 }
@@ -96,11 +120,16 @@ void UPJDamageAbilityTask::OnEndPlayMontage(FName NotifyName)
 
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(ActorInfo.OwnerActor));
 
-	if ((Character != nullptr) && (DamageAttributeTag.IsValid() == true))
+	if (Character != nullptr)
 	{
-		Character->RemoveActionTagContainer(DamageAttributeTag);
+		if (DamageAttributeTag.IsValid() == true)
+		{
+			Character->RemoveActionTagContainer(DamageAttributeTag);
 
-		DamageAttributeTag.Reset();
+			DamageAttributeTag.Reset();
+		}
+		
+		Character->RemoveActionTag(DamageState);
 	}
 	
 	K2_EndAbility();

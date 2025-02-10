@@ -3,11 +3,9 @@
 
 #include "PJ0000/Damage/PJDamageData.h"
 
-FDamageTable UDamageData::InvalidateData;
-
 void UDamageData::Initialize()
 {
-	if (DamageDataTable.IsValid())
+	if (DamageDataTable.IsNull() == false)
 	{
 		DamageData = DamageDataTable.LoadSynchronous();
 	}
@@ -16,22 +14,20 @@ void UDamageData::Initialize()
 TArray<const FDamageTable*> UDamageData::GetDamageList(const FGameplayTagContainer& DamageTags)
 {
 	TArray<const FDamageTable*> DamageList;
-
+	
 	if (DamageData != nullptr)
 	{
-		TArray<FName> RowNames = DamageData->GetRowNames();
-
-		for (auto& Name : RowNames)
-		{
-			const FDamageTable* Damage(DamageData->FindRow<FDamageTable>(Name, TEXT("Context")));
-
-			if (DamageTags.HasTag(Damage->Tag))
+		DamageData->ForeachRow(TEXT(""), TFunctionRef<void(const FName&, const FDamageTable&)>(
+			[&](const FName& Name, const FDamageTable& Damage)
 			{
-				DamageList.Add(Damage);
+				if (DamageTags.HasAny(Damage.Tags))
+				{
+					DamageList.Add(&Damage);
+				}
 			}
-		}
+		));
 	}
-
+	
 	return DamageList;
 }
 
@@ -48,7 +44,7 @@ const FDamageTable* UDamageData::GetDamage(const FGameplayTag& Tag) const
 	{
 		const FDamageTable* Damage(DamageData->FindRow<FDamageTable>(Name, TEXT("Context")));
 
-		if (Damage->Tag == Tag)
+		if (Damage->Tags.HasTag(Tag) == true)
 		{
 			return Damage;
 		}

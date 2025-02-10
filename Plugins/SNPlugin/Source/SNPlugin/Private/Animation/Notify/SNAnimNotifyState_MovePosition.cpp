@@ -11,6 +11,16 @@
 #include "GameFramework/Character.h"
 #include "Types/AttributeStorage.h"
 
+//----------------------------------------------------------------------//
+//
+//! @brief ノーティファイステートの開始
+//
+//! @param MeshComp       メッシュコンポーネント
+//! @param Animation      再生中のアニメーション
+//! @param TotalDuration  ノーティファイの持続時間
+//! @param EventReference イベント情報
+//
+//----------------------------------------------------------------------//
 void USNAnimNotifyState_MovePosition::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference){
 	
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
@@ -20,118 +30,155 @@ void USNAnimNotifyState_MovePosition::NotifyBegin(USkeletalMeshComponent* MeshCo
 	if(Character == nullptr){
 		return;
 	}
-
+	// 移動コンポーネントを取得
 	USNMovePositionComponent* MovePositionComponent(Cast<USNMovePositionComponent>(Character->GetComponentByClass(USNMovePositionComponent::StaticClass())));
-
-	if (MovePositionComponent != nullptr)
-	{
+	
+	if(MovePositionComponent != nullptr){
+		// トランスフォーム情報を追加
 		MovePositionComponent->AddTransform(TransformName, Character->GetActorTransform(), EventReference.GetCurrentAnimationTime());
 	}
 }
 
-void USNAnimNotifyState_MovePosition::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
-{
+//----------------------------------------------------------------------//
+//
+//! @brief ノーティファイ中に呼ばれるティック処理
+//
+//! @param MeshComp       メッシュコンポーネント
+//! @param Animation      再生中のアニメーション
+//! @param FrameDeltaTime 経過時間
+//! @param EventReference イベント情報
+//
+//----------------------------------------------------------------------//
+void USNAnimNotifyState_MovePosition::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference){
+	
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
-
+	
 	ACharacter* Character(Cast<ACharacter>(MeshComp->GetOwner()));
-
-	if (Character == nullptr)
-	{
+	
+	if(Character == nullptr){
 		return;
 	}
-	
+	// 移動コンポーネントを取得
 	USNMovePositionComponent* MovePositionComponent(Cast<USNMovePositionComponent>(Character->GetComponentByClass(USNMovePositionComponent::StaticClass())));
-
-	if (MovePositionComponent != nullptr)
-	{
-		const FTransformData* TransformData = MovePositionComponent->GetTransformData(TransformName);
-
-		if(TransformData != nullptr)
-		{
+	
+	if(MovePositionComponent != nullptr){
+		
+		const FTransformData* TransformData(MovePositionComponent->GetTransformData(TransformName));
+		
+		if(TransformData != nullptr){
+			// ノーティファイステート内での再生時間を取得
 			float ElapsedTime = EventReference.GetCurrentAnimationTime();
-			
+			// ノーティファイステートの終了時間を取得
 			float EndTime = TransformData->StartTime + (EventReference.GetNotify() != nullptr) ? EventReference.GetNotify()->GetDuration() : 0.0f;
-
+			// ノーティファイステートの何パーセントまで経過したかを算出(0.0 - 1.0)
 			float DeltaRatio = CalculateNotifyStateProgressPercentage(TransformData->StartTime, EndTime, ElapsedTime);
 			
-			FVector Location(FVector::ZeroVector), TmpLocation(FVector::ZeroVector);
-			
-			if(bMoveLocation == true)
-			{
-				FVector CurveValue = FVector::ZeroVector;
-
-				if (TranslateInterpolate != nullptr)
-				{
+			FVector Location(TransformData->StartTransform.GetLocation()), TmpLocation(FVector::ZeroVector);
+			// 位置情報を移動するかチェック
+			if(bMoveLocation == true){
+				
+				FVector CurveValue(FVector::ZeroVector);
+				
+				if(TranslateInterpolate != nullptr){
+					// カーブ情報から取得
 					CurveValue = TranslateInterpolate->GetVectorValue(DeltaRatio);
 				}
-
-				if (bUseCurveAsAbsoluteValue == true)
-				{
+				
+				if(bUsePositionCurveAsAbsoluteValue == true){
 					TmpLocation = CurveValue;
-				} else
-				{
-					TmpLocation.X = TargetLocation.X * CurveValue.X;
-					TmpLocation.Y = TargetLocation.Y * CurveValue.Y;
-					TmpLocation.Z = TargetLocation.Z * CurveValue.Z;				
+				} else {
+					TmpLocation.X = TargetPosition.X * CurveValue.X;
+					TmpLocation.Y = TargetPosition.Y * CurveValue.Y;
+					TmpLocation.Z = TargetPosition.Z * CurveValue.Z;
 				}
-
-				if (bAdditive == false)
-				{
+				
+				if(bAdditive == false){
 					Location = TmpLocation;
-				} else
-				{
+				} else {
 					Location = TransformData->StartTransform.GetLocation() + TmpLocation;
 				}
 			}
-
-			FRotator Rotator = FRotator::ZeroRotator;
-		
-			if (RotateInterpolate != nullptr)
-			{
-				FVector Value(RotateInterpolate->GetVectorValue(DeltaRatio));
 			
-				Rotator.Pitch = Value.X;
-				Rotator.Yaw = Value.Y;
-				Rotator.Roll = Value.Z;
+			FRotator Rotator(TransformData->StartTransform.GetRotation()), TmpRotation(FRotator::ZeroRotator);
+			
+			if(bMoveRotation == true){
+				
+				FVector CurveValue(FVector::ZeroVector);
+				
+				if(RotateInterpolate != nullptr){
+					// カーブ情報から取得
+					CurveValue = RotateInterpolate->GetVectorValue(DeltaRatio);
+				}
+				
+				if(bUseRotationCurveAsAbsoluteValue == true){
+					TmpRotation = FRotator(CurveValue.X, CurveValue.Y, CurveValue.Z);
+				} else {
+					TmpRotation.Pitch= TargetRotation.Pitch * CurveValue.X;
+					TmpRotation.Yaw  = TargetRotation.Yaw   * CurveValue.Y;
+					TmpRotation.Roll = TargetRotation.Roll  * CurveValue.Z;
+				}
+				
+				if(bAdditive == false){
+					Rotator = TmpRotation;
+				} else {
+					Rotator = TransformData->StartTransform.GetRotation().Rotator() + TmpRotation;
+				}
+				
 			}
-
+			
 			FTransform Transform(FRotator(Rotator), Location);
-
+			
 			Character->SetActorTransform(Transform);
 		}
-#if 0
-		FTransform SrcTransform = MovePositionComponent->GetSrcTransform(TransformName);
-		FTransform DestTransform = MovePositionComponent->GetDestTransform(TransformName);
-
-		float LocationX = FMath::Lerp(DestTransform.GetLocation().X, SrcTransform.GetLocation().X, PosAlphaX);
-		float LocationY = FMath::Lerp(DestTransform.GetLocation().Y, SrcTransform.GetLocation().Y, PosAlphaX);
-		float LocationZ = FMath::Lerp(DestTransform.GetLocation().Z, SrcTransform.GetLocation().Z, PosAlphaX);
-
-		float RotateX = FMath::Lerp(DestTransform.GetRotation().Rotator().Pitch, SrcTransform.GetRotation().Rotator().Pitch, RotAlphaX);
-		float RotateY = FMath::Lerp(DestTransform.GetRotation().Rotator().Yaw, SrcTransform.GetRotation().Rotator().Yaw, RotAlphaY);
-		float RotateZ = FMath::Lerp(DestTransform.GetRotation().Rotator().Roll, SrcTransform.GetRotation().Rotator().Roll, RotAlphaZ);
-
-		FRotator Rotator(RotateX, RotateY, RotateZ);
-		
-		FTransform Transform(FRotator(Rotator), FVector(LocationX, LocationY, LocationZ));
-
-		Character->SetActorTransform(Transform);
-#endif
 	}
 }
 
-float USNAnimNotifyState_MovePosition::CalculateNotifyStateProgressPercentage(float StartTime, float EndTime, float CurrentTime)
-{
+//----------------------------------------------------------------------//
+//
+//! @brief ノーティファイステートの終了
+//
+//! @param MeshComp       メッシュコンポーネント
+//! @param Animation      再生中のアニメーション
+//! @param EventReference イベント情報
+//
+//----------------------------------------------------------------------//
+void USNAnimNotifyState_MovePosition::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference){
+	
+	Super::NotifyEnd(MeshComp, Animation, EventReference);
+	
+	ACharacter* Character(Cast<ACharacter>(MeshComp->GetOwner()));
+	
+	if(Character == nullptr){
+		return;
+	}
+	// 移動コンポーネントを取得
+	USNMovePositionComponent* MovePositionComponent(Cast<USNMovePositionComponent>(Character->GetComponentByClass(USNMovePositionComponent::StaticClass())));
+	
+	if(MovePositionComponent != nullptr){
+		MovePositionComponent->RemoveTransform(TransformName);
+	}
+}
+
+//----------------------------------------------------------------------//
+//
+//! @brief ノーティファイステートの進行度を0 - 1の比率に計算
+//
+//! @param StartTime   ノーティファイステートの開始時間
+//! @param EndTime     ノーティファイステートの終了時間
+//! @param CurrentTime 現在の経過時間
+//
+//! @retval 進行度
+//
+//----------------------------------------------------------------------//
+float USNAnimNotifyState_MovePosition::CalculateNotifyStateProgressPercentage(float StartTime, float EndTime, float CurrentTime){
 	// NotifyStateの総時間（終了時間 - 開始時間）
 	float TotalDuration = EndTime - StartTime;
 	// NotifyStateの開始時間からの経過時間
 	float ElapsedTime = CurrentTime - StartTime;
 	// パーセンテージを計算（0 ～ 1）
 	float Percentage = (TotalDuration > 0) ? (ElapsedTime / TotalDuration) : 0.0f;
-
-	float Result = FMath::Clamp(Percentage, 0.0f, 1.0f);
-	// 
-	SNPLUGIN_LOG(TEXT("StartTime: %f / EndTime : %f / CurrentTime : %f / Result : %f"), StartTime, EndTime, CurrentTime, Result);
 	// クラッピングして0%～100%の範囲内に保つ
+	float Result = FMath::Clamp(Percentage, 0.0f, 1.0f);
+	
 	return Result;
 }

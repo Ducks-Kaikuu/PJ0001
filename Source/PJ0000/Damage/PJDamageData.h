@@ -12,7 +12,7 @@ struct FDamageTable:public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	FGameplayTag Tag;
+	FGameplayTagContainer Tags;
 	
 	UPROPERTY(EditAnywhere)
 	float Damage = 1.0f;
@@ -54,6 +54,4 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UDataTable> DamageData = nullptr;
-
-	static FDamageTable InvalidateData;
 };
