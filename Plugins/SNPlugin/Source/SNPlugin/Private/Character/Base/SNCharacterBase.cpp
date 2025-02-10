@@ -23,22 +23,12 @@ ASNCharacterBase::ASNCharacterBase(const FObjectInitializer& Initializer)
 	PrimaryActorTick.bCanEverTick = true;
 	// レプリケートをON
 	SetReplicates(true);
-
+	
 	AbilitySystemComponent = Initializer.CreateDefaultSubobject<USNAbilitySystemComponent>(this, TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
-
+	
 	SetNetUpdateFrequency(100.0f);
-
-	for (auto& Attribute:AttributeSetClass)
-	{
-		USNAttributeSet* GameAttribute = Cast<USNAttributeSet>(CreateDefaultSubobject(TEXT("Attribute"), Attribute->GetClass(),  Attribute->GetClass(), true, false));
-
-		if (GameAttribute != nullptr)
-		{
-			AttributeSets.Add(GameAttribute);
-		}
-	}
 }
 
 //----------------------------------------------------------------------//
@@ -63,30 +53,43 @@ void ASNCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 //	DOREPLIFETIME(ASNCharacterBase, FullBodyPreStateName);
 }
 
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグを追加
+//
+//! @param TagContainer ゲームプレイタグコンテナ
+//
+//----------------------------------------------------------------------//
 void ASNCharacterBase::AddActionTagContainer(const FGameplayTagContainer& TagContainer){
 	
-	if (IsLocallyControlled() == true){
+	if(IsLocallyControlled() == true){
 		ActionTags.AppendTags(TagContainer);
 	}
 }
 
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグを追加
+//
+//! @param Tag ゲームプレイタグ
+//
+//----------------------------------------------------------------------//
 void ASNCharacterBase::AddActionTag(const FGameplayTag& Tag){
 	
-	if (IsLocallyControlled() == true){
+	if(IsLocallyControlled() == true){
 		
 		if(ActionTags.HasTag(Tag) == false){
 			ActionTags.AddTag(Tag);
 		}
 	}
 }
-
-void ASNCharacterBase::RemoveActionTag(const FGameplayTag& Tag){
-	
-	if (IsLocallyControlled() == true){
-		ActionTags.RemoveTag(Tag);
-	}
-}
-
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグを削除
+//
+//! @param TagContainer ゲームプレイタグコンテナ
+//
+//----------------------------------------------------------------------//
 void ASNCharacterBase::RemoveActionTagContainer(const FGameplayTagContainer& TagContainer){
 
 	if (IsLocallyControlled() == true){
@@ -94,16 +97,41 @@ void ASNCharacterBase::RemoveActionTagContainer(const FGameplayTagContainer& Tag
 	}
 }
 
-void ASNCharacterBase::ResetAllActionTags()
-{
-	if (IsLocallyControlled() == true)
-	{
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグを削除
+//
+//! @param Tag ゲームプレイタグ
+//
+//----------------------------------------------------------------------//
+void ASNCharacterBase::RemoveActionTag(const FGameplayTag& Tag){
+	
+	if(IsLocallyControlled() == true){
+		ActionTags.RemoveTag(Tag);
+	}
+}
+
+
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグを全て削除
+//
+//----------------------------------------------------------------------//
+void ASNCharacterBase::ResetAllActionTags(){
+	
+	if(IsLocallyControlled() == true){
 		ActionTags.Reset();
 	}
 }
 
-FGameplayTagContainer ASNCharacterBase::GetActionTags() const
-{
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグコンテナを取得
+//
+//! @retval アクションタグコンテナ
+//
+//----------------------------------------------------------------------//
+FGameplayTagContainer ASNCharacterBase::GetActionTags() const {
 	return ActionTags;
 }
 
@@ -115,29 +143,19 @@ FGameplayTagContainer ASNCharacterBase::GetActionTags() const
 void ASNCharacterBase::BeginPlay(){
 	
 	Super::BeginPlay();
-	
 	// 移動、回転などの動きをレプリケート
 	SetReplicateMovement(true);
-
-	for (auto& Attribute:AttributeSetClass)
-	{
-		USNAttributeSet* GameAttribute = NewObject<USNAttributeSet>(this, Attribute, TEXT("AttributeSet"));
-
-		AbilitySystemComponent->SetAttribute(Attribute);
+	
+	if(AbilitySystemComponent != nullptr){
 		
-		if (GameAttribute != nullptr)
-		{
-			AttributeSets.Add(GameAttribute);
-		}
-	}
-
-	if (AbilitySystemComponent != nullptr)
-	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-		
-		for (auto& GameAttribute:AttributeSets)
-		{
-			AbilitySystemComponent->AddSpawnedAttribute(GameAttribute);
+		for(auto& Attribute:AttributeSetClass){
+			// 属性を生成
+			USNAttributeSet* GameAttribute = NewObject<USNAttributeSet>(this, Attribute, TEXT("AttributeSet"));
+			
+			if(GameAttribute != nullptr){
+				// コンポーネントのリストに登録
+				AbilitySystemComponent->AddSpawnedAttribute(GameAttribute);
+			}
 		}
 	}
 }

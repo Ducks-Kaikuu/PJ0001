@@ -53,7 +53,7 @@ void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 
 				DamageWidgetInstance->SetVisibility(ESlateVisibility::Visible);
 
-				UPJHealthSet* HealthSet = Character->GetGameAttribute<UPJHealthSet>();
+				const UPJHealthSet* HealthSet = Character->GetGameAttribute<UPJHealthSet>();
 
 				if (HealthSet != nullptr)
 				{

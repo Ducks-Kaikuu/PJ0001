@@ -65,18 +65,12 @@ void APJEnemy::BeginPlay()
 	}
 	
 	
+	const UPJHealthSet* Health = GetGameAttribute<UPJHealthSet>();
 
-//	if (AbilitySystemComponent != nullptr)
-//	{
-//		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-		
-		const UPJHealthSet* Health = GetGameAttribute<UPJHealthSet>();
-
-		if (Health != nullptr)
-		{
-			Health->OnHealthChanged.AddUObject(this, &ThisClass::HandleHealthChanged);
-		}
-//	}
+	if (Health != nullptr)
+	{
+		Health->OnHealthChanged.AddUObject(this, &ThisClass::HandleHealthChanged);
+	}
 }
 
 void APJEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -105,55 +99,6 @@ void APJEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 			}
 		}
 	}
-}
-
-void APJEnemy::DrawDamage(int Damage)
-{
-#if 1
-	USNGameInstance* GameInstance = SNUtility::GetGameInstance<USNGameInstance>();
-	
-	UPJDamageWidget* DamageWidget = CreateWidget<UPJDamageWidget>(GameInstance, DamaageWidget, TEXT("Damage"));
-
-	if (DamageWidget != nullptr)
-	{
-		ASNSceneBase* Scene(GameInstance->GetCurrentScene());
-
-		APlayerController* PlayerController(SNUtility::GetPlayerController<APlayerController>());
-
-		if ((Scene != nullptr) && (PlayerController != nullptr))
-		{
-			USNMasterWidget* MasterWidget = Scene->GetMasterWidget();
-
-			if (MasterWidget != nullptr)
-			{
-				FVector WorldPosition(GetActorLocation());
-
-				//WorldPosition.Z += 150.0f;
-
-				FVector2D ScreenPosition = FVector2D::ZeroVector;
-
-				PlayerController->ProjectWorldLocationToScreen(WorldPosition, ScreenPosition);
-
-				ScreenPosition /= UWidgetLayoutLibrary::GetViewportScale(GetWorld());
-				
-				MasterWidget->SetLayer(EWidgetLayer::Layer3, DamageWidget);
-
-				DamageWidget->SetVisibility(ESlateVisibility::Visible);
-
-				UPJHealthSet* AAA = Cast<UPJHealthSet>(GetGameAttribute<UPJHealthSet>());
-
-				if (AAA != nullptr)
-				{
-					int HP = (int)AAA->GetHealth();
-
-					DamageWidget->PlayDamage(HP, ScreenPosition);
-				}
-				
-				SNPLUGIN_LOG(TEXT("Damage Effect is Enabled."));
-			}
-		}
-	}
-#endif
 }
 
 UPlayMontageCallbackProxy* APJEnemy::PlayAnimMontageByActionTag()

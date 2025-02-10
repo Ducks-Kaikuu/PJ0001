@@ -30,9 +30,7 @@ public:
 	APJEnemy(const FObjectInitializer& ObjectInitializer);
 
 	virtual void Tick(float DeltaSeconds) override;
-
-	void DrawDamage(int Damage);
-
+	
 	UPlayMontageCallbackProxy* PlayAnimMontageByActionTag();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
@@ -58,12 +56,6 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UChooserTable> ChooserTable = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<USNUserWidgetBase> DamaageWidget = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	float VisionAngle = 60.0f;
 
 	UPROPERTY()
 	TObjectPtr<UPlayMontageCallbackProxy> MontageProxy = nullptr;

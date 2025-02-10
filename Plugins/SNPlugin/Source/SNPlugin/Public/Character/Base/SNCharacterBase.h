@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "Character/SNCharacterDef.h"
 #include "Character/AbilitySystem/SNAttributeSet.h"
+#include "Character/Components/SNAbilitySystemComponent.h"
 
 #include "SNCharacterBase.generated.h"
 
@@ -39,8 +40,10 @@ public:
 	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
+	//! @{@name AbilitySystemComponentを取得
 	USNAbilitySystemComponent* GetAbilitySystemComponent() const ;
+	//! @}
 	
 	/** Returns properties that are replicated for the lifetime of the actor channel */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -86,23 +89,33 @@ public:
 	UFUNCTION(BlueprintCallable, Category="SN|Animation")
 	void PlayMontage(const FName& Name, float PlayRate=1.0f, float StartTime=0.0f);
 	//! @}
-
+	
+	//! @{@name アクションタグを設定
 	void SetActinTag(const FGameplayTag& Tag);
 	void SetActionTagContainer(const FGameplayTagContainer& TagContainer);
-
+	//! @}
+	
+	//! @{@name アクションタグを追加
 	void AddActionTagContainer(const FGameplayTagContainer& TagContainer);
 	void AddActionTag(const FGameplayTag& Tag);
-
-	void RemoveActionTag(const FGameplayTag& Tag);
+	//! @}
+	
+	//! @{@name アクションタグを削除
 	void RemoveActionTagContainer(const FGameplayTagContainer& TagContainer);
+	void RemoveActionTag(const FGameplayTag& Tag);
 	void ResetAllActionTags();
-
+	//! @}
+	
+	//! @{@name アクションタグに含まれているかチェック
 	bool HasActionTag(const FGameplayTag& Tag) const;
 	bool HasAnyActionTags(const FGameplayTagContainer& TagContainer) const ;
 	bool HasAllActionTags(const FGameplayTagContainer& TagContainer) const ;
-
+	//! @}
+	
+	//! @{@name アクションタグコンテナを取得
 	UFUNCTION(BlueprintCallable, Category="SN|Action", meta=(BlueprintThreadSafe))
 	FGameplayTagContainer GetActionTags() const;
+	//! @}
 		
 	//! @{@name モンタージュのセクションへのジャンプ
 	UFUNCTION(BlueprintCallable, Category="SN|Animation")
@@ -113,14 +126,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category="SN|Animation")
 	void SetBlendspaceParam(const FName& Key, const FVector& param);
 	//! @}
-
-	template<class T>
-	T* GetGameAttribute();
-
+	
+	//! @{@name 指定された方のAttributeSetを取得
 	template<class T>
 	const T* GetGameAttribute() const ;
+	//! @}
 	
-	//!@ Satoshi Nishimura 2025/01/31 アクセッサを用意してもうまく動作せず、変数をBlueprintに出してやるとうまくいく…意味不明なChooser
+	//!@ Satoshi Nishimura 2025/01/31 アクセッサ(GetActionTags)を用意してもうまく動作せず、変数をBlueprintに出してやるとうまくいく…意味不明なChooser
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	FGameplayTagContainer ActionTags;
 
@@ -128,7 +140,7 @@ protected:
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 	//!< 上半身の現在のステート
 	UPROPERTY()
 	FName UppderBodyCurrentState = NAME_None;
@@ -152,17 +164,16 @@ protected:
 	//!< 全身の1つ前のステート
 	UPROPERTY()
 	FName FullBodyPreStateName = NAME_None;
-
+	
+	//!< アビリティシステムコンポーネント
 	UPROPERTY(EditAnywhere, Category="SN|Ability")
 	TObjectPtr<USNAbilitySystemComponent> AbilitySystemComponent = nullptr;
 	
 private:
-
+	
+	//!< キャラクターが保持するアビリティ
 	UPROPERTY(EditAnywhere, Category="SN|Ability")
 	TArray<TSubclassOf<USNAttributeSet>> AttributeSetClass;
-
-	UPROPERTY()
-	TArray<TObjectPtr<USNAttributeSet>> AttributeSets;
 	
 	//! @{@name ステートの変更
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -217,47 +228,70 @@ private:
 //! @}
 //! @}
 
-FORCEINLINE USNAbilitySystemComponent* ASNCharacterBase::GetAbilitySystemComponent() const 
-{
+//----------------------------------------------------------------------//
+//
+//! @brief AbilitySystemComponentを取得
+//
+//! @retval AbilitySystemComponentへのポインタ
+//
+//----------------------------------------------------------------------//
+FORCEINLINE USNAbilitySystemComponent* ASNCharacterBase::GetAbilitySystemComponent() const {
 	return AbilitySystemComponent;
 }
 
-FORCEINLINE bool ASNCharacterBase::HasActionTag(const FGameplayTag& Tag) const
-{
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグに含まれているかチェック
+//
+//! @param Tag ゲームプレイタグ
+//
+//! @retval true : アクションタグにTagが含まれる / false : 含まれない
+//
+//----------------------------------------------------------------------//
+FORCEINLINE bool ASNCharacterBase::HasActionTag(const FGameplayTag& Tag) const {
 	return ActionTags.HasTag(Tag);
 }
-FORCEINLINE bool ASNCharacterBase::HasAnyActionTags(const FGameplayTagContainer& TagContainer) const
-{
+
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグにコンテナのどれかのタグが含まれているかチェック
+//
+//! @param Tag ゲームプレイタグコンテナ
+//
+//! @retval true : アクションタグにTagが含まれる / false : 含まれない
+//
+//----------------------------------------------------------------------//
+FORCEINLINE bool ASNCharacterBase::HasAnyActionTags(const FGameplayTagContainer& TagContainer) const {
 	return ActionTags.HasAny(TagContainer);
 }
 
-FORCEINLINE bool ASNCharacterBase::HasAllActionTags(const FGameplayTagContainer& TagContainer) const
-{
+//----------------------------------------------------------------------//
+//
+//! @brief アクションタグにコンテナの全てのタグが含まれているかチェック
+//
+//! @param Tag ゲームプレイタグコンテナ
+//
+//! @retval true : アクションタグにTagが含まれる / false : 含まれない
+//
+//----------------------------------------------------------------------//
+FORCEINLINE bool ASNCharacterBase::HasAllActionTags(const FGameplayTagContainer& TagContainer) const {
 	return ActionTags.HasAll(TagContainer);
 }
 
+//----------------------------------------------------------------------//
+//
+//! @brief 指定された方のAttributeSetを取得
+//
+//! @retval AttributeSet
+//
+//----------------------------------------------------------------------//
 template<class T>
-FORCEINLINE T* ASNCharacterBase::GetGameAttribute()
-{
-	for (auto& GameAttribute : AttributeSets)
-	{
-		if ((GameAttribute != nullptr) && (GameAttribute->GetClass() == T::StaticClass())){
-			return Cast<T>(GameAttribute);
-		}
+FORCEINLINE const T* ASNCharacterBase::GetGameAttribute() const {
+#if 0
+	return const_cast<ASNCharacterBase*>(this)->GetGameAttribute();
+#else
+	if(AbilitySystemComponent != nullptr){
+		return AbilitySystemComponent->GetSet<T>();
 	}
-
-	return nullptr;
-}
-
-template<class T>
-FORCEINLINE const T* ASNCharacterBase::GetGameAttribute() const
-{
-	for (auto& GameAttribute : AttributeSets)
-	{
-		if ((GameAttribute != nullptr) && (GameAttribute->GetClass() == T::StaticClass())){
-			return Cast<T>(GameAttribute);
-		}
-	}
-
-	return nullptr;
+#endif
 }
