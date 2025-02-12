@@ -43,7 +43,7 @@ void APJEnemy::Tick(float DeltaSeconds)
 	{
 		FString Str = FString(TEXT("Health : "))  +  FString::SanitizeFloat(Health->GetHealth());
 		
-		UKismetSystemLibrary::PrintString(GetWorld(), *Str);
+		//UKismetSystemLibrary::PrintString(GetWorld(), *Str);
 	}
 #endif
 
