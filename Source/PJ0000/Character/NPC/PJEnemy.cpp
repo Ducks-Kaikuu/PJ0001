@@ -13,6 +13,7 @@
 #include "Channels/MovieSceneTimeWarpChannel.h"
 #include "Character/Base/SNPlayerBase.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
+#include "Character/Components/SNMaterialComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -53,6 +54,11 @@ void APJEnemy::Tick(float DeltaSeconds)
 	{
 		//AIController->Restart();
 	}
+
+	if (IsDead())
+	{
+		//Dissolve(10.0f);
+	}
 }
 
 void APJEnemy::BeginPlay()
@@ -70,6 +76,13 @@ void APJEnemy::BeginPlay()
 	if (Health != nullptr)
 	{
 		Health->OnHealthChanged.AddUObject(this, &ThisClass::HandleHealthChanged);
+	}
+
+	USNMaterialComponent* MaterialComponent = FindComponentByClass<USNMaterialComponent>();
+
+	if (MaterialComponent != nullptr)
+	{
+		MaterialComponent->CreateMaterialInstanceDynamic();
 	}
 }
 
@@ -133,6 +146,16 @@ UPlayMontageCallbackProxy* APJEnemy::PlayAnimMontageByActionTag()
 	return nullptr;
 }
 
+void APJEnemy::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	if (OnLanded.IsBound() == true)
+	{
+		OnLanded.Execute(Hit);
+	}
+}
+
 void APJEnemy::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue)
 {
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage"));
@@ -150,4 +173,60 @@ float APJEnemy::GetVelocity2D() const
 	}
 
 	return Speed;
+}
+
+bool APJEnemy::IsDead() const
+{
+	const UPJHealthSet* HealthSet = GetGameAttribute<UPJHealthSet>();
+	
+	if (HealthSet != nullptr)
+	{
+		int HP = HealthSet->GetHealth();
+
+		return (HP <= 0) ? true : false;
+	}
+
+	return false;
+}
+
+void APJEnemy::Dissolve(float Time)
+{
+	if (MaterialInstanceDynamicInstArray.Find(TEXT("TEST")) == nullptr)
+	{
+		return;
+	}
+
+	if (DissolveTimerHandle.IsValid() == true)
+	{
+		return;
+	}
+	
+	GetWorldTimerManager().SetTimer(DissolveTimerHandle, this, &APJEnemy::DissolveDelegate, 0.016f, true);
+}
+
+void APJEnemy::DissolveDelegate()
+{
+	static float Alpha = 0.0f;
+
+	Alpha += 0.016f;
+
+	Alpha = FMath::Clamp(Alpha, 0, 1);
+	
+	UMaterialInstanceDynamic* Instance = MaterialInstanceDynamicInstArray[TEXT("TEST")];
+
+	if (Instance != nullptr)
+	{
+		Instance->SetScalarParameterValue(TEXT("DissolveAlpha"), Alpha);
+	}
+
+	if (Alpha >= 1.0f)
+	{
+		SetActorEnableCollision(false);
+
+		SetActorHiddenInGame(true);
+
+		GetWorldTimerManager().ClearAllTimersForObject(this);
+
+		Destroy();
+	}
 }

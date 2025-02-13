@@ -7,6 +7,8 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
+#include "Character/Components/SNMaterialComponent.h"
+#include "Character/NPC/PJEnemy.h"
 #include "Scene/SNSceneBase.h"
 #include "UI/Widget/PJDamageWidget.h"
 #include "UI/Widget/SNMasterWidget.h"
@@ -65,5 +67,69 @@ void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 				SNPLUGIN_LOG(TEXT("Damage Effect is Enabled."));
 			}
 		}
+	}
+}
+
+void UPJDamageWithChooserComponent::Death()
+{
+	Super::Death();
+
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+	if (Character == nullptr)
+	{
+		SNPLUGIN_ERROR(TEXT("PJDamageWithChooserComponent::Death - Character is nullptr."));
+
+		return;
+	}
+
+	const UPJHealthSet* HealthSet = Character->GetGameAttribute<UPJHealthSet>();
+
+	if ((HealthSet == nullptr) || (HealthSet->GetHealth() > 0))
+	{
+		return;;
+	}
+
+	DissolveStart();
+}
+
+void UPJDamageWithChooserComponent::DissolveStart()
+{
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+	if (Character == nullptr)
+	{
+		return;
+	}
+
+	DeathCount = 0.0f;
+
+	Character->GetWorldTimerManager().SetTimer(DeathTimerHandle, this, &UPJDamageWithChooserComponent::DissoleExecute, DeathSpeed, true);
+}
+
+void UPJDamageWithChooserComponent::DissoleExecute()
+{
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+	
+	DeathCount += DeathSpeed;
+
+	DeathCount = FMath::Clamp(DeathCount, 0.0f, DeathTime);
+
+	USNMaterialComponent* MaterialComponent = Character->FindComponentByClass<USNMaterialComponent>();
+
+	if (MaterialComponent != nullptr)
+	{
+		MaterialComponent->SetScalarParameterValue(TEXT("Werewolf"), TEXT("DissolveAlpha"), DeathCount/DeathTime);
+	}
+
+	if (DeathCount >= DeathTime)
+	{
+		Character->SetActorEnableCollision(false);
+
+		Character->SetActorHiddenInGame(true);
+
+		Character->GetWorldTimerManager().ClearTimer(DeathTimerHandle);
+
+		Character->Destroy();
 	}
 }

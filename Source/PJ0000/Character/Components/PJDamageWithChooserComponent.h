@@ -20,7 +20,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Damage")
 	void DrawDamage(int Damage);
 
+	virtual void Death() override;
+
 private:
+
+	void DissolveStart();
+
+	UFUNCTION()
+	void DissoleExecute();
+	
+	UPROPERTY(EditAnywhere, Category="Death", meta = (ClampMin=0.016f, ClampMax=1000.0f))
+	float DeathTime = 10.0f;
+	
+	UPROPERTY(EditAnywhere, Category="Death")
+	float DeathSpeed = 0.016f;
+
+	float DeathCount = 0.0f;
+
+	FTimerHandle DeathTimerHandle;
 	
 	UPROPERTY(EditAnywhere, Category="Damage")
 	TSubclassOf<USNUserWidgetBase> DamageWidget = nullptr;

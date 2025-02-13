@@ -33,8 +33,21 @@ public:
 	
 	UPlayMontageCallbackProxy* PlayAnimMontageByActionTag();
 
+	virtual void Landed(const FHitResult& Hit) override;
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
 	float GetVelocity2D() const ;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
+	bool IsDead() const;
+
+	void Dissolve(float Time);
+
+	DECLARE_DELEGATE_OneParam(FLandedDelegate, const FHitResult&);
+	FLandedDelegate OnLanded;
+
+	UFUNCTION()
+	void DissolveDelegate();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -59,6 +72,14 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UPlayMontageCallbackProxy> MontageProxy = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TMap<FName, TObjectPtr<UMaterialInstance>> MaterialInstArray;
+
+	UPROPERTY()
+	TMap<FName, TObjectPtr<UMaterialInstanceDynamic>> MaterialInstanceDynamicInstArray;
+
+	FTimerHandle DissolveTimerHandle;
 };
 
 

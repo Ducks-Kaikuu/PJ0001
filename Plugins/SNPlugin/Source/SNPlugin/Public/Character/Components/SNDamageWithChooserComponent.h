@@ -21,6 +21,8 @@ public:
 	USNDamageWithChooserComponent();
 
 	UPlayMontageCallbackProxy* PlayDamageAnimation(const FGameplayTagContainer& DamageTags, bool bAddToOwner=true);
+
+	virtual void Death(){}
 	
 protected:
 	// Called when the game starts

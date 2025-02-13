@@ -1,0 +1,132 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "Character/Components/SNMaterialComponent.h"
+
+#include "SNDef.h"
+#include "StateTreeTypes.h"
+#include "ViewportInteractionTypes.h"
+#include "GameFramework/Character.h"
+
+// Sets default values for this component's properties
+USNMaterialComponent::USNMaterialComponent()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = true;
+
+	PrimaryComponentTick.bStartWithTickEnabled = false;
+	// ...
+}
+
+void USNMaterialComponent::CreateMaterialInstanceDynamic()
+{
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+
+	if (Character != nullptr)
+	{
+		USkeletalMeshComponent* Mesh = Character->GetMesh();
+
+		SNPLUGIN_ASSERT(Mesh != nullptr, TEXT("USMaterialComponent::BeginPlay: Mesh is null"));
+
+		int Index = 0;
+
+		const TArray<FName> SlotNames(Mesh->GetMaterialSlotNames());
+		
+		for (auto& Material : Mesh->GetMaterials())
+		{
+			if (Material != nullptr)
+			{
+				UMaterialInstanceDynamic* InstanceDynamic = Mesh->CreateDynamicMaterialInstance(Index);
+
+				if (InstanceDynamic != nullptr)
+				{
+					FSNMaterial MaterialInfo(Material, InstanceDynamic);
+
+					SNPLUGIN_ASSERT(Index < SlotNames.Num(), TEXT("USNMaterialComponent::BeginPlay : Material Num is Over."));
+
+					FName SlotName(SlotNames[Index++]);
+
+					Materials.Add(SlotName, MaterialInfo);
+				}
+			}
+		}
+	}
+}
+
+void USNMaterialComponent::SetScalarParameterValue(const FName& SlotName, const FName& ParamName, float Value)
+{
+	FSNMaterial* Material = Materials.Find(SlotName);
+
+	if (Material != nullptr)
+	{
+		Material->MaterialInstanceDynamic->SetScalarParameterValue(ParamName, Value);
+	}
+}
+
+void USNMaterialComponent::SetTextureParameterValue(const FName& SlotName, const FName& ParamName, UTexture* Texture)
+{
+	FSNMaterial* Material = Materials.Find(SlotName);
+
+	if (Material != nullptr)
+	{
+		Material->MaterialInstanceDynamic->SetTextureParameterValue(ParamName, Texture);
+	}
+}
+
+void USNMaterialComponent::SetRuntimeVirtualTextureParameterValue(const FName& SlotName, const FName& ParamName, URuntimeVirtualTexture* Texture)
+{
+	FSNMaterial* Material = Materials.Find(SlotName);
+
+	if (Material != nullptr)
+	{
+		Material->MaterialInstanceDynamic->SetRuntimeVirtualTextureParameterValue(ParamName, Texture);
+	}
+}
+
+void USNMaterialComponent::SetVectorParameterValue(const FName& SlotName, const FName& ParamName, const FVector& Value)
+{
+	FSNMaterial* Material = Materials.Find(SlotName);
+
+	if (Material != nullptr)
+	{
+		Material->MaterialInstanceDynamic->SetVectorParameterValue(ParamName, Value);
+	}
+}
+
+
+// Called when the game starts
+void USNMaterialComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	SetComponentTickEnabled(false);
+}
+
+void USNMaterialComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+
+	if (Character != nullptr)
+	{
+		USkeletalMeshComponent* Mesh = Character->GetMesh();
+
+		SNPLUGIN_ASSERT(Mesh != nullptr, TEXT("USMaterialComponent::BeginPlay: Mesh is null"));
+
+		const TArray<FName> SlotNames(Mesh->GetMaterialSlotNames());
+		
+		for (auto& Material : Materials)
+		{
+			int MaterialNo = SlotNames.Find(Material.Key);
+
+			if (MaterialNo >= 0)
+			{
+				Mesh->SetMaterial(MaterialNo, Material.Value.SourceInterface);	
+			}
+		}
+	}
+}
+

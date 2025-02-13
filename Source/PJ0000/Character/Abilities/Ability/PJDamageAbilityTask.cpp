@@ -3,8 +3,10 @@
 
 #include "PJ0000/Character/Abilities/Ability//PJDamageAbilityTask.h"
 
+#include "AIController.h"
 #include "PlayMontageCallbackProxy.h"
 #include "SNDef.h"
+#include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
 #include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/PJDamageWithChooserComponent.h"
@@ -79,9 +81,9 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		if (DamageComponent != nullptr)
 		{
 			DamageComponent->DrawDamage(Damage->Damage);
-			
+
 			UPlayMontageCallbackProxy* MontageProxy = DamageComponent->PlayDamageAnimation(DamageAttributeTag);
-			
+
 			if (MontageProxy != nullptr)
 			{
 				MontageProxy->OnCompleted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
@@ -111,6 +113,10 @@ void UPJDamageAbilityTask::OnNotifyBegin(FName NotifyName)
 			
 			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On Notify Begin."));
 		}
+	}
+	else
+	{
+		
 	}
 }
 
