@@ -20,5 +20,7 @@ bool UPJActionSlow::ExecAction(const FInputActionValue& InputActionValue)
 
 	Character->CustomTimeDilation = Value;
 
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Speed Down: %f"), InputValue), true, false);
+
 	return true;
 }
