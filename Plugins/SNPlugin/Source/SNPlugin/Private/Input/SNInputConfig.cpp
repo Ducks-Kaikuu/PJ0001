@@ -85,8 +85,15 @@ bool	USNInputConfig::InitializeInput(FName Name, UObject* OwnerObject){
 					FSNInputAction& Input(action);
 					// アクション名を設定
 					// Action->SetActionName(*(Input.InputAction->GetName()));
-					//Action->SetActionTag(Input.InputTag);
-					//Action->SetExclusiveActionTag(Input.ExclusiveTags);
+					if (Action->GetActionTag().IsValid() == false)
+					{
+						Action->SetActionTag(Input.InputTag);	
+					}
+
+					if (Action->GetExclusiveActionTag().IsValid() == false)
+					{
+						Action->SetExclusiveActionTag(Input.ExclusiveTags);
+					}
 					
 					if(PlayablePawn != nullptr){
 

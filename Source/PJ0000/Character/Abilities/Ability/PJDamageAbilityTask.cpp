@@ -3,17 +3,14 @@
 
 #include "PJ0000/Character/Abilities/Ability//PJDamageAbilityTask.h"
 
-#include "AIController.h"
 #include "PlayMontageCallbackProxy.h"
 #include "SNDef.h"
-#include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
 #include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/PJDamageWithChooserComponent.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNDamageWithChooserComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PJ0000/Character/NPC/PJEnemy.h"
 #include "PJ0000/Damage/PJDamageData.h"
 #include "PJ0000/System/PJGameInstance.h"
 #include "Utility/SNUtility.h"

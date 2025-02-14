@@ -24,10 +24,17 @@ void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 
 		return;
 	}
+
+	if (DamageWidget == nullptr)
+	{
+		SNPLUGIN_ERROR(TEXT("PJDamageWithChooserComponent::DrawDamage - Damage Widget is nullptr."));
+
+		return;
+	}
 	
 	USNGameInstance* GameInstance = SNUtility::GetGameInstance<USNGameInstance>();
 	
-	UPJDamageWidget* DamageWidgetInstance = CreateWidget<UPJDamageWidget>(GameInstance, DamageWidget, TEXT("Damage"));
+	UPJDamageWidget* DamageWidgetInstance = CreateWidget<UPJDamageWidget>(Character->GetWorld(), DamageWidget, TEXT("Damage"));
 
 	if (DamageWidgetInstance != nullptr)
 	{
