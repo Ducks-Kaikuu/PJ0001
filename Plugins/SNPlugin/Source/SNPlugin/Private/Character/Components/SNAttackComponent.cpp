@@ -4,6 +4,7 @@
 #include "Character/Components/SNAttackComponent.h"
 
 #include "AbilitySystemComponent.h"
+#include "Character/Components/SNDamageWithChooserComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
@@ -113,8 +114,35 @@ USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result
 
 		if (AbilitySystemComponent != nullptr)
 		{
-			AbilitySystemComponent->TryActivateAbilitiesByTag(GameplayTags);
+			USNDamageWithChooserComponent* DamageComponent = Target->FindComponentByClass<USNDamageWithChooserComponent>();
+			
+			if (DamageComponent != nullptr)
+			{
+				FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
 
+				FGameplayEffectContext* Context = ContextHandle.Get();
+
+				if (Context != nullptr)
+				{
+					TArray<TWeakObjectPtr<AActor>> ActorList = {pAttacker};
+
+					Context->AddActors(ActorList);
+					
+					Context->AddHitResult(Result);
+				}
+				// EffectContextをDamageComponentに持たせることに何か不満...
+				DamageComponent->SetDamagedEffectContextHandle(ContextHandle);
+			}
+			
+			AbilitySystemComponent->TryActivateAbilitiesByTag(GameplayTags);
+#if 0
+			{
+				for (auto& GameplayTag : GameplayTags)
+				{
+					AbilitySystemComponent->ExecuteGameplayCue(GameplayTag, ContextHandle);	
+				}
+			};
+#endif
 			return eHitState_HitAttackCanDamage;
 		}
 

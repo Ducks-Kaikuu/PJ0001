@@ -33,9 +33,11 @@ void USNGameplayAbility::ApplyGameplayEffectsToSelf(UAbilitySystemComponent* Abi
 
 void USNGameplayAbility::ApplyGameplayEffectsToSelf(UAbilitySystemComponent* AbilitySystemComponent, TFunctionRef<void(FGameplayEffectSpec*)> EffectPredicate)
 {
+	FGameplayEffectContextHandle ContextHandle(AbilitySystemComponent->MakeEffectContext());
+	
 	for (auto& Effect : GameplayEffects)
 	{
-		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 1.0f, AbilitySystemComponent->MakeEffectContext());
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(Effect, 1.0f, ContextHandle);
 
 		if (SpecHandle.Data != nullptr)
 		{

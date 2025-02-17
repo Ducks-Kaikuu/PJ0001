@@ -59,7 +59,9 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		const FDamageTable* Damage = DamageList[0];
 		
 		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
-
+		
+		UPJDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<UPJDamageWithChooserComponent>();
+		
 		if (AbilitySystemComponent != nullptr)
 		{
 			ApplyGameplayEffectsToSelf(AbilitySystemComponent, [&](FGameplayEffectSpec* Spec)
@@ -71,9 +73,19 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 					Spec->SetSetByCallerMagnitude(DamageTag, Damage->Damage);
 				}
 			});
+			
+			if(DamageComponent != nullptr)
+			{
+				const FGameplayEffectContextHandle& ContextHandle(DamageComponent->GetDamagedEffectContextHandle());
+
+				for (auto& GameplayTag : Damage->DamageCueTags)
+				{
+					AbilitySystemComponent->ExecuteGameplayCue(GameplayTag, ContextHandle);	
+				}
+
+				DamageComponent->ResetDamagedEffectContextHandle();
+			}
 		}
-		
-		UPJDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<UPJDamageWithChooserComponent>();
 		
 		if (DamageComponent != nullptr)
 		{
