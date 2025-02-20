@@ -155,24 +155,3 @@ UPlayMontageCallbackProxy* USNComboComponent::PerformMotionMatching(ACharacter* 
 	
 	return nullptr;
 }
-
-void USNComboComponent::AddAbilityTask(UAbilityTask* Task)
-{
-	if (Task != nullptr)
-	{
-		ComboTasks.Add(Task);	
-	}
-
-	if (ComboTasks.Num() > 0)
-	{
-		SetComponentTickEnabled(true);
-	}
-}
-
-void USNComboComponent::RemoveAbilityTask(UAbilityTask* Task)
-{
-	ComboTasks.Remove(Task);
-}
-
-
-

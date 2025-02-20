@@ -31,6 +31,9 @@ bool UPJAttackAction::ExecAction(const FInputActionValue& InputActionValue)
 				ComboComponent->Start();
 				
 				ComboComponent->SetComponentTickEnabled(true);
+				
+				SNPLUGIN_LOG(TEXT("Combo Start Comming. %f"), ComboComponent->GetComboScore());
+				
 			} else
 			{
 				if (Character->GetAbilitySystemComponent()->HasMatchingGameplayTag(AdvancedInput))
@@ -92,7 +95,7 @@ bool UPJAttackAction::ExecAction(const FInputActionValue& InputActionValue)
 
 					return true;
 				}
-			} 
+			}
 		}
 	}
 

@@ -7,9 +7,12 @@
 #include "Character/Components/SNDamageWithChooserComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-// Sets default values for this component's properties
-USNAttackComponent::USNAttackComponent()
-{
+//----------------------------------------------------------------------//
+//
+//! @brief デフォルトコンストラクタ
+//
+//----------------------------------------------------------------------//
+USNAttackComponent::USNAttackComponent(){
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
@@ -18,19 +21,13 @@ USNAttackComponent::USNAttackComponent()
 	// ...
 }
 
-FHitResult USNAttackComponent::GenerateSphereSweep(AActor* pAttacker, float Time, const FVector& Start,
-	const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList,
-	bool bPenetrate, bool bBomb)
-{
-	return InternalGenerateSphereSweep(pAttacker, Time, Start, End, Radius, GameplayTags, ignoreList, bPenetrate, bBomb);
+FHitResult USNAttackComponent::GenerateSphereSweep(AActor* pAttacker, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb){
+	return InternalGenerateSphereSweep(pAttacker, Start, End, Radius, GameplayTags, ignoreList, bPenetrate, bBomb);
 }
 
-FHitResult USNAttackComponent::GenerateSphere(AActor* pAttacker, float Time, const FVector& Pos, float Radius,
-	const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList)
-{
-	return InternalGenerateSphereSweep(pAttacker, Time, Pos, Pos, Radius, GameplayTags, ignoreList, true, true);
+FHitResult USNAttackComponent::GenerateSphere(AActor* pAttacker, const FVector& Pos, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList){
+	return InternalGenerateSphereSweep(pAttacker, Pos, Pos, Radius, GameplayTags, ignoreList, true, true);
 }
-
 
 // Called when the game starts
 void USNAttackComponent::BeginPlay()
@@ -42,7 +39,7 @@ void USNAttackComponent::BeginPlay()
 	
 }
 
-FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, float Time, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb)
+FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb)
 {
 	if (pAttacker == nullptr)
 	{
@@ -86,7 +83,7 @@ FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, fl
 		
 		if(Result.bBlockingHit == true){
 			// 攻撃判定チェック
-			eHitState state = OnHit(Result, GameplayTags, Time, pAttacker);
+			eHitState state = OnHit(Result, GameplayTags, pAttacker);
 			
 			if(bPenetrate == false){
 				return Result;
@@ -104,7 +101,7 @@ FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, fl
 
 }
 
-USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, float Time, AActor* pAttacker)
+USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, AActor* pAttacker)
 {
 	AActor* Target = Result.GetActor();
 
@@ -135,14 +132,7 @@ USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result
 			}
 			
 			AbilitySystemComponent->TryActivateAbilitiesByTag(GameplayTags);
-#if 0
-			{
-				for (auto& GameplayTag : GameplayTags)
-				{
-					AbilitySystemComponent->ExecuteGameplayCue(GameplayTag, ContextHandle);	
-				}
-			};
-#endif
+			
 			return eHitState_HitAttackCanDamage;
 		}
 

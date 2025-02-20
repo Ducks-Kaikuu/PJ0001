@@ -6,6 +6,7 @@
 #include "GameplayCueNotify_Actor.h"
 #include "PJHitVfxGameplayCueNotify_Actor.generated.h"
 
+class UNiagaraSystem;
 /**
  * 
  */
@@ -19,4 +20,15 @@ public:
 	APJHitVfxGameplayCueNotify_Actor();
 
 	virtual void HandleGameplayCue(AActor* MyTarget, EGameplayCueEvent::Type EventType, const FGameplayCueParameters& Parameters) override;
+
+private:
+
+	UPROPERTY(EditAnywhere, Category = "Vfx")
+	UNiagaraSystem* HitVfx = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Vfx")
+	FVector Scale = FVector::OneVector;
+
+	
+	
 };

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -13,7 +13,15 @@ class UPlayMontageCallbackProxy;
 struct FGameplayTagContainer;
 struct FGameplayEffectContextHandle;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+//!@{@defgroup キャラクター用コンポーネント
+//!@{
+//----------------------------------------------------------------------//
+//
+//! @brief ダメージ用コンポーネント
+//! Chooserでダメージモーションの管理してます。
+//
+//----------------------------------------------------------------------//
+UCLASS()
 class SNPLUGIN_API USNDamageWithChooserComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -48,6 +56,8 @@ private:
 #endif
 	
 };
+//! @}
+//! @}
 
 FORCEINLINE void USNDamageWithChooserComponent::SetDamagedEffectContextHandle(const FGameplayEffectContextHandle& DamagedHandle)
 {

@@ -12,6 +12,7 @@
 //----------------------------------------------------------------------//
 //
 //! @brief 攻撃コリジョン生成
+//!※USNAttackComponentが存在しない場合は使用できません。
 //
 //----------------------------------------------------------------------//
 UCLASS()
@@ -25,47 +26,43 @@ public:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 	//! @}
 	
-	//!< 親となるソケットorボーン名
+	//! 親となるソケットorボーン名
 	UPROPERTY(EditAnywhere, Category = "SN|Attack")
 	FName ParentSocket = NAME_None;
 	
-	//!< 親のローテーション情報を無理するかのフラグ
+	//! 親のローテーション情報を無理するかのフラグ
 	UPROPERTY(EditAnywhere, Category = "SN|Attack")
 	bool bIgnoreRotation = false;
-
-	//!< スイープで判定するかのフラグ
+	
+	//! スイープで判定するかのフラグ
 	UPROPERTY(EditAnywhere, Category = "SN|Attack")
 	bool bSweep = false;
-
-	//!< 貫通させるかのフラグ
+	
+	//! 貫通させるかのフラグ
 	UPROPERTY(EditAnywhere, Category = "SN|Attack")
 	bool bPenetrate = false;
-
-	//!< 爆発属性か…(現在未使用)
+	
+	//! 爆発属性か…(現在未使用)
 	UPROPERTY(EditAnywhere, Category = "SN|Attack")
 	bool bBomb = false;
-
-	//!< ダメージ時間
-	UPROPERTY(EditAnywhere, Category = "SN|Attack")
-	float Time = 0.0f;
-
-	//!< 攻撃の大きさ
+	
+	//! 攻撃の大きさ
 	UPROPERTY(EditAnywhere, Category = "SN|Attack")
 	float Radius = 5.0f;
-
-	//!< ポジション情報
+	
+	//! ポジション情報
 	UPROPERTY(EditAnywhere, Category = "SN|Attack", meta = (EditCondition = "!bSweep"))
 	FVector Position;
-
-	//!< スイープで判定する場合の開始地点
+	
+	//! スイープで判定する場合の開始地点
 	UPROPERTY(EditAnywhere, Category = "SN|Attack", meta = (EditCondition = "bSweep"))
 	FVector Start;
-
-	//!< スイープで判定する場合の終了地点
+	
+	//! スイープで判定する場合の終了地点
 	UPROPERTY(EditAnywhere, Category = "SN|Attack", meta = (EditCondition = "bSweep"))
 	FVector End;
-
-	//!< ダメージ属性
+	
+	//! ダメージ属性
 	UPROPERTY(EditAnywhere, Category = "SN|Attack")
 	FGameplayTagContainer DamageAttribetes;
 };

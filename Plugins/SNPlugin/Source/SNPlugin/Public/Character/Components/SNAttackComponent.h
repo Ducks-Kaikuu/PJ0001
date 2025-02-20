@@ -6,24 +6,33 @@
 #include "Components/ActorComponent.h"
 #include "SNAttackComponent.generated.h"
 
-
 struct FGameplayTagContainer;
 
-UCLASS(ClassGroup=(Custom), Blueprintable, meta=(BlueprintSpawnableComponent))
+//!@{@defgroup キャラクター用コンポーネント
+//!@{
+//----------------------------------------------------------------------//
+//
+//! @brief 攻撃用コンポーネント
+//! USNDamageWithChooserComponentとセットで使用。後々はインターフェイスに対応したほうが良いかも…。
+//
+//----------------------------------------------------------------------//
+UCLASS()
 class SNPLUGIN_API USNAttackComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
+	
+	//! @{@name デフォルトコンストラクタ
 	USNAttackComponent();
-
-	//! @{@name 球型のスイープコリジョンを生成
-	FHitResult	GenerateSphereSweep(AActor* pAttacker, float Time, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool isPenetrate, bool bBomb);
 	//! @}
-
+	
+	//! @{@name 球型のスイープコリジョンを生成
+	FHitResult	GenerateSphereSweep(AActor* pAttacker, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool isPenetrate, bool bBomb);
+	//! @}
+	
 	//! @{@name 球型の攻撃コリジョンを生成
-	FHitResult	GenerateSphere(AActor* pAttacker, float Time, const FVector& Pos, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList);
+	FHitResult	GenerateSphere(AActor* pAttacker, const FVector& Pos, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList);
 	//! @}
 	
 protected:
@@ -39,11 +48,11 @@ private:
 	};
 	
 	//! @{@name 球型のスイープコリジョンを生成
-	FHitResult	InternalGenerateSphereSweep(AActor* pAttacker, float Time, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb);
+	FHitResult	InternalGenerateSphereSweep(AActor* pAttacker, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb);
 	//! @}
 
 	//! @{@name 攻撃コリジョンが当たった際の処理
-	eHitState	OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, float Time, AActor* pAttacker);
+	eHitState	OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, AActor* pAttacker);
 	//! @}
 	
 #if WITH_EDITORONLY_DATA
@@ -52,3 +61,5 @@ private:
 #endif
 	
 };
+//! @}
+//! @}
