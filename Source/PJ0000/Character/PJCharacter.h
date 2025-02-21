@@ -30,6 +30,4 @@ private:
 
 	void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
 
-	UPROPERTY()
-	TObjectPtr<UPJHealthSet> HealthSet;
 };

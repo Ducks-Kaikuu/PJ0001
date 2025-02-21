@@ -21,12 +21,12 @@ USNAttackComponent::USNAttackComponent(){
 	// ...
 }
 
-FHitResult USNAttackComponent::GenerateSphereSweep(AActor* pAttacker, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb){
-	return InternalGenerateSphereSweep(pAttacker, Start, End, Radius, GameplayTags, ignoreList, bPenetrate, bBomb);
+FHitResult USNAttackComponent::GenerateSphereSweep(AActor* pAttacker, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb, FGuid guid){
+	return InternalGenerateSphereSweep(pAttacker, Start, End, Radius, GameplayTags, ignoreList, bPenetrate, bBomb, guid);
 }
 
-FHitResult USNAttackComponent::GenerateSphere(AActor* pAttacker, const FVector& Pos, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList){
-	return InternalGenerateSphereSweep(pAttacker, Pos, Pos, Radius, GameplayTags, ignoreList, true, true);
+FHitResult USNAttackComponent::GenerateSphere(AActor* pAttacker, const FVector& Pos, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, FGuid guid){
+	return InternalGenerateSphereSweep(pAttacker, Pos, Pos, Radius, GameplayTags, ignoreList, true, true, guid);
 }
 
 // Called when the game starts
@@ -39,7 +39,7 @@ void USNAttackComponent::BeginPlay()
 	
 }
 
-FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb)
+FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, const FVector& Start, const FVector& End, float Radius, const FGameplayTagContainer& GameplayTags, const TArray<AActor*>& ignoreList, bool bPenetrate, bool bBomb, FGuid guid)
 {
 	if (pAttacker == nullptr)
 	{
@@ -53,6 +53,11 @@ FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, co
 	UWorld* World = GetWorld();
 
 	if (World == nullptr)
+	{
+		return FHitResult();
+	}
+
+	if (guid.IsValid() == false)
 	{
 		return FHitResult();
 	}
@@ -83,7 +88,7 @@ FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, co
 		
 		if(Result.bBlockingHit == true){
 			// 攻撃判定チェック
-			eHitState state = OnHit(Result, GameplayTags, pAttacker);
+			eHitState state = OnHit(Result, GameplayTags, pAttacker, guid);
 			
 			if(bPenetrate == false){
 				return Result;
@@ -101,7 +106,7 @@ FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, co
 
 }
 
-USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, AActor* pAttacker)
+USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, AActor* pAttacker, FGuid guid)
 {
 	AActor* Target = Result.GetActor();
 
@@ -115,6 +120,14 @@ USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result
 			
 			if (DamageComponent != nullptr)
 			{
+
+				if (DamageComponent->GetDamageGuid() == guid)
+				{
+					return eHitState_HitAttackCannotDamage;
+				}
+
+				DamageComponent->SetDamageGuid(guid);
+				
 				FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
 
 				FGameplayEffectContext* Context = ContextHandle.Get();
@@ -130,8 +143,11 @@ USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result
 				// EffectContextをDamageComponentに持たせることに何か不満...
 				DamageComponent->SetDamagedEffectContextHandle(ContextHandle);
 			}
+
+			for(auto& AttackTag : GameplayTags){
+				AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(AttackTag));	
+			}
 			
-			AbilitySystemComponent->TryActivateAbilitiesByTag(GameplayTags);
 			
 			return eHitState_HitAttackCanDamage;
 		}

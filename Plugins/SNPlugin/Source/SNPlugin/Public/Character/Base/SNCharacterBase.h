@@ -287,11 +287,8 @@ FORCEINLINE bool ASNCharacterBase::HasAllActionTags(const FGameplayTagContainer&
 //----------------------------------------------------------------------//
 template<class T>
 FORCEINLINE const T* ASNCharacterBase::GetGameAttribute() const {
-#if 0
-	return const_cast<ASNCharacterBase*>(this)->GetGameAttribute();
-#else
 	if(AbilitySystemComponent != nullptr){
 		return AbilitySystemComponent->GetSet<T>();
 	}
-#endif
+	return nullptr;
 }

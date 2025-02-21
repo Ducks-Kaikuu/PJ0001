@@ -21,9 +21,6 @@ public:
 
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="PJ|Damage")
-	FGameplayTagContainer DamageAttributeTag;
-	
 private:
 
 	UFUNCTION()
@@ -32,9 +29,15 @@ private:
 	UFUNCTION()
 	void OnEndPlayMontage(FName NotifyName);
 
+	UFUNCTION()
+	void OnDamageFinished();
+
 	UPROPERTY(EditAnywhere, Category="PJ|Damage")
 	FGameplayTag DamageState;
 
+	UPROPERTY()
+	FGameplayTagContainer DamageAttributeTag;
+	
 	UPROPERTY()
 	FTimerHandle DamageTimers;
 };

@@ -36,9 +36,6 @@ public:
 	virtual void Landed(const FHitResult& Hit) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
-	float GetVelocity2D() const ;
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
 	bool IsDead() const;
 
 	void Dissolve(float Time);

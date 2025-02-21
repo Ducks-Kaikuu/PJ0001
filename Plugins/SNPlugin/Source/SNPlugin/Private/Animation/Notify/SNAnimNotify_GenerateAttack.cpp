@@ -36,10 +36,12 @@ void USNAnimNotify_GenerateAttack::Notify(USkeletalMeshComponent* MeshComp, UAni
 		USNAttackComponent* AttackComponent = Attacker->FindComponentByClass<USNAttackComponent>();
 		
 		if(AttackComponent != nullptr){
+
+			AttackComponent->GenerateAttackGuid();
 			
 			TArray<AActor*> IgnoreList({Attacker});
 			// コリジョンを生成
-			AttackComponent->GenerateSphereSweep(Attacker, StartPos, EndPos, Radius, DamageAttribetes, IgnoreList, bPenetrate, bBomb);
+			AttackComponent->GenerateSphereSweep(Attacker, StartPos, EndPos, Radius, DamageAttribetes, IgnoreList, bPenetrate, bBomb, AttackComponent->GetAttackGuid());
 		}
 	}
 }

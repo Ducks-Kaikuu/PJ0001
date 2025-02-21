@@ -10,6 +10,7 @@
 #include "Character/Components/PJDamageWithChooserComponent.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNDamageWithChooserComponent.h"
+#include "Character/NPC/PJEnemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "PJ0000/Damage/PJDamageData.h"
 #include "PJ0000/System/PJGameInstance.h"
@@ -55,8 +56,15 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		TArray<const FDamageTable*> DamageList(DamageData->GetDamageList(ActivationOwnedTags));
 		// ダメージの属性は1個だけ...。ダメージの持続時間が複数個に対応できるなら...複数個にしても大丈夫ですが...。
 		SNPLUGIN_ASSERT(DamageList.Num() ==1, TEXT("Invalidate damage attributes."));
-
+		
 		const FDamageTable* Damage = DamageList[0];
+
+		SNPLUGIN_ASSERT(Damage != nullptr, TEXT("Damage is null!"));
+
+		if (Damage->Duration > 0.0f)
+		{
+			Character->GetWorldTimerManager().SetTimer(DamageTimers, this, &UPJDamageAbilityTask::OnDamageFinished, Damage->Duration, false);
+		}
 		
 		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
 		
@@ -99,8 +107,6 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 				MontageProxy->OnInterrupted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 				MontageProxy->OnBlendOut.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
 				MontageProxy->OnNotifyBegin.AddDynamic(this, &UPJDamageAbilityTask::OnNotifyBegin);
-
-				return;
 			}
 		}
 	}
@@ -122,10 +128,6 @@ void UPJDamageAbilityTask::OnNotifyBegin(FName NotifyName)
 			
 			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On Notify Begin."));
 		}
-	}
-	else
-	{
-		
 	}
 }
 
@@ -150,4 +152,32 @@ void UPJDamageAbilityTask::OnEndPlayMontage(FName NotifyName)
 	K2_EndAbility();
 	
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On End Play Montage."));
+}
+
+void UPJDamageAbilityTask::OnDamageFinished()
+{
+	FGameplayAbilityActorInfo ActorInfo(GetActorInfo());
+	
+	APJEnemy* Character(Cast<APJEnemy>(ActorInfo.OwnerActor));
+
+	if (Character != nullptr)
+	{
+		if (Character->IsDead())
+		{
+			return;
+		}
+		
+		if (DamageAttributeTag.IsValid() == true)
+		{
+			Character->RemoveActionTagContainer(DamageAttributeTag);
+
+			DamageAttributeTag.Reset();
+		}
+		
+		Character->RemoveActionTag(DamageState);
+	}
+
+	DamageTimers.Invalidate();
+
+	K2_EndAbility();
 }

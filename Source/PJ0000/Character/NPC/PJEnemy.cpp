@@ -161,20 +161,6 @@ void APJEnemy::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCause
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage"));
 }
 
-float APJEnemy::GetVelocity2D() const
-{
-	FVector Velocity = GetCharacterMovement()->Velocity;
-
-	float Speed = Velocity.Size2D();
-
-	if (GetCharacterMovement()->MovementMode != MOVE_Walking)
-	{
-		Speed = 0.0f;
-	}
-
-	return Speed;
-}
-
 bool APJEnemy::IsDead() const
 {
 	const UPJHealthSet* HealthSet = GetGameAttribute<UPJHealthSet>();

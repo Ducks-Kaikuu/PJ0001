@@ -4,6 +4,24 @@
 #include "Animation/Notify/SNAnimNotifyState_GenerateAttack.h"
 #include "Character/Components/SNAttackComponent.h"
 
+void USNAnimNotifyState_GenerateAttack::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration, const FAnimNotifyEventReference& EventReference)
+{
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
+
+	AActor* Attacker = Cast<AActor>(MeshComp->GetOwner());
+	
+	if(Attacker != nullptr)
+	{
+		// 攻撃コンポーネントを取得
+		USNAttackComponent* AttackComponent = Attacker->FindComponentByClass<USNAttackComponent>();
+		
+		if(AttackComponent != nullptr)
+		{
+			AttackComponent->GenerateAttackGuid();
+		}
+	}
+}
+
 void USNAnimNotifyState_GenerateAttack::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference){
 	
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
@@ -38,7 +56,25 @@ void USNAnimNotifyState_GenerateAttack::NotifyTick(USkeletalMeshComponent* MeshC
 			
 			TArray<AActor*> IgnoreList({Attacker});
 			// コリジョンを生成
-			AttackComponent->GenerateSphereSweep(Attacker, StartPos, EndPos, Radius, DamageAttribetes, IgnoreList, bPenetrate, bBomb);
+			AttackComponent->GenerateSphereSweep(Attacker, StartPos, EndPos, Radius, DamageAttribetes, IgnoreList, bPenetrate, bBomb, AttackComponent->GetAttackGuid());
+		}
+	}
+}
+
+void USNAnimNotifyState_GenerateAttack::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
+{
+	Super::NotifyEnd(MeshComp, Animation, EventReference);
+
+	AActor* Attacker = Cast<AActor>(MeshComp->GetOwner());
+	
+	if(Attacker != nullptr)
+	{
+		// 攻撃コンポーネントを取得
+		USNAttackComponent* AttackComponent = Attacker->FindComponentByClass<USNAttackComponent>();
+		
+		if(AttackComponent != nullptr)
+		{
+			AttackComponent->ResetAttackGuid();
 		}
 	}
 }

@@ -9,7 +9,6 @@
 APJCharacter::APJCharacter(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer){
 
-	HealthSet = CreateDefaultSubobject<UPJHealthSet>(TEXT("HealthSet"));
 }
 
 void APJCharacter::BeginPlay()
@@ -18,7 +17,7 @@ void APJCharacter::BeginPlay()
 
 	if (AbilitySystemComponent != nullptr)
 	{
-		const UPJHealthSet* Health = AbilitySystemComponent->GetSet<UPJHealthSet>();
+		const UPJHealthSet* Health = GetGameAttribute<UPJHealthSet>();
 
 		if (Health != nullptr)
 		{
