@@ -43,12 +43,45 @@ public:
 	FGuid GetDamageGuid() const;
 	
 	virtual void Death(){}
+
+	DECLARE_MULTICAST_DELEGATE(FOnMontagePlayEnd);
+	FOnMontagePlayEnd OnMontagePlayEndDelegate;
+
+	DECLARE_MULTICAST_DELEGATE(FOnMontageInterrupted);
+	FOnMontageInterrupted OnMontageInterruptedDelegate;
+
+	DECLARE_MULTICAST_DELEGATE(FOnMontageBlendOut);
+	FOnMontageBlendOut OnMontageBlendOutDelegate;
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnNotifyBegin, FName);
+	FOnNotifyBegin OnNotifyBeginDelegate;
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnNotifyEnd, FName);
+	FOnNotifyEnd OnNotifyEndDelegate;
 	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 private:
+	UFUNCTION()
+	void OnMontagePlayEnd(FName NotifyName);
+
+	UFUNCTION()
+	void OnMontageInterrupted(FName NotifyName);
+
+	UFUNCTION()
+	void OnMontageBlendOut(FName NotifyName);
+
+	UFUNCTION()
+	void OnNotifyBegin(FName NotifyName);
+
+	UFUNCTION()
+	void OnNotifyEnd(FName NotifyName);
+	
+	UPROPERTY()
+	TObjectPtr<UPlayMontageCallbackProxy> MontageProxy = nullptr;
+	
 	UPROPERTY(EditAnywhere, Category = "SN|Damage")
 	TObjectPtr<UChooserTable> DamageAnimationChooser = nullptr;
 

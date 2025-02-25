@@ -77,7 +77,7 @@ void USNAnimNotifyState_MovePosition::NotifyTick(USkeletalMeshComponent* MeshCom
 			// 位置情報を移動するかチェック
 			if(bMoveLocation == true){
 				
-				FVector CurveValue(FVector::ZeroVector);
+				FVector CurveValue(DeltaRatio, DeltaRatio, DeltaRatio);
 				
 				if(TranslateInterpolate != nullptr){
 					// カーブ情報から取得

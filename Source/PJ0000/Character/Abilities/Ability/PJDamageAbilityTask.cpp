@@ -11,6 +11,7 @@
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNDamageWithChooserComponent.h"
 #include "Character/NPC/PJEnemy.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PJ0000/Damage/PJDamageData.h"
 #include "PJ0000/System/PJGameInstance.h"
@@ -64,6 +65,8 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		if (Damage->Duration > 0.0f)
 		{
 			Character->GetWorldTimerManager().SetTimer(DamageTimers, this, &UPJDamageAbilityTask::OnDamageFinished, Damage->Duration, false);
+
+			SNPLUGIN_LOG(TEXT("Damage Timer Started."));
 		}
 		
 		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
@@ -99,14 +102,24 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		{
 			DamageComponent->DrawDamage(Damage->Damage);
 
-			UPlayMontageCallbackProxy* MontageProxy = DamageComponent->PlayDamageAnimation(DamageAttributeTag);
-
-			if (MontageProxy != nullptr)
+			if(Character->GetCharacterMovement()->IsMovingOnGround() == true)
 			{
-				MontageProxy->OnCompleted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
-				MontageProxy->OnInterrupted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
-				MontageProxy->OnBlendOut.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
-				MontageProxy->OnNotifyBegin.AddDynamic(this, &UPJDamageAbilityTask::OnNotifyBegin);
+				UPlayMontageCallbackProxy* MontageProxy(DamageComponent->PlayDamageAnimation(DamageAttributeTag));
+
+				if (MontageProxy != nullptr)
+				{
+					MontageProxy->OnCompleted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
+					MontageProxy->OnInterrupted.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
+					MontageProxy->OnBlendOut.AddDynamic(this, &UPJDamageAbilityTask::OnEndPlayMontage);
+					MontageProxy->OnNotifyBegin.AddDynamic(this, &UPJDamageAbilityTask::OnNotifyBegin);
+
+					SNPLUGIN_LOG(TEXT("Montage Delegate is set."));
+				}
+			} else
+			{
+				Character->GetWorldTimerManager().SetTimer(DamageTimers, this, &UPJDamageAbilityTask::OnDamageFinished, 0.1f, false);
+
+				SNPLUGIN_LOG(TEXT("Use Damage Timer."));
 			}
 		}
 	}
@@ -128,6 +141,8 @@ void UPJDamageAbilityTask::OnNotifyBegin(FName NotifyName)
 			
 			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On Notify Begin."));
 		}
+
+		K2_EndAbility();
 	}
 }
 
@@ -151,7 +166,7 @@ void UPJDamageAbilityTask::OnEndPlayMontage(FName NotifyName)
 	
 	K2_EndAbility();
 	
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On End Play Montage."));
+	SNPLUGIN_LOG(TEXT("On End Play Montage."));
 }
 
 void UPJDamageAbilityTask::OnDamageFinished()
@@ -173,11 +188,11 @@ void UPJDamageAbilityTask::OnDamageFinished()
 
 			DamageAttributeTag.Reset();
 		}
-		
-		Character->RemoveActionTag(DamageState);
 	}
 
 	DamageTimers.Invalidate();
 
 	K2_EndAbility();
+
+	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("On Damage Finished."));
 }

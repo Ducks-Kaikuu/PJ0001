@@ -8,7 +8,6 @@
 #include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/SNMaterialComponent.h"
-#include "Character/NPC/PJEnemy.h"
 #include "Scene/SNSceneBase.h"
 #include "UI/Widget/PJDamageWidget.h"
 #include "UI/Widget/SNMasterWidget.h"
@@ -138,5 +137,15 @@ void UPJDamageWithChooserComponent::DissoleExecute()
 		Character->GetWorldTimerManager().ClearTimer(DeathTimerHandle);
 
 		Character->Destroy();
+	}
+}
+
+void UPJDamageWithChooserComponent::AddLoopCount(int Num)
+{
+	LoopCount += Num;
+
+	if (LoopCount < 0)
+	{
+		LoopCount = 0;
 	}
 }

@@ -28,6 +28,54 @@ void USNDamageWithChooserComponent::BeginPlay()
 	SetComponentTickEnabled(false);
 }
 
+void USNDamageWithChooserComponent::OnMontagePlayEnd(FName NotifyName)
+{
+	if (OnMontagePlayEndDelegate.IsBound())
+	{
+		OnMontagePlayEndDelegate.Broadcast();
+	}
+	
+	SNPLUGIN_LOG(TEXT("USNDamageWithChooserComponent::OnMontagePlayEnd."));
+}
+
+void USNDamageWithChooserComponent::OnMontageInterrupted(FName NotifyName)
+{
+	if (OnMontageInterruptedDelegate.IsBound())
+	{
+		OnMontageInterruptedDelegate.Broadcast();
+	}
+	SNPLUGIN_LOG(TEXT("USNDamageWithChooserComponent::OnMontageInterrupted."));
+}
+
+void USNDamageWithChooserComponent::OnMontageBlendOut(FName NotifyName)
+{
+	if (OnMontageBlendOutDelegate.IsBound())
+	{
+		OnMontageBlendOutDelegate.Broadcast();
+	}
+	SNPLUGIN_LOG(TEXT("USNDamageWithChooserComponent::OnMontageBlendOut."));
+}
+
+void USNDamageWithChooserComponent::OnNotifyBegin(FName NotifyName)
+{
+	if (OnNotifyBeginDelegate.IsBound())
+	{
+		OnNotifyBeginDelegate.Broadcast(NotifyName);
+	}
+	
+	SNPLUGIN_LOG(TEXT("USNDamageWithChooserComponent::OnNotifyBegin."));
+}
+
+void USNDamageWithChooserComponent::OnNotifyEnd(FName NotifyName)
+{
+	if (OnNotifyEndDelegate.IsBound())
+	{
+		OnNotifyEndDelegate.Broadcast(NotifyName);
+	}
+	
+	SNPLUGIN_LOG(TEXT("USNDamageWithChooserComponent::OnNotifyEnd."));
+}
+
 UPlayMontageCallbackProxy* USNDamageWithChooserComponent::PlayDamageAnimation(const FGameplayTagContainer& DamageTags, bool bAddToOwner)
 {
 	if (DamageAnimationChooser == nullptr)
@@ -59,11 +107,39 @@ UPlayMontageCallbackProxy* USNDamageWithChooserComponent::PlayDamageAnimation(co
 		{
 			if (AnimInstance->Montage_IsPlaying(AnimMontage) == false)
 			{
-				UPlayMontageCallbackProxy* MontageProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(Character->GetMesh(), AnimMontage, 1.0f, 0.0f);
+				MontageProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(Character->GetMesh(), AnimMontage, 1.0f, 0.0f);
 
-				if ((MontageProxy!= nullptr) && (bAddToOwner == true))
+				if (MontageProxy!= nullptr)
 				{
-					Character->AddActionTagContainer(DamageTags);
+					if (bAddToOwner == true)
+					{
+						Character->AddActionTagContainer(DamageTags);
+					}
+
+					if (MontageProxy->OnCompleted.Contains(this, TEXT("USNDamageWithChooserComponent::OnMontagePlayEnd")) == false)
+					{
+						MontageProxy->OnCompleted.AddDynamic(this, &USNDamageWithChooserComponent::OnMontagePlayEnd);
+					}
+
+					if (MontageProxy->OnInterrupted.Contains(this, TEXT("USNDamageWithChooserComponent::OnMontageInterrupted")) == false)
+					{
+						MontageProxy->OnInterrupted.AddDynamic(this, &USNDamageWithChooserComponent::OnMontageInterrupted);
+					}
+
+					if (MontageProxy->OnBlendOut.Contains(this, TEXT("USNDamageWithChooserComponent::OnMontageBlendOut")) == false)
+					{
+						MontageProxy->OnBlendOut.AddDynamic(this, &USNDamageWithChooserComponent::OnMontageBlendOut);
+					}
+
+					if (MontageProxy->OnNotifyBegin.Contains(this, TEXT("USNDamageWithChooserComponent::OnNotifyBegin")) == false)
+					{
+						MontageProxy->OnNotifyBegin.AddDynamic(this, &USNDamageWithChooserComponent::OnNotifyBegin);
+					}
+
+					if (MontageProxy->OnNotifyEnd.Contains(this, TEXT("USNDamageWithChooserComponent::OnNotifyEnd")) == false)
+					{
+						MontageProxy->OnNotifyEnd.AddDynamic(this, &USNDamageWithChooserComponent::OnNotifyEnd);
+					}
 				}
 #if WITH_EDITORONLY_DATA
 				if (bDebugDraw == true)

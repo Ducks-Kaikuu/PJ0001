@@ -8,22 +8,13 @@
 #include "SNDef.h"
 #include "Animation/Components/SNMovePositionComponent.h"
 #include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
-#include "Blueprint/UserWidget.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
-#include "Channels/MovieSceneTimeWarpChannel.h"
 #include "Character/Base/SNPlayerBase.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNMaterialComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "Perception/PawnSensingComponent.h"
 #include "PJ0000/Character/Abilities/Attributes/PJHealthSet.h"
-#include "Scene/SNSceneBase.h"
 #include "System/SNBlueprintFunctionLibrary.h"
-#include "UI/Widget/PJDamageWidget.h"
-#include "UI/Widget/SNMasterWidget.h"
-#include "Utility/SNUtility.h"
 
 APJEnemy::APJEnemy(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
@@ -175,44 +166,3 @@ bool APJEnemy::IsDead() const
 	return false;
 }
 
-void APJEnemy::Dissolve(float Time)
-{
-	if (MaterialInstanceDynamicInstArray.Find(TEXT("TEST")) == nullptr)
-	{
-		return;
-	}
-
-	if (DissolveTimerHandle.IsValid() == true)
-	{
-		return;
-	}
-	
-	GetWorldTimerManager().SetTimer(DissolveTimerHandle, this, &APJEnemy::DissolveDelegate, 0.016f, true);
-}
-
-void APJEnemy::DissolveDelegate()
-{
-	static float Alpha = 0.0f;
-
-	Alpha += 0.016f;
-
-	Alpha = FMath::Clamp(Alpha, 0, 1);
-	
-	UMaterialInstanceDynamic* Instance = MaterialInstanceDynamicInstArray[TEXT("TEST")];
-
-	if (Instance != nullptr)
-	{
-		Instance->SetScalarParameterValue(TEXT("DissolveAlpha"), Alpha);
-	}
-
-	if (Alpha >= 1.0f)
-	{
-		SetActorEnableCollision(false);
-
-		SetActorHiddenInGame(true);
-
-		GetWorldTimerManager().ClearAllTimersForObject(this);
-
-		Destroy();
-	}
-}

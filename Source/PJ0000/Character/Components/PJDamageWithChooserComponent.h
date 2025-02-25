@@ -22,6 +22,12 @@ public:
 
 	virtual void Death() override;
 
+	void ResetLoopCount();
+	
+	void AddLoopCount(int Num);
+
+	bool IsLoopEnd(int Num) const ;
+
 private:
 
 	void DissolveStart();
@@ -42,4 +48,16 @@ private:
 	UPROPERTY(EditAnywhere, Category="Damage")
 	TSubclassOf<USNUserWidgetBase> DamageWidget = nullptr;
 
+	int LoopCount = 0;
+
 };
+
+FORCEINLINE void UPJDamageWithChooserComponent::ResetLoopCount()
+{
+	LoopCount = 0;
+}
+
+FORCEINLINE bool UPJDamageWithChooserComponent::IsLoopEnd(int Num) const
+{
+	return (LoopCount >= Num);
+} 

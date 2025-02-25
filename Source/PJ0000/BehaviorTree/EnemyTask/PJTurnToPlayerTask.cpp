@@ -7,6 +7,7 @@
 #include "SNDef.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Base/SNPlayerBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Utility/SNUtility.h"
 
@@ -32,6 +33,11 @@ bool UPJTurnToPlayerTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8*
 		return false;
 	}
 
+	if (Character->GetCharacterMovement()->IsMovingOnGround() == false)
+	{
+		return false;
+	}
+
 	ASNPlayerBase* Player = SNUtility::GetCurrentPlayer<ASNPlayerBase>();
 
 	FRotator CurrentRotation(Character->GetActorRotation());
@@ -49,6 +55,8 @@ bool UPJTurnToPlayerTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8*
 
 		FRotator NewRotate = Rotate.Rotation();
 
+		NewRotate.Pitch = 0.0f;
+		
 		Character->SetActorRotation(NewRotate);
 
 		Result = false;
