@@ -62,22 +62,23 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	
+	UFUNCTION()
+	virtual void OnMontagePlayEnd(FName NotifyName);
 
+	UFUNCTION()
+	virtual void OnMontageInterrupted(FName NotifyName);
+
+	UFUNCTION()
+	virtual void OnMontageBlendOut(FName NotifyName);
+
+	UFUNCTION()
+	virtual void OnNotifyBegin(FName NotifyName);
+
+	UFUNCTION()
+	virtual void OnNotifyEnd(FName NotifyName);
+	
 private:
-	UFUNCTION()
-	void OnMontagePlayEnd(FName NotifyName);
-
-	UFUNCTION()
-	void OnMontageInterrupted(FName NotifyName);
-
-	UFUNCTION()
-	void OnMontageBlendOut(FName NotifyName);
-
-	UFUNCTION()
-	void OnNotifyBegin(FName NotifyName);
-
-	UFUNCTION()
-	void OnNotifyEnd(FName NotifyName);
 	
 	UPROPERTY()
 	TObjectPtr<UPlayMontageCallbackProxy> MontageProxy = nullptr;

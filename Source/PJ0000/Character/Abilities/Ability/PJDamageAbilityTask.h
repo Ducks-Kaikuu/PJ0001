@@ -27,9 +27,6 @@ private:
 	void OnNotifyBegin(FName NotifyName);
 
 	UFUNCTION()
-	void OnEndPlayMontage(FName NotifyName);
-
-	UFUNCTION()
 	void OnDamageFinished();
 
 	UPROPERTY(EditAnywhere, Category="PJ|Damage")

@@ -17,6 +17,7 @@ class PJ0000_API UPJDamageWithChooserComponent : public USNDamageWithChooserComp
 	GENERATED_BODY()
 
 public:
+	
 	UFUNCTION(BlueprintCallable, Category="Damage")
 	void DrawDamage(int Damage);
 
@@ -28,12 +29,28 @@ public:
 
 	bool IsLoopEnd(int Num) const ;
 
+	void SetDamageAbilityTags(const FGameplayTagContainer& DamageAbilityTags);
+
+protected:
+	
+	virtual void BeginPlay() override;
+	
 private:
+	
+	virtual void OnMontagePlayEnd(FName NotifyName) override;
+
+	virtual void OnNotifyBegin(FName NotifyName) override;
 
 	void DissolveStart();
 
 	UFUNCTION()
 	void DissoleExecute();
+
+	UPROPERTY(EditAnywhere, Category="Death", meta = (ClampMin=0.016f, ClampMax=1000.0f))
+	FGameplayTag DamageState;
+
+	UPROPERTY()
+	FGameplayTagContainer DamageTags;
 	
 	UPROPERTY(EditAnywhere, Category="Death", meta = (ClampMin=0.016f, ClampMax=1000.0f))
 	float DeathTime = 10.0f;
@@ -60,4 +77,9 @@ FORCEINLINE void UPJDamageWithChooserComponent::ResetLoopCount()
 FORCEINLINE bool UPJDamageWithChooserComponent::IsLoopEnd(int Num) const
 {
 	return (LoopCount >= Num);
-} 
+}
+
+FORCEINLINE void UPJDamageWithChooserComponent::SetDamageAbilityTags(const FGameplayTagContainer& DamageAbilityTags)
+{
+	DamageTags = DamageAbilityTags;
+}

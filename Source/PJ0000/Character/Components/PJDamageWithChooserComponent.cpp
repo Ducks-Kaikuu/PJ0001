@@ -99,6 +99,38 @@ void UPJDamageWithChooserComponent::Death()
 	DissolveStart();
 }
 
+void UPJDamageWithChooserComponent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void UPJDamageWithChooserComponent::OnMontagePlayEnd(FName NotifyName)
+{
+	Super::OnMontagePlayEnd(NotifyName);
+	
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+	if (Character != nullptr)
+	{
+		if (DamageState.IsValid())
+		{
+			Character->RemoveActionTag(DamageState);	
+		}
+
+		if (DamageTags.IsValid())
+		{
+			Character->RemoveActionTagContainer(DamageTags);;
+
+			DamageTags.Reset();
+		}
+	}
+}
+
+void UPJDamageWithChooserComponent::OnNotifyBegin(FName NotifyName)
+{
+	Super::OnNotifyBegin(NotifyName);
+}
+
 void UPJDamageWithChooserComponent::DissolveStart()
 {
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));

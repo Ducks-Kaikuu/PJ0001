@@ -96,7 +96,7 @@ void	USNActionBase::InputAction(const FInputActionValue& InputActionValue){
 #if WITH_EDITORONLY_DATA
 		
 		if(bDebugDraw == true){
-			SNPLUGIN_LOG(TEXT("USNActionBase::InputAction Exclusive Tag Contained."));
+			SNPLUGIN_LOG(TEXT("USNActionBase::InputAction Exclusive Tag Contained.[%s - %s]"), *Character->GetActionTags().ToString(), *ExclusiveTags.ToString());
 		}
 #endif	
 		
