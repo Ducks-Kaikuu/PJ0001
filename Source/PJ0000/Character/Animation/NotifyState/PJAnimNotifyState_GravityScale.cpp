@@ -37,17 +37,20 @@ void UPJAnimNotifyState_GravityScale::NotifyEnd(USkeletalMeshComponent* MeshComp
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 
-	ACharacter* Character(Cast<ACharacter>(MeshComp->GetOwner()));
-
-	if (Character != nullptr)
+	if (bRestore == true)
 	{
-		UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
+		ACharacter* Character(Cast<ACharacter>(MeshComp->GetOwner()));
 
-		if (MovementComponent != nullptr)
+		if (Character != nullptr)
 		{
-			MovementComponent->GravityScale = OldGravityScale;
+			UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
 
-			SNPLUGIN_LOG(TEXT("GravityScale : %f"), OldGravityScale);
+			if (MovementComponent != nullptr)
+			{
+				MovementComponent->GravityScale = OldGravityScale;
+
+				SNPLUGIN_LOG(TEXT("GravityScale : %f"), OldGravityScale);
+			}
 		}
 	}
 }

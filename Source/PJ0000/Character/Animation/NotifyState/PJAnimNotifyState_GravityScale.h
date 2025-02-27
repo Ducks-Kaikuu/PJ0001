@@ -27,6 +27,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Animation|Gravity")
 	float VelocityScale = 1.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Animation|Gravity")
+	bool bRestore = true;
+	
 	UPROPERTY()
 	float OldGravityScale;
 };

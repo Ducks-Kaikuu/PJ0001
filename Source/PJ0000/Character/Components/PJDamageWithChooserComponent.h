@@ -29,6 +29,14 @@ public:
 
 	bool IsLoopEnd(int Num) const ;
 
+	void ResetAirDamageTimer();
+
+	void AddAirDamageTimer(float Time);
+
+	void StartResumeTimer(float Time, const FName& SectionName);
+
+	bool IsAirDamage(float Time) const ;
+
 	void SetDamageAbilityTags(const FGameplayTagContainer& DamageAbilityTags);
 
 protected:
@@ -36,7 +44,10 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-	
+
+	UFUNCTION()
+	void OnResumeTimerDelegate();
+
 	virtual void OnMontagePlayEnd(FName NotifyName) override;
 
 	virtual void OnNotifyBegin(FName NotifyName) override;
@@ -51,7 +62,7 @@ private:
 
 	UPROPERTY()
 	FGameplayTagContainer DamageTags;
-	
+
 	UPROPERTY(EditAnywhere, Category="Death", meta = (ClampMin=0.016f, ClampMax=1000.0f))
 	float DeathTime = 10.0f;
 	
@@ -67,6 +78,13 @@ private:
 
 	int LoopCount = 0;
 
+	float AirDamageTimer = 0.0f;
+
+	FTimerHandle ResumeTimerHandle;
+
+	float ResumeTime = 0.0f;
+
+	FName NextSectionName = NAME_None;
 };
 
 FORCEINLINE void UPJDamageWithChooserComponent::ResetLoopCount()
@@ -82,4 +100,14 @@ FORCEINLINE bool UPJDamageWithChooserComponent::IsLoopEnd(int Num) const
 FORCEINLINE void UPJDamageWithChooserComponent::SetDamageAbilityTags(const FGameplayTagContainer& DamageAbilityTags)
 {
 	DamageTags = DamageAbilityTags;
+}
+
+FORCEINLINE void UPJDamageWithChooserComponent::ResetAirDamageTimer()
+{
+	AirDamageTimer = 0.0f;
+}
+
+FORCEINLINE bool UPJDamageWithChooserComponent::IsAirDamage(float Time) const
+{
+	return (AirDamageTimer >= Time);
 }

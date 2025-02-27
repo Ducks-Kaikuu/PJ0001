@@ -55,7 +55,7 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		}
 
 		UPJDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<UPJDamageWithChooserComponent>();
-		
+
 		TArray<const FDamageTable*> DamageList(DamageData->GetDamageList(ActivationOwnedTags));
 		// ダメージの属性は1個だけ...。ダメージの持続時間が複数個に対応できるなら...複数個にしても大丈夫ですが...。
 		SNPLUGIN_ASSERT(DamageList.Num() ==1, TEXT("Invalidate damage attributes."));
@@ -78,6 +78,15 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			{
 				if (DamageComponent != nullptr)
 				{
+					UAnimInstance* AnimInstance = Character->GetAnimInstance();
+
+					if (AnimInstance != nullptr)
+					{
+						AnimInstance->Montage_Resume(nullptr);
+					}
+					
+					DamageComponent->AddLoopCount(-1);
+					
 					DamageComponent->SetDamageAbilityTags(DamageAttributeTag);
 				}
 			}

@@ -11,7 +11,10 @@
 #include "Scene/SNSceneBase.h"
 #include "UI/Widget/PJDamageWidget.h"
 #include "UI/Widget/SNMasterWidget.h"
+#include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 #include "Utility/SNUtility.h"
+
+static const float FPS = 1.0f/60.0f;
 
 void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 {
@@ -179,5 +182,63 @@ void UPJDamageWithChooserComponent::AddLoopCount(int Num)
 	if (LoopCount < 0)
 	{
 		LoopCount = 0;
+	}
+}
+
+void UPJDamageWithChooserComponent::AddAirDamageTimer(float Time)
+{
+	AirDamageTimer += Time;
+
+	if (AirDamageTimer < 0)
+	{
+		AirDamageTimer = 0;
+	}
+
+	SNPLUGIN_LOG(TEXT("AirDamageTimer %f."), AirDamageTimer);
+}
+
+void UPJDamageWithChooserComponent::StartResumeTimer(float Time, const FName& SectionName)
+{
+	NextSectionName = SectionName;
+
+	ResumeTime = Time;
+
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+	if (Character != nullptr)
+	{
+		Character->GetWorldTimerManager().SetTimer(ResumeTimerHandle, this, &UPJDamageWithChooserComponent::OnResumeTimerDelegate, 1.0f/60.0f, true);
+	}
+}
+
+void UPJDamageWithChooserComponent::OnResumeTimerDelegate()
+{
+	AddAirDamageTimer(1.0f/60.0f);
+
+	if (IsAirDamage(ResumeTime))
+	{
+		ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+		if (Character != nullptr)
+		{
+			UAnimInstance* AnimInstance = Character->GetAnimInstance();
+
+			if (AnimInstance != nullptr)
+			{
+				if (NextSectionName != NAME_None)
+				{
+					AnimInstance->Montage_JumpToSection(NextSectionName);
+
+					NextSectionName = NAME_None;
+				}
+
+				AnimInstance->Montage_Resume(nullptr);
+
+				ResetAirDamageTimer();
+
+			}
+
+			Character->GetWorldTimerManager().ClearTimer(ResumeTimerHandle);
+		}
 	}
 }
