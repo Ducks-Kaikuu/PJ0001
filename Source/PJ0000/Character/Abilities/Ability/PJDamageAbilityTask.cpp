@@ -74,27 +74,24 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			if(Character->GetCharacterMovement()->IsMovingOnGround() == true)
 			{
 				Character->GetWorldTimerManager().SetTimer(DamageTimers, this, &UPJDamageAbilityTask::OnDamageFinished, 0.1f, false);
-			} else
-			{
-				if (DamageComponent != nullptr)
-				{
-					UAnimInstance* AnimInstance = Character->GetAnimInstance();
-
-					if (AnimInstance != nullptr)
-					{
-						AnimInstance->Montage_Resume(nullptr);
-					}
-					
-					DamageComponent->AddLoopCount(-1);
-					
-					DamageComponent->SetDamageAbilityTags(DamageAttributeTag);
-				}
 			}
 		}
 		
+		if (DamageComponent != nullptr)
+		{
+			UAnimInstance* AnimInstance = Character->GetAnimInstance();
+
+			if (AnimInstance != nullptr)
+			{
+				AnimInstance->Montage_Resume(nullptr);
+			}
+				
+			DamageComponent->AddAirDamageTimer(-1.0f);
+				
+			DamageComponent->SetDamageAbilityTags(DamageAttributeTag);
+		}
+		
 		USNAbilitySystemComponent* AbilitySystemComponent = Character->GetAbilitySystemComponent();
-		
-		
 		
 		if (AbilitySystemComponent != nullptr)
 		{
@@ -124,7 +121,7 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		if (DamageComponent != nullptr)
 		{
 			DamageComponent->DrawDamage(Damage->Damage);
-
+			// 地面にいる状態ならダメージモーションを再生(空中でのダメージはモーションがないの...)
 			if(Character->GetCharacterMovement()->IsMovingOnGround() == true)
 			{
 				UPlayMontageCallbackProxy* MontageProxy(DamageComponent->PlayDamageAnimation(DamageAttributeTag));

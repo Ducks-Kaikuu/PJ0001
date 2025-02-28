@@ -36,7 +36,7 @@ void UPJAnimNotifyState_GravityScale::NotifyBegin(USkeletalMeshComponent* MeshCo
 void UPJAnimNotifyState_GravityScale::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
-
+	
 	if (bRestore == true)
 	{
 		ACharacter* Character(Cast<ACharacter>(MeshComp->GetOwner()));
