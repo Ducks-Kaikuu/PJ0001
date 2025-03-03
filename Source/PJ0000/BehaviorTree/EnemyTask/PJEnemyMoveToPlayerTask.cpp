@@ -7,6 +7,7 @@
 #include "SNDef.h"
 #include "Character/Base/SNPlayerBase.h"
 #include "Character/NPC/PJEnemy.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Utility/SNUtility.h"
 
@@ -26,6 +27,25 @@ bool UPJEnemyMoveToPlayerTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, u
 
 			if(Player != nullptr)
 			{
+				float Distance = FVector::Distance(Character->GetActorLocation(), Player->GetActorLocation());
+
+				float WalkSpeed = Character->GetCharacterMovement()->MaxWalkSpeed;
+				
+				if ((WalkSpeed == MinSpeed) && (Distance > ChangeDistance + Threshold))
+				{
+					Character->GetCharacterMovement()->MaxWalkSpeed = MaxSpeed;
+				} else
+				if ((WalkSpeed == MaxSpeed) && (Distance < ChangeDistance - Threshold))
+				{
+					Character->GetCharacterMovement()->MaxWalkSpeed = MinSpeed;
+				} else
+				{
+					if ((WalkSpeed != MaxSpeed) && (WalkSpeed != MaxSpeed))
+					{
+						Character->GetCharacterMovement()->MaxWalkSpeed = MinSpeed;
+					}
+				}
+				
 				EPathFollowingRequestResult::Type MoveResult = AiController->MoveToActor(Player, ChaseDistance, false, false);
 
 #if WITH_EDITORONLY_DATA

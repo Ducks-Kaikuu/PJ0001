@@ -9,8 +9,6 @@
 
 class UPJDamageWithChooserComponent;
 
-static const float FPS = 1.0f/60.0f;
-
 void UPJAnimNotify_PauseAndJumpSection::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);

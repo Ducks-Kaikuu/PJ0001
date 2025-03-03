@@ -38,6 +38,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
 	bool IsDead() const;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
+	float GetMaxWaldSpeed() const ;
+	
+
 	DECLARE_DELEGATE_OneParam(FLandedDelegate, const FHitResult&);
 	FLandedDelegate OnLanded;
 

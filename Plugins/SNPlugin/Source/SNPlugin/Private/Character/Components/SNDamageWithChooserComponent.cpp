@@ -28,6 +28,18 @@ void USNDamageWithChooserComponent::BeginPlay()
 	SetComponentTickEnabled(false);
 }
 
+void USNDamageWithChooserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (MontageProxy!= nullptr)
+	{
+		MontageProxy->OnCompleted.RemoveAll(this);
+		
+		MontageProxy = nullptr;
+	}
+}
+
 void USNDamageWithChooserComponent::OnMontagePlayEnd(FName NotifyName)
 {
 	if (OnMontagePlayEndDelegate.IsBound())

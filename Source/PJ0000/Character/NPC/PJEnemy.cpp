@@ -11,10 +11,12 @@
 #include "Character/Base/SNPlayerBase.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNMaterialComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "PJ0000/Character/Abilities/Attributes/PJHealthSet.h"
 #include "System/SNBlueprintFunctionLibrary.h"
+#include "Utility/SNUtility.h"
 
 APJEnemy::APJEnemy(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
@@ -74,6 +76,18 @@ void APJEnemy::BeginPlay()
 	if (MaterialComponent != nullptr)
 	{
 		MaterialComponent->CreateMaterialInstanceDynamic();
+	}
+
+	APJAIEnemy000* AIController = Cast<APJAIEnemy000>(GetController());
+
+	if (AIController != nullptr)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(SNUtility::GetPlayerController<APlayerController>());
+
+		if (PlayerController != nullptr)
+		{
+			AIController->SetPlayerKey(PlayerController->GetPawn());
+		}
 	}
 }
 
@@ -164,5 +178,17 @@ bool APJEnemy::IsDead() const
 	}
 
 	return false;
+}
+
+float APJEnemy::GetMaxWaldSpeed() const
+{
+	UCharacterMovementComponent* Component = GetCharacterMovement();
+
+	if (Component != nullptr)
+	{
+		return Component->MaxWalkSpeed;
+	}
+
+	return 0.0f;
 }
 

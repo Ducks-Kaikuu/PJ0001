@@ -20,6 +20,18 @@ public:
 	virtual bool ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 private:
+	UPROPERTY(EditAnywhere, Category = "Speed")
+	float ChangeDistance = 500.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Speed")
+	float Threshold =10.0f;
+	
+	UPROPERTY(EditAnywhere, Category = "Speed")
+	float MinSpeed = 300.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Speed")
+	float MaxSpeed = 600.0f;
+	
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTag IdleTag;

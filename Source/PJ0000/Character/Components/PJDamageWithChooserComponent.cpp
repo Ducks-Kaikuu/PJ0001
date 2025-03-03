@@ -14,8 +14,6 @@
 #include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 #include "Utility/SNUtility.h"
 
-static const float FPS = 1.0f/60.0f;
-
 void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 {
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
