@@ -33,10 +33,15 @@ void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 	}
 	
 	USNGameInstance* GameInstance = SNUtility::GetGameInstance<USNGameInstance>();
-	
-	UPJDamageWidget* DamageWidgetInstance = CreateWidget<UPJDamageWidget>(Character->GetWorld(), DamageWidget, TEXT("Damage"));
 
-	if (DamageWidgetInstance != nullptr)
+//	if (WidgetInstance != nullptr)
+//	{
+//		WidgetInstance = nullptr;
+//	}
+	
+	WidgetInstance = CreateWidget<UPJDamageWidget>(Character->GetWorld(), DamageWidget, TEXT("Damage"));
+
+	if (WidgetInstance != nullptr)
 	{
 		ASNSceneBase* Scene(GameInstance->GetCurrentScene());
 
@@ -58,9 +63,9 @@ void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 
 				ScreenPosition /= UWidgetLayoutLibrary::GetViewportScale(GetWorld());
 				
-				MasterWidget->SetLayer(EWidgetLayer::Layer3, DamageWidgetInstance);
+				MasterWidget->SetLayer(EWidgetLayer::Layer3, WidgetInstance.Get());
 
-				DamageWidgetInstance->SetVisibility(ESlateVisibility::Visible);
+				WidgetInstance->SetVisibility(ESlateVisibility::Visible);
 
 				const UPJHealthSet* HealthSet = Character->GetGameAttribute<UPJHealthSet>();
 
@@ -68,7 +73,7 @@ void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 				{
 					int HP = (int)HealthSet->GetHealth();
 					
-					DamageWidgetInstance->PlayDamage(HP, ScreenPosition);	
+					WidgetInstance->PlayDamage(HP, ScreenPosition);	
 				}
 				
 				SNPLUGIN_LOG(TEXT("Damage Effect is Enabled."));
@@ -100,9 +105,41 @@ void UPJDamageWithChooserComponent::Death()
 	DissolveStart();
 }
 
+void UPJDamageWithChooserComponent::StartStrike()
+{
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+	if (Character != nullptr)
+	{
+		Character->LandedDelegate.AddDynamic(this, &UPJDamageWithChooserComponent::OnCharacterLanded);
+	}
+}
+
 void UPJDamageWithChooserComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void UPJDamageWithChooserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+}
+
+void UPJDamageWithChooserComponent::OnCharacterLanded(const FHitResult& Hit)
+{
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+	if (Character != nullptr)
+	{
+		UAnimInstance* AnimInstance(Character->GetAnimInstance());
+
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Resume(nullptr);;
+		}
+
+		Character->LandedDelegate.RemoveDynamic(this, &UPJDamageWithChooserComponent::OnCharacterLanded);
+	}
 }
 
 void UPJDamageWithChooserComponent::OnMontagePlayEnd(FName NotifyName)
@@ -113,6 +150,13 @@ void UPJDamageWithChooserComponent::OnMontagePlayEnd(FName NotifyName)
 
 	if (Character != nullptr)
 	{
+		FGameplayTag StrikeDamage = FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage.Strike"));
+
+		if (DamageTags.HasAny(FGameplayTagContainer(StrikeDamage)) == true)
+		{
+			return;
+		}
+		
 		if (DamageState.IsValid())
 		{
 			Character->RemoveActionTag(DamageState);	
@@ -191,8 +235,6 @@ void UPJDamageWithChooserComponent::AddAirDamageTimer(float Time)
 	{
 		AirDamageTimer = 0;
 	}
-
-	SNPLUGIN_LOG(TEXT("AirDamageTimer %f."), AirDamageTimer);
 }
 
 void UPJDamageWithChooserComponent::StartResumeTimer(float Time, const FName& SectionName)

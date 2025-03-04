@@ -6,6 +6,7 @@
 #include "Character/Components/SNDamageWithChooserComponent.h"
 #include "PJDamageWithChooserComponent.generated.h"
 
+class UPJDamageWidget;
 class USNUserWidgetBase;
 
 /**
@@ -39,11 +40,18 @@ public:
 
 	void SetDamageAbilityTags(const FGameplayTagContainer& DamageAbilityTags);
 
+	void StartStrike();
+
 protected:
 	
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 private:
+
+	UFUNCTION()
+	void OnCharacterLanded(const FHitResult& Hit);
 
 	UFUNCTION()
 	void OnResumeTimerDelegate();
@@ -75,6 +83,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category="Damage")
 	TSubclassOf<USNUserWidgetBase> DamageWidget = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UPJDamageWidget> WidgetInstance = nullptr;
 
 	int LoopCount = 0;
 

@@ -16,7 +16,7 @@ UPJDamageWidget::UPJDamageWidget()
 bool UPJDamageWidget::Initialize()
 {
 	bool Result = Super::Initialize();
-	
+
 	//DamageText = Cast<UTextBlock>(GetWidgetFromName(TEXT("Damage")));
 
 	//if (WidgetTree != nullptr)
@@ -59,9 +59,7 @@ void UPJDamageWidget::OnAnimationFinished_Implementation(const UWidgetAnimation*
 
 	SetVisibility(ESlateVisibility::Hidden);
 
-	RemoveFromParent();
-
-	ConditionalBeginDestroy();
+	//RemoveFromParent();
 
 	SNPLUGIN_LOG(TEXT("DamageWidget::OnAnimationEnded"));
 }

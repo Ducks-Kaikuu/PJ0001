@@ -24,9 +24,9 @@ void USNAnimNotify_RemoveActionTag::Notify(USkeletalMeshComponent* MeshComp, UAn
 		// アクションタグを削除
 		Character->RemoveActionTagContainer(Tags);
 #if WITH_EDITORONLY_DATA
-		if(bDebugDraw == true){
-			SNPLUGIN_LOG(TEXT("Remove Action Tag Container.[%s]"), *Tags.ToString());
-		}
+		//if(bDebugDraw == true){
+			SNPLUGIN_LOG(TEXT("Remove Action Tag Container.[%s] - [%s]"), *Tags.ToString(), *Animation->GetName());
+		//}
 #endif
 	}
 }

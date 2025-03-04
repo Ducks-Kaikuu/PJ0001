@@ -120,7 +120,8 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 		
 		if (DamageComponent != nullptr)
 		{
-			DamageComponent->DrawDamage(Damage->Damage);
+			// PIEウィンドウからフォーカスを移すと高確率でハングするので、とりあえずこめんと
+			// DamageComponent->DrawDamage(Damage->Damage);
 			// 地面にいる状態ならダメージモーションを再生(空中でのダメージはモーションがないの...)
 			if(Character->GetCharacterMovement()->IsMovingOnGround() == true)
 			{
@@ -129,6 +130,17 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 				if (MontageProxy != nullptr)
 				{
 					MontageProxy->OnNotifyBegin.AddDynamic(this, &UPJDamageAbilityTask::OnNotifyBegin);
+				}
+			} else
+			{
+				if (DamageAttributeTag.HasTag(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage.Strike"))))
+				{
+					UPlayMontageCallbackProxy* MontageProxy(DamageComponent->PlayDamageAnimation(DamageAttributeTag));
+
+					if (MontageProxy != nullptr)
+					{
+						MontageProxy->OnNotifyBegin.AddDynamic(this, &UPJDamageAbilityTask::OnNotifyBegin);
+					}
 				}
 			}
 		}
