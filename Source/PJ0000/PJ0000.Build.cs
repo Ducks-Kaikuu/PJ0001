@@ -21,6 +21,7 @@ public class PJ0000 : ModuleRules
 			"MotionWarping",
 			// ↑↑ここまで
 			"StateTreeModule",
+			"EngineSettings",
 			"UMG",
 			"Slate",
 			"SlateCore",

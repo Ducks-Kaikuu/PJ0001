@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PJ0000/Damage/PJDamageData.h"
 #include "PJ0000/System/PJGameInstance.h"
+#include "System/PJCheatManager.h"
 #include "Utility/SNUtility.h"
 
 void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -99,9 +100,26 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			{
 				if (Spec != nullptr)
 				{
+					float DamageValue = Damage->Damage;
+					
+					APlayerController* PlayerController = SNUtility::GetPlayerController<APlayerController>();
+
+					if (PlayerController != nullptr)
+					{
+						UPJCheatManager* CheatManager = Cast<UPJCheatManager>(PlayerController->CheatManager);
+
+						if (CheatManager != nullptr)
+						{
+							if (CheatManager->IsEnemyNoDamage())
+							{
+								DamageValue = 0.0f;
+							}
+						}
+					}
+					
 					FGameplayTag DamageTag = FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"));
 
-					Spec->SetSetByCallerMagnitude(DamageTag, Damage->Damage);
+					Spec->SetSetByCallerMagnitude(DamageTag, DamageValue);
 				}
 			});
 			
