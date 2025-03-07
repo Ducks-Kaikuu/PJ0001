@@ -6,21 +6,57 @@
 #include "GameFramework/Actor.h"
 #include "PJSpawner.generated.h"
 
+class APJEnemy;
+class UCurveVector;
+
 UCLASS()
 class PJ0000_API APJSpawner : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+	
 	// Sets default values for this actor's properties
 	APJSpawner();
+
+	UStaticMeshComponent* GetMesh();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+private:
+	
+	UFUNCTION()
+	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UFUNCTION()
+	void OnAnimationTimer();
+
+	UFUNCTION()
+	void OnEnemyGone();
+	
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UStaticMeshComponent> StaticMesh = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<APJEnemy>> SpawnClass;
+	
+	UPROPERTY(EditAnywhere)
+	int SpawnNum = 4;
+
+	UPROPERTY(EditAnywhere, Category=Animation)
+	TObjectPtr<UCurveVector> CurveVector = nullptr;
+
+	UPROPERTY(EditAnywhere, Category=Animation)
+	float AnimationTime = 0.0f;
+
+	float Timer = 0.0f;
+
+	FTimerHandle TimerHandle;
 };
+
+FORCEINLINE UStaticMeshComponent* APJSpawner::GetMesh()
+{
+	return StaticMesh;
+}

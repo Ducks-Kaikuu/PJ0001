@@ -9,7 +9,7 @@
 #include "Animation/Components/SNMovePositionComponent.h"
 #include "Curves/CurveVector.h"
 #include "GameFramework/Character.h"
-#include "Types/AttributeStorage.h"
+//#include "Types/AttributeStorage.h"
 
 //----------------------------------------------------------------------//
 //

@@ -4,6 +4,7 @@
 #include "PJ0000/Character/NPC/PJEnemy.h"
 
 #include "AbilitySystemComponent.h"
+#include "PJEnemyManager.h"
 #include "PlayMontageCallbackProxy.h"
 #include "SNDef.h"
 #include "Animation/Components/SNMovePositionComponent.h"
@@ -15,6 +16,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "PJ0000/Character/Abilities/Attributes/PJHealthSet.h"
+#include "System/PJGameInstance.h"
 #include "System/SNBlueprintFunctionLibrary.h"
 #include "Utility/SNUtility.h"
 
@@ -89,6 +91,13 @@ void APJEnemy::BeginPlay()
 			AIController->SetPlayerKey(PlayerController->GetPawn());
 		}
 	}
+
+	UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
+
+	if (GameInstance != nullptr)
+	{
+		GameInstance->GetEnemyManager()->AddEnemy(this);
+	}
 }
 
 void APJEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -96,6 +105,13 @@ void APJEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	PerceptionComponent->OnPerceptionUpdated.RemoveDynamic(this, &APJEnemy::OnPerceptionUpdated);
+
+	UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
+
+	if (GameInstance != nullptr)
+	{
+		GameInstance->GetEnemyManager()->RemoveEnemy(this);
+	}
 }
 
 void APJEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)

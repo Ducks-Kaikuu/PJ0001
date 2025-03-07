@@ -6,6 +6,7 @@
 #include "System/SNGameInstance.h"
 #include "PJGameInstance.generated.h"
 
+class UPJEnemyManager;
 class UDamageData;
 /**
  * 
@@ -21,11 +22,24 @@ public:
 
 	UDamageData* GetDamageData();
 
+	UPJEnemyManager* GetEnemyManager();
+
 private:
+
+	UPROPERTY(EditAnywhere, Category="Game|Enemy")
+	TSoftClassPtr<UPJEnemyManager> EnemyManagerClass;
 	
 	UPROPERTY(EditAnywhere, Category="Game|Damage")
 	TSoftObjectPtr<UDamageData> DamageDataObject;
 
 	UPROPERTY()
 	TObjectPtr<UDamageData> DamageData = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UPJEnemyManager> EnemyManager = nullptr;
 };
+
+FORCEINLINE UPJEnemyManager* UPJGameInstance::GetEnemyManager()
+{
+	return EnemyManager;
+}

@@ -2,6 +2,8 @@
 
 
 #include "PJ0000/System/PJGameInstance.h"
+
+#include "Character/NPC/PJEnemyManager.h"
 #include "PJ0000/Damage/PJDamageData.h"
 
 void UPJGameInstance::Init()
@@ -15,6 +17,16 @@ void UPJGameInstance::Init()
 		if (DamageData != nullptr)
 		{
 			DamageData->Initialize();
+		}
+	}
+
+	if (EnemyManagerClass.IsNull() == false)
+	{
+		UClass* Class = EnemyManagerClass.LoadSynchronous();
+
+		if (Class != nullptr)
+		{
+			EnemyManager = NewObject<UPJEnemyManager>(UClass::StaticClass());
 		}
 	}
 }

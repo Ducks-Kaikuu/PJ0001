@@ -13,7 +13,8 @@
 				"Engine",
 				"GameplayAbilities",
 				"SNAnimation",
-				"AIModule"
+				"AIModule",
+				"CoreUObject"
 			]
 		}
 	],
@@ -36,7 +37,7 @@
 		{
 			"Name": "Niagara",
 			"Enabled": true,
-			"WhitelistTargets": [
+			"TargetAllowList": [
 				"Game",
 				"Editor"
 			]
