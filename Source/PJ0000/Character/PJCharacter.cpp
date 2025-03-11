@@ -11,6 +11,10 @@ APJCharacter::APJCharacter(const FObjectInitializer& ObjectInitializer)
 
 }
 
+void APJCharacter::UpdateCamera()
+{
+}
+
 void APJCharacter::BeginPlay()
 {
 	Super::BeginPlay();
