@@ -25,13 +25,6 @@ void UPJAnimNotify_Knockdown::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	{
 		Character->GetCharacterMovement()->GravityScale = FallSpeed;
 
-		UPJDamageWithChooserComponent* DamageComponent = Character->FindComponentByClass<UPJDamageWithChooserComponent>();
-
-		if (DamageComponent != nullptr)
-		{
-			DamageComponent->StartStrike();
-		}
-		
 	}
 
 	SNPLUGIN_LOG(TEXT("Strike is coming."));

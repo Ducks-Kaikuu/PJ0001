@@ -3,6 +3,7 @@
 
 #include "Spawner/PJSpawner.h"
 
+#include "SNDef.h"
 #include "Character/NPC/PJEnemy.h"
 #include "Character/NPC/PJEnemyManager.h"
 #include "Curves/CurveVector.h"
@@ -25,7 +26,11 @@ APJSpawner::APJSpawner()
 
 	StaticMesh->SetupAttachment(GetRootComponent());
 
-	StaticMesh->OnComponentHit.AddDynamic(this, &APJSpawner::OnComponentHit);
+	StaticMesh->SetNotifyRigidBodyCollision(true);
+	
+	//StaticMesh->OnComponentHit.AddDynamic(this, &APJSpawner::OnComponentHit);
+
+	StaticMesh->OnComponentBeginOverlap.AddDynamic(this, &APJSpawner::OnComponentBeginOverlap);
 
 }
 
@@ -49,19 +54,50 @@ void APJSpawner::BeginPlay()
 	}
 }
 
+void APJSpawner::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	APJEnemy* Enemy = Cast<APJEnemy>(OtherActor);
+
+	if (Enemy != nullptr)
+	{
+		if (CollideActor.Contains(Enemy) == false)
+		{
+			if (Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage")))))
+			{
+				if (TimerHandle.IsValid() == false)
+				{
+					GetWorldTimerManager().SetTimer(TimerHandle, this, &APJSpawner::OnAnimationTimer, 1.0f/60.0f, true);
+
+					CollideActor.Add(Enemy);
+
+					SNPLUGIN_LOG(TEXT("APJSpawner::OnComponentBeginOverlap : %d"), CollideActor.Num());
+				}
+			}
+		}
+	}
+}
+
 void APJSpawner::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	APJEnemy* Enemy = Cast<APJEnemy>(OtherActor);
 
 	if (Enemy != nullptr)
 	{
-		if (Enemy->GetActionTags().HasTag(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage.L"))))
+		if (CollideActor.Contains(Enemy) == false)
 		{
-			
+			if (Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage")))))
+			{
+				if (TimerHandle.IsValid() == false)
+				{
+					GetWorldTimerManager().SetTimer(TimerHandle, this, &APJSpawner::OnAnimationTimer, 1.0f/60.0f, true);
+				}
+
+				CollideActor.Add(Enemy);
+
+				SNPLUGIN_LOG(TEXT("APJSpawner::OnComponentHit : %d"), CollideActor.Num());
+			}
 		}
 	}
-
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &APJSpawner::OnAnimationTimer, 1.0f/60.0f, true);
 }
 
 void APJSpawner::OnAnimationTimer()
@@ -83,6 +119,13 @@ void APJSpawner::OnAnimationTimer()
 			Timer = 0.0f;
 
 			TimerHandle.Invalidate();
+
+			for (int i= 0 ; i<CollideActor.Num() ; i++)
+			{
+				OnEnemyGone();	
+			}
+
+			CollideActor.Empty();
 		}
 
 		SetActorScale3D(Scale);
@@ -100,17 +143,37 @@ void APJSpawner::OnEnemyGone()
 	
 	for (int i=0 ; i<SpawnNum ; ++i)
 	{
-		FVector Range(FMath::RandRange(2.0f, 5.0f) * 100.0f, FMath::RandRange(2.0f, 5.0f) * 100.0f, 88.0f);
-
-		FVector Location = SpawnLocation + Range;
-
-		TSubclassOf<APJEnemy>& EnemyClass = SpawnClass[(int)FMath::RandRange(0.0f, (float)SpawnClass.Num()-1)];
-
-		FTransform SpawnTransform = FTransform::Identity;
-
-		SpawnTransform.SetLocation(Location);
-		
-		GetWorld()->SpawnActor(EnemyClass.Get(), &SpawnTransform);
+		SpawnEnemy(SpawnLocation);
 	}
-	
+}
+
+AActor* APJSpawner::SpawnEnemy(const FVector& SpawnLocation)
+{
+	FVector Range(FMath::RandRange(0.0f, SpawnRadius * 2.0f) - SpawnRadius , FMath::RandRange(0.0f, SpawnRadius * 2.0f) - SpawnRadius, 88.0f);
+
+	if (Range.X < 0.0f)
+	{
+		Range.X = FMath::Clamp(Range.X, -SpawnRadius, -250.0f);
+	} else
+	{
+		Range.X = FMath::Clamp(Range.X, 250.0f, SpawnRadius);
+	}
+
+	if (Range.Y < 0.0f)
+	{
+		Range.Y = FMath::Clamp(Range.Y, -SpawnRadius, -250.0f);
+	} else
+	{
+		Range.Y = FMath::Clamp(Range.Y, 250.0f, SpawnRadius);
+	}
+
+	FVector Location = SpawnLocation + Range;
+
+	TSubclassOf<APJEnemy>& EnemyClass = SpawnClass[static_cast<int>(FMath::RandRange(0.0f, static_cast<float>(SpawnClass.Num()-1)))];
+
+	FTransform SpawnTransform = FTransform::Identity;
+
+	SpawnTransform.SetLocation(Location);
+		
+	return GetWorld()->SpawnActor(EnemyClass.Get(), &SpawnTransform);
 }

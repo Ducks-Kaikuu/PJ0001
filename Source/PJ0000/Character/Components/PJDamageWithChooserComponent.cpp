@@ -107,6 +107,13 @@ void UPJDamageWithChooserComponent::Death()
 
 void UPJDamageWithChooserComponent::StartStrike()
 {
+	
+}
+
+void UPJDamageWithChooserComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
 	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
 
 	if (Character != nullptr)
@@ -115,14 +122,16 @@ void UPJDamageWithChooserComponent::StartStrike()
 	}
 }
 
-void UPJDamageWithChooserComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void UPJDamageWithChooserComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+	if (Character != nullptr)
+	{
+		Character->LandedDelegate.RemoveDynamic(this, &UPJDamageWithChooserComponent::OnCharacterLanded);
+	}
 }
 
 void UPJDamageWithChooserComponent::OnCharacterLanded(const FHitResult& Hit)
@@ -137,8 +146,6 @@ void UPJDamageWithChooserComponent::OnCharacterLanded(const FHitResult& Hit)
 		{
 			AnimInstance->Montage_Resume(nullptr);;
 		}
-
-		Character->LandedDelegate.RemoveDynamic(this, &UPJDamageWithChooserComponent::OnCharacterLanded);
 	}
 }
 
