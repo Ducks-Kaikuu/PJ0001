@@ -14,7 +14,7 @@ void UPJAnimNotifyState_Vanish::NotifyTick(USkeletalMeshComponent* MeshComp, UAn
 
 	APlayerController* PlayerController = SNUtility::GetPlayerController<APlayerController>();
 
-	ASNPlayerBase* Player = Cast<ASNPlayerBase>(PlayerController->GetPawn());
+	ASNPlayerBase* Player = nullptr;
 
 	if (PlayerController != nullptr)
 	{
@@ -25,9 +25,17 @@ void UPJAnimNotifyState_Vanish::NotifyTick(USkeletalMeshComponent* MeshComp, UAn
 	{
 		if (Player != nullptr)
 		{
-			FVector Position = Character->GetActorLocation() + Player->GetActorForwardVector() * Speed;
+			if (bSelfOrient == false)
+			{
+				FVector Position = Character->GetActorLocation() + Player->GetActorForwardVector() * Speed;
 
-			Character->SetActorLocation(Position);
+				Character->SetActorLocation(Position);
+			} else
+			{
+				FVector Position = Character->GetActorLocation() + Character->GetActorForwardVector() * -1 * Speed;
+
+				Character->SetActorLocation(Position);
+			}
 			
 		} else
 		{

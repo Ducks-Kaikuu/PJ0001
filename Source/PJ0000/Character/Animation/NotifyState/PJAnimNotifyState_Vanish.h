@@ -20,4 +20,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere)
 	float Speed = 100.0f;
+
+	UPROPERTY(EditAnywhere)
+	bool bSelfOrient = false;
 };
