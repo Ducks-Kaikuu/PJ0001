@@ -19,23 +19,23 @@ USNMaterialComponent::USNMaterialComponent()
 
 void USNMaterialComponent::CreateMaterialInstanceDynamic()
 {
-	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	AActor* Character = Cast<AActor>(GetOwner());
 
 	if (Character != nullptr)
 	{
-		USkeletalMeshComponent* Mesh = Character->GetMesh();
+		UMeshComponent* MeshComponent = Character->FindComponentByClass<UMeshComponent>();
 
-		SNPLUGIN_ASSERT(Mesh != nullptr, TEXT("USMaterialComponent::BeginPlay: Mesh is null"));
+		SNPLUGIN_ASSERT(MeshComponent != nullptr, TEXT("USMaterialComponent::BeginPlay: Mesh is null"));
 
 		int Index = 0;
 
-		const TArray<FName> SlotNames(Mesh->GetMaterialSlotNames());
+		const TArray<FName> SlotNames(MeshComponent->GetMaterialSlotNames());
 		
-		for (auto& Material : Mesh->GetMaterials())
+		for (auto& Material : MeshComponent->GetMaterials())
 		{
 			if (Material != nullptr)
 			{
-				UMaterialInstanceDynamic* InstanceDynamic = Mesh->CreateDynamicMaterialInstance(Index);
+				UMaterialInstanceDynamic* InstanceDynamic = MeshComponent->CreateDynamicMaterialInstance(Index);
 
 				if (InstanceDynamic != nullptr)
 				{
@@ -43,7 +43,7 @@ void USNMaterialComponent::CreateMaterialInstanceDynamic()
 
 					SNPLUGIN_ASSERT(Index < SlotNames.Num(), TEXT("USNMaterialComponent::BeginPlay : Material Num is Over."));
 
-					FName SlotName(SlotNames[Index++]);
+					FName SlotName = SlotNames.Num() > 0 ? SlotNames[Index++] : NAME_None;
 
 					Materials.Add(SlotName, MaterialInfo);
 				}
@@ -106,23 +106,23 @@ void USNMaterialComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
-	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	AActor* Character = Cast<AActor>(GetOwner());
 
 	if (Character != nullptr)
 	{
-		USkeletalMeshComponent* Mesh = Character->GetMesh();
+		UMeshComponent* MeshComponent = Character->FindComponentByClass<UMeshComponent>();
 
-		SNPLUGIN_ASSERT(Mesh != nullptr, TEXT("USMaterialComponent::BeginPlay: Mesh is null"));
+		SNPLUGIN_ASSERT(MeshComponent != nullptr, TEXT("USMaterialComponent::EndPlay: Mesh is null"));
 
-		const TArray<FName> SlotNames(Mesh->GetMaterialSlotNames());
+		const TArray<FName> SlotNames(MeshComponent->GetMaterialSlotNames());
 		
 		for (auto& Material : Materials)
 		{
-			int MaterialNo = SlotNames.Find(Material.Key);
+			int MaterialNo = SlotNames.Num() > 0 ? SlotNames.Find(Material.Key) : 0;
 
 			if (MaterialNo >= 0)
 			{
-				Mesh->SetMaterial(MaterialNo, Material.Value.SourceInterface);	
+				MeshComponent->SetMaterial(MaterialNo, Material.Value.SourceInterface);	
 			}
 		}
 	}

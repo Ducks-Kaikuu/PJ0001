@@ -25,6 +25,8 @@ public class PJ0000 : ModuleRules
 			"UMG",
 			"Slate",
 			"SlateCore",
+			"FieldSystemEngine",
+			"GeometryCollectionEngine"
 		});
 		
 		PrivateIncludePaths.AddRange(new string[]

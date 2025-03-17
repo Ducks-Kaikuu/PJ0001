@@ -4,10 +4,11 @@
 #include "Spawner/PJSpawner.h"
 
 #include "SNDef.h"
+#include "Character/Components/SNMaterialComponent.h"
 #include "Character/NPC/PJEnemy.h"
 #include "Character/NPC/PJEnemyManager.h"
 #include "Curves/CurveVector.h"
-#include "Kismet/KismetMaterialLibrary.h"
+#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "System/PJGameInstance.h"
 #include "Utility/SNUtility.h"
 
@@ -19,19 +20,24 @@ APJSpawner::APJSpawner()
 
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
+	GeometryCollectionComponent = CreateDefaultSubobject<UGeometryCollectionComponent>("GeometryCollectionComponent");
 
-	SetRootComponent(CreateDefaultSubobject<USceneComponent>("Root"));
+	if (GeometryCollectionComponent != nullptr)
+	{
+		SetRootComponent(GeometryCollectionComponent);
 
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+		TArray<float> DamageThreshold;
 
-	StaticMesh->SetupAttachment(GetRootComponent());
+		DamageThreshold.Add(99999.0f);
 
-	StaticMesh->SetNotifyRigidBodyCollision(true);
-	
-	//StaticMesh->OnComponentHit.AddDynamic(this, &APJSpawner::OnComponentHit);
+		GeometryCollectionComponent->SetGenerateOverlapEvents(true);
+		
+		GeometryCollectionComponent->SetDamageThreshold(DamageThreshold);
+		
+		GeometryCollectionComponent->OnComponentBeginOverlap.AddDynamic(this, &APJSpawner::OnComponentBeginOverlap);
+	}
 
-	StaticMesh->OnComponentBeginOverlap.AddDynamic(this, &APJSpawner::OnComponentBeginOverlap);
-
+	MaterialComponent = CreateDefaultSubobject<USNMaterialComponent>("MaterialComponent");
 }
 
 // Called when the game starts or when spawned
@@ -41,6 +47,11 @@ void APJSpawner::BeginPlay()
 
 	SetActorTickEnabled(false);
 
+	if (MaterialComponent != nullptr)
+	{
+		MaterialComponent->CreateMaterialInstanceDynamic();
+	}
+
 	UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
 
 	if (GameInstance != nullptr)
@@ -49,7 +60,7 @@ void APJSpawner::BeginPlay()
 
 		if (EnemyManager != nullptr)
 		{
-			EnemyManager->OnEnemyGone.AddUObject(this, &APJSpawner::OnEnemyGone);
+			EnemyManager->OnEnemyGone.AddUObject(this, &APJSpawner::OnAllEnemyDie);
 		}
 	}
 }
@@ -64,9 +75,9 @@ void APJSpawner::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponen
 		{
 			if (Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage")))))
 			{
-				if (TimerHandle.IsValid() == false)
+				if (AnimTimerHandle.IsValid() == false)
 				{
-					GetWorldTimerManager().SetTimer(TimerHandle, this, &APJSpawner::OnAnimationTimer, 1.0f/60.0f, true);
+					GetWorldTimerManager().SetTimer(AnimTimerHandle, this, &APJSpawner::OnAnimationTimer, 1.0f/60.0f, true);
 
 					CollideActor.Add(Enemy);
 
@@ -77,25 +88,38 @@ void APJSpawner::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	}
 }
 
-void APJSpawner::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void APJSpawner::OnAllEnemyDie()
 {
-	APJEnemy* Enemy = Cast<APJEnemy>(OtherActor);
-
-	if (Enemy != nullptr)
+	if (GetWorld() == nullptr)
 	{
-		if (CollideActor.Contains(Enemy) == false)
+		return;
+	}
+	
+	OnEnemyGone();
+
+	--NoEnemyAndSpawnNum;
+
+	if (NoEnemyAndSpawnNum <= 0)
+	{
+		if (GeometryCollectionComponent != nullptr)
 		{
-			if (Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage")))))
-			{
-				if (TimerHandle.IsValid() == false)
-				{
-					GetWorldTimerManager().SetTimer(TimerHandle, this, &APJSpawner::OnAnimationTimer, 1.0f/60.0f, true);
-				}
+			GeometryCollectionComponent->SetSimulatePhysics(true);
 
-				CollideActor.Add(Enemy);
+			GeometryCollectionComponent->AddImpulse(FVector(0, 0, 0));
 
-				SNPLUGIN_LOG(TEXT("APJSpawner::OnComponentHit : %d"), CollideActor.Num());
-			}
+			GeometryCollectionComponent->SetNotifyBreaks(true);
+			
+			GeometryCollectionComponent->OnChaosBreakEvent.AddDynamic(this, &APJSpawner::OnBreakEvent);
+			
+			GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+			GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+			GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+
+			FVector Locate = GetActorLocation();
+			
+			AFieldSystemActor* FieldActor = Cast<AFieldSystemActor>(GetWorld()->SpawnActor(FieldSystemClass, &Locate));
+			
+			//FieldActor->Destroy();
 		}
 	}
 }
@@ -106,29 +130,61 @@ void APJSpawner::OnAnimationTimer()
 
 	if (CurveVector != nullptr)
 	{
-		FVector Scale = CurveVector->GetVectorValue(Timer);
+		FVector Scale = CurveVector->GetVectorValue(AnimTimer);
 
-		Timer += FPS;
+		AnimTimer += FPS;
 
-		if (Timer >= AnimationTime)
+		if (AnimTimer >= AnimationTime)
 		{
 			Scale = FVector::OneVector;
 			
-			GetWorldTimerManager().ClearTimer(TimerHandle);
+			GetWorldTimerManager().ClearTimer(AnimTimerHandle);
 
-			Timer = 0.0f;
+			AnimTimer = 0.0f;
 
-			TimerHandle.Invalidate();
+			AnimTimerHandle.Invalidate();
 
 			for (int i= 0 ; i<CollideActor.Num() ; i++)
 			{
 				OnEnemyGone();	
 			}
 
+			HitAndSpawnNum =- 1;
+			
 			CollideActor.Empty();
 		}
 
 		SetActorScale3D(Scale);
+	}
+}
+
+void APJSpawner::OnFadeOut()
+{
+	FadeTimer += 0.016f;
+
+	float Alpha = FadeTimer / FadeOutTime;
+
+	Alpha = FMath::Clamp(Alpha, 0.0f, 1.0f);
+
+	MaterialComponent->SetScalarParameterValue(NAME_None, TEXT("DitherAlpha"), 1.0f - Alpha);
+
+	if (FadeTimer >= FadeOutTime){
+
+		GetWorldTimerManager().ClearTimer(FadeTimerHandle);
+
+		Destroy();
+	}
+}
+
+void APJSpawner::OnBreakEvent(const FChaosBreakEvent& BreakEvent)
+{
+	if (GeometryCollectionComponent != nullptr)
+	{
+		GeometryCollectionComponent->SetSimulatePhysics(false);
+
+		GeometryCollectionComponent->SetCollisionObjectType(ECC_WorldStatic);
+
+		GetWorldTimerManager().SetTimer(FadeTimerHandle, this, &APJSpawner::OnFadeOut, 0.016f, true);
 	}
 }
 
