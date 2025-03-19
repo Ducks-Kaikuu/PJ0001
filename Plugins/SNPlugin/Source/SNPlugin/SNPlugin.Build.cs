@@ -42,6 +42,7 @@ public class SNPlugin : ModuleRules
 				"UMG", 
 				"EnhancedInput", 
 				"GameplayAbilities",
+				"OpenSSL",
 				// ... add other public dependencies that you statically link with here ...
 			}
 		);
@@ -57,7 +58,12 @@ public class SNPlugin : ModuleRules
 			PublicDependencyModuleNames.Add("OnlineServicesInterface");
 			PublicDependencyModuleNames.Add("OnlineServicesEOSGS");
 		}
-			
+
+		if (Target.Type == TargetType.Editor)
+		{
+			PublicDefinitions.Add("SN_DEBUG_SAVE_DATA");
+		}
+		
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
