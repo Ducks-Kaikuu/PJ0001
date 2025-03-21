@@ -5,6 +5,7 @@
 
 #include "PlayMontageCallbackProxy.h"
 #include "SNDef.h"
+#include "Character/PJCharacter.h"
 #include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/PJDamageWithChooserComponent.h"
@@ -44,6 +45,15 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 	if (Character != nullptr)
 	{
+		APJCharacter* Player = Cast<APJCharacter>(Character);
+
+		if ((Player != nullptr) && (Player->IsNoDamage() == true))
+		{
+			K2_EndAbility();
+			
+			return;
+		}
+		
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage is comming."));
 		
 		DamageAttributeTag = ActivationOwnedTags.Filter(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))));

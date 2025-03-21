@@ -41,10 +41,15 @@ void USNMaterialComponent::CreateMaterialInstanceDynamic()
 				{
 					FSNMaterial MaterialInfo(Material, InstanceDynamic);
 
-					SNPLUGIN_ASSERT(Index < SlotNames.Num(), TEXT("USNMaterialComponent::BeginPlay : Material Num is Over."));
+					FName SlotName(NAME_None);
+					// マテリアルが単体の場合、SlotNameがNoneでSlotNamesがEmptyのことがある。
+					if (SlotNames.IsEmpty() == false)
+					{
+						SNPLUGIN_ASSERT(Index < SlotNames.Num(), TEXT("USNMaterialComponent::BeginPlay : Material Num is Over."));
 
-					FName SlotName = SlotNames.Num() > 0 ? SlotNames[Index++] : NAME_None;
-
+						SlotName = SlotNames[Index];
+					}
+					
 					Materials.Add(SlotName, MaterialInfo);
 				}
 			}

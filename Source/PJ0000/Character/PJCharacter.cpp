@@ -5,10 +5,26 @@
 
 #include "Abilities/Attributes/PJHealthSet.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 APJCharacter::APJCharacter(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer){
 
+}
+
+bool APJCharacter::IsLanded() const
+{
+	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
+	{
+		if((MovementComponent->MovementMode == MOVE_Flying)
+		|| (MovementComponent->MovementMode == MOVE_Falling))
+		{
+			return false;
+		}
+		
+	};
+		
+	return true;
 }
 
 void APJCharacter::UpdateCamera()

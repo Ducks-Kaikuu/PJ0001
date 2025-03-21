@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystemInterface.h"
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
+#include "Utility/SNAtomicFlag.h"
 #include "PJCharacter.generated.h"
 
 class UPJHealthSet;
@@ -33,6 +33,12 @@ struct FSimpleCameraParameter{
 	float TransitionSpeed = 0.0f;
 };
 
+UENUM(BlueprintType)
+enum class EPlayerStatusFlag : uint8
+{
+	NoDamage=0 UMETA(DisplayName = "No Damage"),
+};
+
 /**
  * 
  */
@@ -44,9 +50,11 @@ class PJ0000_API APJCharacter : public ASNMotionMatchingPlayerBase
 public:
 	APJCharacter(const FObjectInitializer& ObjectInitializer);
 
+	bool IsLanded() const ;
+
 	UFUNCTION(BlueprintCallable)
 	void UpdateCamera();
-
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Camera)
 	FSimpleCameraParameter FarCamera;
 
@@ -59,10 +67,32 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category=Camera)
 	float CameraDistanceMultiplier = 1.0f;
 
+	void SetNoDamage(bool bNoDamage);
+
+	bool IsNoDamage() const;
+
 protected:
 	virtual void BeginPlay() override;
 	
 private:
 
 	void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
+	
+	SNAtomicFlag<1> StatusFlag;
 };
+
+FORCEINLINE void APJCharacter::SetNoDamage(bool bNoDamage)
+{
+	if (bNoDamage == true)
+	{
+		StatusFlag.On(static_cast<int>(EPlayerStatusFlag::NoDamage));
+	} else
+	{
+		StatusFlag.Off(static_cast<int>(EPlayerStatusFlag::NoDamage));
+	}
+}
+
+FORCEINLINE bool APJCharacter::IsNoDamage() const
+{
+	return StatusFlag.Is(static_cast<int>(EPlayerStatusFlag::NoDamage));
+}

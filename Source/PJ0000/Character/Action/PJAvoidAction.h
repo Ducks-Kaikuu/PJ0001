@@ -6,6 +6,7 @@
 #include "Action/SNActionBase.h"
 #include "PJAvoidAction.generated.h"
 
+class UChooserTable;
 /**
  * 
  */
@@ -18,7 +19,13 @@ public:
 
 	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Action|Dodge")
+	float AxisX;
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Action|Action|Avoid|Animation")
 	TObjectPtr<UAnimMontage> Montage;
+
+	UPROPERTY(EditAnywhere, Category = "Action|Action|Dodge|Animation")
+	TObjectPtr<UChooserTable> DodgeChooserTable = nullptr;
 };
