@@ -95,8 +95,12 @@ void ASNCharacterBase::RemoveActionTagContainer(const FGameplayTagContainer& Tag
 	if (IsLocallyControlled() == true){
 		
 		ActionTags.RemoveTags(TagContainer);
-
-		SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *TagContainer.ToString());
+#if WITH_EDITORONLY_DATA
+		if (bDrawActionTag == true)
+		{
+			SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *TagContainer.ToString());
+		}
+#endif
 	}
 }
 
@@ -113,7 +117,12 @@ void ASNCharacterBase::RemoveActionTag(const FGameplayTag& Tag){
 		
 		ActionTags.RemoveTag(Tag);
 
-		SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *Tag.ToString());
+#if WITH_EDITORONLY_DATA
+		if (bDrawActionTag == true)
+		{
+			SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *Tag.ToString());
+		}
+#endif
 	}
 }
 
@@ -600,14 +609,24 @@ void ASNCharacterBase::SetActinTag(const FGameplayTag& Tag)
 	// タグを追加
 	ActionTags.AddTag(Tag);
 
-	SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *Tag.ToString());
+#if WITH_EDITORONLY_DATA
+	if (bDrawActionTag == true)
+	{
+		SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *Tag.ToString());
+	}
+#endif
 }
 
 void ASNCharacterBase::SetActionTagContainer(const FGameplayTagContainer& TagContainer)
 {
 	ActionTags = TagContainer;
-
-	SNPLUGIN_LOG(TEXT("[%s] - %s"), TEXT(__FUNCTION__), *TagContainer.ToString());
+	
+#if WITH_EDITORONLY_DATA
+	if (bDrawActionTag == true)
+	{
+		SNPLUGIN_LOG(TEXT("[%s] - %s"), TEXT(__FUNCTION__), *TagContainer.ToString());
+	}
+#endif
 }
 
 //----------------------------------------------------------------------//

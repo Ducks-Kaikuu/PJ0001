@@ -57,7 +57,7 @@ private:
 	//! @}
 
 	//! @{@name 攻撃コリジョンが当たった際の処理
-	eHitState	OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, AActor* pAttacker, FGuid guid);
+	eHitState	OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, AActor* Attacker, FGuid guid);
 	//! @}
 
 	FGuid AttackID;

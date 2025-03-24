@@ -126,6 +126,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="SN|Animation")
 	void SetBlendspaceParam(const FName& Key, const FVector& param);
 	//! @}
+
+	UFUNCTION(BlueprintCallable, Category="SN|Category")
+	const FGameplayTagContainer& GetCategoryType() const ;
 	
 	//! @{@name 指定された方のAttributeSetを取得
 	template<class T>
@@ -168,6 +171,9 @@ protected:
 	//!< アビリティシステムコンポーネント
 	UPROPERTY(EditAnywhere, Category="SN|Ability")
 	TObjectPtr<USNAbilitySystemComponent> AbilitySystemComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, Category="SN|CategoryType")
+	FGameplayTagContainer CategoryType;
 	
 private:
 	
@@ -224,6 +230,11 @@ private:
 	
 	void InternalJumpMontageSection(const FName& Name, const FName& Section);
 	//! @}
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, Category="SN|Debug|ActionTag")
+	bool bDrawActionTag = false;
+#endif
 };
 //! @}
 //! @}
@@ -292,3 +303,8 @@ FORCEINLINE const T* ASNCharacterBase::GetGameAttribute() const {
 	}
 	return nullptr;
 }
+
+FORCEINLINE const FGameplayTagContainer& ASNCharacterBase::GetCategoryType() const
+{
+	return CategoryType;
+} 

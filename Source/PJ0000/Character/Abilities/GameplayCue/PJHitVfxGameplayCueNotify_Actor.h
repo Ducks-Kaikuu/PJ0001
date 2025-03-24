@@ -27,6 +27,12 @@ private:
 	UNiagaraSystem* HitVfx = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Vfx")
+	UNiagaraSystem* EnemyHitVfx = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Vfx")
+	UNiagaraSystem* PlayerHitVfx = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Vfx")
 	FVector Scale = FVector::OneVector;
 
 	

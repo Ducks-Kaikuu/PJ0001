@@ -4,6 +4,7 @@
 #include "Character/Components/SNAttackComponent.h"
 
 #include "AbilitySystemComponent.h"
+#include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/SNDamageWithChooserComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -106,12 +107,22 @@ FHitResult USNAttackComponent::InternalGenerateSphereSweep(AActor* pAttacker, co
 
 }
 
-USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, AActor* pAttacker, FGuid guid)
+USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result, const FGameplayTagContainer& GameplayTags, AActor* Attacker, FGuid guid)
 {
-	AActor* Target = Result.GetActor();
+	ASNCharacterBase* Target = Cast<ASNCharacterBase>(Result.GetActor());
 
 	if (Target != nullptr)
 	{
+		ASNCharacterBase* AttackCharacter = Cast<ASNCharacterBase>(Attacker);
+
+		if (AttackCharacter != nullptr)
+		{
+			// 同じタイプ同志にはダメージを与えないための処理。ここでこの処理でいいのか...。様子を見ながら要検討。
+			if (AttackCharacter->GetCategoryType().HasAny(Target->GetCategoryType()))
+			{
+				return eHitState_HitAttackCannotDamage;
+			}
+		}
 		UAbilitySystemComponent* AbilitySystemComponent = Target->FindComponentByClass<UAbilitySystemComponent>();
 
 		if (AbilitySystemComponent != nullptr)
@@ -134,7 +145,7 @@ USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result
 
 				if (Context != nullptr)
 				{
-					TArray<TWeakObjectPtr<AActor>> ActorList = {pAttacker};
+					TArray<TWeakObjectPtr<AActor>> ActorList = {Attacker};
 
 					Context->AddActors(ActorList);
 					
