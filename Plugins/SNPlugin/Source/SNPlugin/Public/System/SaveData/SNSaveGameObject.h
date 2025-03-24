@@ -6,9 +6,13 @@
 #include "GameFramework/SaveGame.h"
 #include "SNSaveGameObject.generated.h"
 
-/**
- * 
- */
+//!@{@defgroup セーブデータ
+//!@{
+//----------------------------------------------------------------------//
+//
+//! @brief セーブデータオブジェクト(セーブデータの実態)
+//
+//----------------------------------------------------------------------//
 UCLASS()
 class SNPLUGIN_API USNSaveGameObject : public USaveGame
 {
@@ -53,8 +57,12 @@ private:
 	//!< 実際に保存される領域
 	UPROPERTY()
 	TArray<uint8> SaveData;
+
 	//!< 暗号化後のデータ
 	uint8* EncryptData = nullptr;
+
 	//!< 暗号化後のデータサイズ
 	size_t DataSize = 0;
 };
+//! @}
+//! @}

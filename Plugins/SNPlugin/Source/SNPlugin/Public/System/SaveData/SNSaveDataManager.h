@@ -25,6 +25,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAutoSaveStart);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAutoSaveFinished);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadAutoSaveDataFinished);
 
+//!@{@defgroup セーブデータ
+//!@{
 //----------------------------------------------------------------------//
 //
 //! @brief セーブデータ管理クラス
@@ -189,6 +191,8 @@ private:
 	//!< @brief ミューテックス
 	FCriticalSection SaveDataMutex;
 };
+//! @}
+//! @}
 
 //----------------------------------------------------------------------//
 //

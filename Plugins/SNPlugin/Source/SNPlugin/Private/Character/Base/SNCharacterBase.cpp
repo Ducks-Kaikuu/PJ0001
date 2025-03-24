@@ -93,7 +93,10 @@ void ASNCharacterBase::AddActionTag(const FGameplayTag& Tag){
 void ASNCharacterBase::RemoveActionTagContainer(const FGameplayTagContainer& TagContainer){
 
 	if (IsLocallyControlled() == true){
+		
 		ActionTags.RemoveTags(TagContainer);
+
+		SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *TagContainer.ToString());
 	}
 }
 
@@ -107,7 +110,10 @@ void ASNCharacterBase::RemoveActionTagContainer(const FGameplayTagContainer& Tag
 void ASNCharacterBase::RemoveActionTag(const FGameplayTag& Tag){
 	
 	if(IsLocallyControlled() == true){
+		
 		ActionTags.RemoveTag(Tag);
+
+		SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *Tag.ToString());
 	}
 }
 
@@ -593,11 +599,15 @@ void ASNCharacterBase::SetActinTag(const FGameplayTag& Tag)
 	ResetAllActionTags();
 	// タグを追加
 	ActionTags.AddTag(Tag);
+
+	SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *Tag.ToString());
 }
 
 void ASNCharacterBase::SetActionTagContainer(const FGameplayTagContainer& TagContainer)
 {
 	ActionTags = TagContainer;
+
+	SNPLUGIN_LOG(TEXT("[%s] - %s"), TEXT(__FUNCTION__), *TagContainer.ToString());
 }
 
 //----------------------------------------------------------------------//
