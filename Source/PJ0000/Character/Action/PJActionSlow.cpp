@@ -5,22 +5,35 @@
 
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "System/PJGameInstance.h"
+#include "System/PJTimerManager.h"
+#include "Utility/SNUtility.h"
 
 bool UPJActionSlow::ExecAction(const FInputActionValue& InputActionValue)
 {
 	Super::ExecAction(InputActionValue);
 
+	UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
+
+	if (GameInstance == nullptr)
+	{
+		return false;
+	}
+
+	UPJTimerManager* TimerManager = GameInstance->GetTimerManager();
+
+	if (TimerManager == nullptr)
+	{
+		return false;
+	}
+
 	float InputValue = InputActionValue.Get<float>(), Value = 0.0f;
-
-	Value = FMath::Clamp(1.0f - InputValue, SlowSpeed, 1.0f);
 	
-	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), Value);
+	Value = FMath::Clamp(1.0f - InputValue, SlowSpeed, 1.0f);
 
-	ACharacter* Character = GetOwner<ACharacter>();
+	TimerManager->SetWorldTimerRate(Value);
 
-	Character->CustomTimeDilation = Value;
-
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("Speed Down: %f"), InputValue), true, false);
-
+	TimerManager->UpdateTimer();
+	
 	return true;
 }

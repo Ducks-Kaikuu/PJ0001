@@ -16,4 +16,8 @@ class PJ0000_API UPJSpeedUpAction : public USNActionBase
 
 public:
 	virtual bool ExecAction(const FInputActionValue& InputActionValue) override;
+	
+private:
+	UPROPERTY(EditAnywhere, Category = "SN|Action|SpeedUp")
+	float UpperLimit = 2.0f;
 };

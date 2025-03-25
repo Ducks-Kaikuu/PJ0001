@@ -3,6 +3,7 @@
 
 #include "PJ0000/System/PJGameInstance.h"
 
+#include "PJTimerManager.h"
 #include "Character/NPC/PJEnemyManager.h"
 #include "PJ0000/Damage/PJDamageData.h"
 
@@ -27,6 +28,16 @@ void UPJGameInstance::Init()
 		if (Class != nullptr)
 		{
 			EnemyManager = NewObject<UPJEnemyManager>(UClass::StaticClass());
+		}
+	}
+
+	if (TimerManagerClass.IsNull() == false)
+	{
+		UClass* Class = TimerManagerClass.LoadSynchronous();
+
+		if (Class != nullptr)
+		{
+			TimerManager = NewObject<UPJTimerManager>(UClass::StaticClass());
 		}
 	}
 }

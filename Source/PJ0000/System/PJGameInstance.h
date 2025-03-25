@@ -6,6 +6,7 @@
 #include "System/SNGameInstance.h"
 #include "PJGameInstance.generated.h"
 
+class UPJTimerManager;
 class UPJEnemyManager;
 class UDamageData;
 /**
@@ -24,6 +25,8 @@ public:
 
 	UPJEnemyManager* GetEnemyManager();
 
+	UPJTimerManager* GetTimerManager();
+
 private:
 
 	UPROPERTY(EditAnywhere, Category="Game|Enemy")
@@ -32,14 +35,25 @@ private:
 	UPROPERTY(EditAnywhere, Category="Game|Damage")
 	TSoftObjectPtr<UDamageData> DamageDataObject;
 
+	UPROPERTY(EditAnywhere, Category="Game|Timer")
+	TSoftClassPtr<UPJTimerManager> TimerManagerClass;
+
 	UPROPERTY()
 	TObjectPtr<UDamageData> DamageData = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UPJEnemyManager> EnemyManager = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UPJTimerManager> TimerManager = nullptr;
 };
 
 FORCEINLINE UPJEnemyManager* UPJGameInstance::GetEnemyManager()
 {
 	return EnemyManager;
+}
+
+FORCEINLINE UPJTimerManager* UPJGameInstance::GetTimerManager()
+{
+	return TimerManager;
 }
