@@ -3,6 +3,7 @@
 
 #include "PJ0000/Character/Abilities/Ability//PJDamageAbilityTask.h"
 
+#include "AIController.h"
 #include "PlayMontageCallbackProxy.h"
 #include "SNDef.h"
 #include "Character/PJCharacter.h"
@@ -52,6 +53,13 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 			K2_EndAbility();
 			
 			return;
+		}
+
+		AAIController* AIController = Cast<AAIController>(Character->GetController());
+
+		if (AIController != nullptr)
+		{
+			AIController->StopMovement();
 		}
 		
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage is comming."));

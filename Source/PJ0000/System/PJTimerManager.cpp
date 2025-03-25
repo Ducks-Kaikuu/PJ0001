@@ -38,3 +38,17 @@ void UPJTimerManager::SetPlayerSpeedupRate(float Rate)
 {
 	PlayerSpeedupRate = Rate;
 }
+
+void UPJTimerManager::SetIgnoreTimeRate(AActor* Actor, bool bIgnore)
+{
+	if (Actor != nullptr)
+	{
+		if (bIgnore == true)
+		{
+			Actor->CustomTimeDilation = PlayerTimerRate;
+		} else
+		{
+			Actor->CustomTimeDilation = 1.0f;
+		}
+	}
+}

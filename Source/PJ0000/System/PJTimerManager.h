@@ -22,6 +22,8 @@ public:
 
 	void SetPlayerSpeedupRate(float Rate);
 
+	void SetIgnoreTimeRate(AActor* Actor, bool bIgnore);
+
 	float GetWorldTimerRate() const ;
 
 	float GetPlayerSpeedupRate() const ;
