@@ -127,7 +127,7 @@ USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result
 
 		if (AbilitySystemComponent != nullptr)
 		{
-			USNDamageWithChooserComponent* DamageComponent = Target->FindComponentByClass<USNDamageWithChooserComponent>();
+			USNDamageComponent* DamageComponent = Target->FindComponentByClass<USNDamageComponent>();
 			
 			if (DamageComponent != nullptr)
 			{
@@ -136,7 +136,7 @@ USNAttackComponent::eHitState USNAttackComponent::OnHit(const FHitResult& Result
 				{
 					return eHitState_HitAttackCannotDamage;
 				}
-
+				// ダメージの固有IDを取得
 				DamageComponent->SetDamageGuid(guid);
 				
 				FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();

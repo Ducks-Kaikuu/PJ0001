@@ -56,6 +56,10 @@ private:
 	UFUNCTION()
 	void OnResumeTimerDelegate();
 
+	virtual void OnMontageInterrupted(FName NotifyName) override;
+
+	virtual  void OnMontageBlendOut(FName NotifyName) override;
+
 	virtual void OnMontagePlayEnd(FName NotifyName) override;
 
 	virtual void OnNotifyBegin(FName NotifyName) override;

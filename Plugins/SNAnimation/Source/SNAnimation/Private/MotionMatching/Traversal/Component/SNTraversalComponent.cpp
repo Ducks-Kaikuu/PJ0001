@@ -41,7 +41,11 @@ void USNTraversalComponent::BeginPlay(){
 	ACharacter* Character(GetOwner<ACharacter>());
 	
 	if(Character != nullptr){
-		Character->LandedDelegate.AddDynamic(this, &USNTraversalComponent::USNTraversalComponent::OnLanded);
+
+		if (Character->LandedDelegate.Contains(this, TEXT("OnLanded")))
+		{
+			Character->LandedDelegate.AddDynamic(this, &USNTraversalComponent::OnLanded);
+		}
 	}
 }
 

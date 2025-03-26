@@ -59,6 +59,8 @@ void UPJDamageAbilityTask::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 		if (AIController != nullptr)
 		{
+			// ダメージ中に動く不具合の対応。
+			// MoveToActorが残ってるのでは...？ということでダメージ受けたときは停止。
 			AIController->StopMovement();
 		}
 		

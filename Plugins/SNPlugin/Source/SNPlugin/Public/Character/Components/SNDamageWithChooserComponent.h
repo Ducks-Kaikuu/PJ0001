@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "GameplayEffectTypes.h"
+#include "SNDamageComponent.h"
 #include "SNDamageWithChooserComponent.generated.h"
 
 
@@ -22,7 +22,7 @@ struct FGameplayEffectContextHandle;
 //
 //----------------------------------------------------------------------//
 UCLASS()
-class SNPLUGIN_API USNDamageWithChooserComponent : public UActorComponent
+class SNPLUGIN_API USNDamageWithChooserComponent : public USNDamageComponent
 {
 	GENERATED_BODY()
 
@@ -31,18 +31,6 @@ public:
 	USNDamageWithChooserComponent();
 
 	UPlayMontageCallbackProxy* PlayDamageAnimation(const FGameplayTagContainer& DamageTags, bool bAddToOwner=true);
-
-	void SetDamagedEffectContextHandle(const FGameplayEffectContextHandle& DamagedHandle);
-
-	void ResetDamagedEffectContextHandle();
-
-	const FGameplayEffectContextHandle& GetDamagedEffectContextHandle() const;
-
-	void SetDamageGuid(FGuid guid);
-
-	FGuid GetDamageGuid() const;
-	
-	virtual void Death(){}
 
 	DECLARE_MULTICAST_DELEGATE(FOnMontagePlayEnd);
 	FOnMontagePlayEnd OnMontagePlayEndDelegate;
@@ -88,10 +76,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "SN|Damage")
 	TObjectPtr<UChooserTable> DamageAnimationChooser = nullptr;
 
-	FGameplayEffectContextHandle DamagedEffectContextHandle;
-
-	FGuid DamageGuid;
-
 #if WITH_EDITORONLY_DATA
 	UPROPERTY(EditAnywhere, Category = "SN|Damage")
 	bool bDebugDraw = false;
@@ -100,28 +84,3 @@ private:
 };
 //! @}
 //! @}
-
-FORCEINLINE void USNDamageWithChooserComponent::SetDamagedEffectContextHandle(const FGameplayEffectContextHandle& DamagedHandle)
-{
-	DamagedEffectContextHandle = DamagedHandle;
-}
-
-FORCEINLINE void USNDamageWithChooserComponent::ResetDamagedEffectContextHandle()
-{
-	DamagedEffectContextHandle.Clear();
-}
-
-FORCEINLINE const FGameplayEffectContextHandle& USNDamageWithChooserComponent::GetDamagedEffectContextHandle() const
-{
-	return DamagedEffectContextHandle;
-}
-
-FORCEINLINE void USNDamageWithChooserComponent::SetDamageGuid(FGuid guid)
-{
-	DamageGuid = guid;
-}
-
-FORCEINLINE FGuid USNDamageWithChooserComponent::GetDamageGuid() const
-{
-	return DamageGuid;
-}

@@ -37,6 +37,35 @@ void UPJAnimNotifyState_IgnoreTime::NotifyBegin(USkeletalMeshComponent* MeshComp
 	}
 }
 
+void UPJAnimNotifyState_IgnoreTime::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
+{
+	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+
+	ASNPlayerBase* Player = Cast<ASNPlayerBase>(MeshComp->GetOwner());
+
+	if (Player != nullptr)
+	{
+		return;
+	}
+
+	ACharacter* Character = Cast<ACharacter>(MeshComp->GetOwner());
+
+	if (Character != nullptr)
+	{
+		UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
+
+		if (GameInstance != nullptr)
+		{
+			UPJTimerManager* TimerManager = GameInstance->GetTimerManager();
+
+			if (TimerManager != nullptr)
+			{
+				TimerManager->SetIgnoreTimeRate(Character, true);
+			}
+		}
+	}
+}
+
 void UPJAnimNotifyState_IgnoreTime::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
