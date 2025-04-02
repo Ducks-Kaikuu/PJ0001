@@ -5,8 +5,12 @@
 
 #include "SNDef.h"
 #include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/PJDamageWithChooserComponent.h"
+#include "System/PJGameInstance.h"
+#include "System/PJTimerManager.h"
+#include "Utility/SNUtility.h"
 
 APJHitVfxGameplayCueNotify_Actor::APJHitVfxGameplayCueNotify_Actor()
 {
@@ -29,6 +33,17 @@ void APJHitVfxGameplayCueNotify_Actor::HandleGameplayCue(AActor* MyTarget, EGame
 
 			if (HitResult != nullptr)
 			{
+				UPJTimerManager* TimerManager = nullptr;
+				
+				UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
+
+				if (GameInstance != nullptr)
+				{
+					TimerManager = GameInstance->GetTimerManager();	
+				}
+
+				UNiagaraComponent* Component = nullptr;
+				
 				ASNCharacterBase* Character = Cast<ASNCharacterBase>(MyTarget);
 
 				if (Character != nullptr)
@@ -47,14 +62,19 @@ void APJHitVfxGameplayCueNotify_Actor::HandleGameplayCue(AActor* MyTarget, EGame
 
 					if (bPlayer == true)
 					{
-						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PlayerHitVfx, HitResult->ImpactPoint, FRotator::ZeroRotator, Scale);
+						Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), PlayerHitVfx, HitResult->ImpactPoint, FRotator::ZeroRotator, Scale);
 					} else
 					{
-						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), EnemyHitVfx, HitResult->ImpactPoint, FRotator::ZeroRotator, Scale);
+						Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), EnemyHitVfx, HitResult->ImpactPoint, FRotator::ZeroRotator, Scale);
 					}
 				} else
 				{
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVfx, HitResult->ImpactPoint, FRotator::ZeroRotator, Scale);
+					Component = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), HitVfx, HitResult->ImpactPoint, FRotator::ZeroRotator, Scale);
+				}
+
+				if ((TimerManager != nullptr) && (Component != nullptr))
+				{
+					TimerManager->AddIgnoreTimeRareVfx(Component);
 				}
 			}
 		}

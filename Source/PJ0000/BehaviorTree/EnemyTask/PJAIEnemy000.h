@@ -7,6 +7,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "PJAIEnemy000.generated.h"
 
+class USNEqsLocationList;
 class UBehaviorTreeComponent;
 class ASNPlayerBase;
 /**
@@ -46,6 +47,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	FName PlayerKeyName = FName(TEXT("Player"));
 	
+	UPROPERTY(EditAnywhere)
+	FName LocationName = FName(TEXT("TargetLocations"));
+	
 	UPROPERTY()
 	TObjectPtr<UBehaviorTreeComponent> BehaviorComponent = nullptr;
 
@@ -54,6 +58,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UBlackboardComponent> BlackboardComponent = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<USNEqsLocationList> EqsLocationList = nullptr;
 };
 
 FORCEINLINE UBehaviorTreeComponent* APJAIEnemy000::GetBehaviorTreeComponent()

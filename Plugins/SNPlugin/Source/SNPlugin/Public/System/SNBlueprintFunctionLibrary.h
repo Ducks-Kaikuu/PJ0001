@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SNBlueprintFunctionLibrary.generated.h"
 
+class ACharacter;
 class UChooserTable;
 class USNOnlineSystem;
 
@@ -19,9 +20,12 @@ class SNPLUGIN_API USNBlueprintFunctionLibrary : public UBlueprintFunctionLibrar
 
 public:
 
+	UFUNCTION(BlueprintCallable, Category="SN|Syatem|Player")
+	static ACharacter* GetSNPlayer();
+
 	UFUNCTION(BlueprintCallable, Category="SN|Input")
 	static void SetInputMappingContext(APlayerController* PlayerController, FName Name, bool bClear=true);
-		
+
 	UFUNCTION(BlueprintCallable, Category="SN|Online")
 	static void Login();
 

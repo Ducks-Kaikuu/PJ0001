@@ -13,6 +13,14 @@
 #include "PoseSearch/PoseSearchLibrary.h"
 #include "PoseSearch/PoseSearchResult.h"
 #include "System/SNGameInstance.h"
+#include "Utility/SNUtility.h"
+
+ACharacter* USNBlueprintFunctionLibrary::GetSNPlayer()
+{
+	ACharacter* Player = SNUtility::GetCurrentPlayer<ACharacter>();
+
+	return Player;
+}
 
 void USNBlueprintFunctionLibrary::SetInputMappingContext(APlayerController* PlayerController, FName Name, bool bClear)
 {

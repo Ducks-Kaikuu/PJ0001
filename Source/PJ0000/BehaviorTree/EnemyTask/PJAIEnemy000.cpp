@@ -3,6 +3,7 @@
 
 #include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
 
+#include "AI/EQS/Utility/SNEqsLocationList.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/Base/SNPlayerBase.h"
@@ -62,6 +63,16 @@ void APJAIEnemy000::OnUnPossess()
 void APJAIEnemy000::BeginPlay()
 {
 	Super::BeginPlay();
+
+	EqsLocationList = NewObject<USNEqsLocationList>();
+
+	if (EqsLocationList != nullptr)
+	{
+		if (BlackboardComponent != nullptr)
+		{
+			BlackboardComponent->SetValueAsObject(LocationName, EqsLocationList);
+		}
+	}
 }
 
 bool APJAIEnemy000::IsBehaviorTreeRunning() const

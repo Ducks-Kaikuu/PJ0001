@@ -6,6 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "PJTimerManager.generated.h"
 
+class UNiagaraComponent;
 /**
  * 
  */
@@ -24,19 +25,29 @@ public:
 
 	void SetIgnoreTimeRate(AActor* Actor, bool bIgnore);
 
+	void SetNiagaraIgnoreTimeRate(UNiagaraComponent* Component, bool bIgnore);
+
 	float GetWorldTimerRate() const ;
 
 	float GetPlayerSpeedupRate() const ;
 
 	float GetPlayerTimerRate() const ;
 
+	void AddIgnoreTimeRareVfx(UNiagaraComponent* Component);
+
 private:
+	
+	UFUNCTION()
+	void NiagaraSystemFinished(class UNiagaraComponent* Component);
 
 	float WorldTimerRate = 1.0f;
 
 	float PlayerTimerRate = 1.0f;
 
 	float PlayerSpeedupRate = 1.0f;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UNiagaraComponent>> IgnoreTimeRateVFX;
 };
 
 FORCEINLINE float UPJTimerManager::GetWorldTimerRate() const
