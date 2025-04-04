@@ -5,8 +5,9 @@
 
 #include "SNDef.h"
 #include "Character/Components/SNMaterialComponent.h"
-#include "Character/NPC/PJEnemy.h"
-#include "Character/NPC/PJEnemyManager.h"
+#include "Character/Enemy/PJEnemy.h"
+#include "Character/Enemy/PJEnemyGroup.h"
+#include "Character/Enemy/PJEnemyManager.h"
 #include "Curves/CurveVector.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "System/PJGameInstance.h"
@@ -195,41 +196,14 @@ void APJSpawner::OnEnemyGone()
 		return;
 	}
 	
-	FVector SpawnLocation = GetActorLocation();
-	
-	for (int i=0 ; i<SpawnNum ; ++i)
+	UPJEnemyGroup* Group = NewObject<UPJEnemyGroup>(this, UPJEnemyGroup::StaticClass());
+
+	if (Group != nullptr)
 	{
-		SpawnEnemy(SpawnLocation);
-	}
-}
-
-AActor* APJSpawner::SpawnEnemy(const FVector& SpawnLocation)
-{
-	FVector Range(FMath::RandRange(0.0f, SpawnRadius * 2.0f) - SpawnRadius , FMath::RandRange(0.0f, SpawnRadius * 2.0f) - SpawnRadius, 88.0f);
-
-	if (Range.X < 0.0f)
-	{
-		Range.X = FMath::Clamp(Range.X, -SpawnRadius, -250.0f);
-	} else
-	{
-		Range.X = FMath::Clamp(Range.X, 250.0f, SpawnRadius);
-	}
-
-	if (Range.Y < 0.0f)
-	{
-		Range.Y = FMath::Clamp(Range.Y, -SpawnRadius, -250.0f);
-	} else
-	{
-		Range.Y = FMath::Clamp(Range.Y, 250.0f, SpawnRadius);
-	}
-
-	FVector Location = SpawnLocation + Range;
-
-	TSubclassOf<APJEnemy>& EnemyClass = SpawnClass[static_cast<int>(FMath::RandRange(0.0f, static_cast<float>(SpawnClass.Num()-1)))];
-
-	FTransform SpawnTransform = FTransform::Identity;
-
-	SpawnTransform.SetLocation(Location);
+		FVector SpawnLocation = GetActorLocation();
 		
-	return GetWorld()->SpawnActor(EnemyClass.Get(), &SpawnTransform);
+		TSubclassOf<APJEnemy>& EnemyClass = SpawnClass[static_cast<int>(FMath::RandRange(0.0f, static_cast<float>(SpawnClass.Num()-1)))];
+		
+		Group->SpawnGroupsEnemy(EnemyClass, SpawnNum, SpawnLocation, SpawnRadius);
+	}
 }

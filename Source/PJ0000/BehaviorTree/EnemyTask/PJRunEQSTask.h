@@ -3,27 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BehaviorTree/Services/BTService_RunEQS.h"
-#include "PJBTService_PJRunEQS.generated.h"
+#include "Action/SNActionBase.h"
+#include "BehaviorTree/Tasks/BTTask_RunEQSQuery.h"
+#include "PJRunEQSTask.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PJ0000_API UPJBTService_PJRunEQS : public UBTService_RunEQS
+class PJ0000_API UPJRunEQSTask : public UBTTask_RunEQSQuery
 {
 	GENERATED_BODY()
 
 public:
 	
-	UPJBTService_PJRunEQS(const FObjectInitializer& ObjectInitializer);
+	virtual void InitializeFromAsset(UBehaviorTree& Asset) override;
+	
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
-	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+private:
 
-	void OnSNQueryFinished(TSharedPtr<FEnvQueryResult> EnvQueryResult);
-
-protected:
-
+	void OnPJQueryFinished(TSharedPtr<FEnvQueryResult> EnvQueryResult);
+	
 	UPROPERTY(EditAnywhere, Category = "SN|Debug")
 	bool bDebugDraw = false;
 	

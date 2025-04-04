@@ -26,6 +26,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ASNPlayerBase* GetPlayerKey();
 
+	UFUNCTION(BlueprintCallable)
+	USNEqsLocationList* GetEqsLocationList();
+
 	UBehaviorTreeComponent* GetBehaviorTreeComponent();
 
 	virtual UBlackboardComponent* GetBlackboardComponent();
@@ -34,6 +37,8 @@ public:
 	bool IsBehaviorTreeRunning() const ;
 	
 	void Restart();
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
@@ -61,6 +66,11 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<USNEqsLocationList> EqsLocationList = nullptr;
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, Category = "EQS|Debug")
+	bool bEqsDebugDraw = false;
+#endif
 };
 
 FORCEINLINE UBehaviorTreeComponent* APJAIEnemy000::GetBehaviorTreeComponent()

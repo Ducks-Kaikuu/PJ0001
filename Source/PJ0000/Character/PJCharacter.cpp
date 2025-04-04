@@ -4,8 +4,11 @@
 #include "PJ0000/Character/PJCharacter.h"
 
 #include "Abilities/Attributes/PJHealthSet.h"
+#include "AI/EQS/PJEqsManager.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "System/PJGameInstance.h"
+#include "Utility/SNUtility.h"
 
 APJCharacter::APJCharacter(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer){
@@ -29,6 +32,20 @@ bool APJCharacter::IsLanded() const
 
 void APJCharacter::UpdateCamera()
 {
+}
+
+void APJCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
+	
+	UPJEqsManager* EqsManager =  GameInstance->GetEqsManager();
+
+	if (EqsManager != nullptr)
+	{
+		EqsManager->RunEqs(GetWorld(), FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("EQS.Player.Simple"))));
+	}
 }
 
 void APJCharacter::BeginPlay()

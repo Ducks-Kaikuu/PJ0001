@@ -71,6 +71,9 @@ public:
 
 	bool IsNoDamage() const;
 
+
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	virtual void BeginPlay() override;
 	

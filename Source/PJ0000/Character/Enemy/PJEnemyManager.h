@@ -8,7 +8,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FEnemyGine)
 
-class APJEnemy;
+class APJEnemyBase;
 /**
  * 
  */
@@ -19,13 +19,13 @@ class PJ0000_API UPJEnemyManager : public UObject
 
 public:
 
-	void AddEnemy(APJEnemy* Enemy);
+	void AddEnemy(APJEnemyBase* Enemy);
 
-	void RemoveEnemy(APJEnemy* Enemy);
+	void RemoveEnemy(APJEnemyBase* Enemy);
 
 	FEnemyGine OnEnemyGone;
 	
 private:
 	UPROPERTY()
-	TArray<APJEnemy*> EnemyList; 
+	TArray<TObjectPtr<APJEnemyBase>> EnemyList; 
 };

@@ -5,6 +5,9 @@
 
 #include "SNDef.h"
 #include "VectorUtil.h"
+#include "AI/EQS/Utility/SNEqsLocationList.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -20,19 +23,48 @@ void UPJBTService_PJRunEQS::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
+	OwnerBTComp = OwnerComp;
+	
 	SNPLUGIN_LOG(TEXT("UPJBTService_PJRunEQS::TickNode"));
 }
 
 void UPJBTService_PJRunEQS::OnSNQueryFinished(TSharedPtr<FEnvQueryResult> EnvQueryResult)
 {
+	return;
+	
+	if (OwnerBTComp == nullptr)
+	{
+		return;
+	}
+
+	APJAIEnemy000* AIController = Cast<APJAIEnemy000>(OwnerBTComp->GetAIOwner());
+
+	if (AIController == nullptr)
+	{
+		return;
+	}
+
+	USNEqsLocationList* LocationList = AIController->GetEqsLocationList();
+
+	if (LocationList == nullptr)
+	{
+		return;
+	}
+
+	LocationList->ClearLocations();
+	
 	TArray<FVector> Points;
 	
 	EnvQueryResult->GetAllAsLocations(Points);
 
 	int Index = 0;
-	
+
 	for (auto& Location : Points)
 	{
+		float Score = EnvQueryResult->GetItemScore(Index);;
+
+		LocationList->AddLocation(Score, Location);
+		
 		if (bDebugDraw == true)
 		{
 			float Alpha = EnvQueryResult->GetItemScore(Index);

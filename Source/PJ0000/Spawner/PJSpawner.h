@@ -46,8 +46,6 @@ private:
 
 	UFUNCTION()
 	void OnEnemyGone();
-
-	AActor* SpawnEnemy(const FVector& SpawnLocation);
 	
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<APJEnemy>> SpawnClass;

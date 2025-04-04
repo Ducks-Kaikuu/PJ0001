@@ -10,10 +10,49 @@ void USNEqsLocationList::AddLocation(float Score, const FVector& Location)
 	NewLocation.W = Score;
 
 	Locations.Add(NewLocation);
+}
 
+void USNEqsLocationList::SortLocations()
+{
 	Locations.Sort([](const FVector4& A, const FVector4& B)
 	{
 		return A.W > B.W;
 	});
+}
+
+void USNEqsLocationList::ClearLocations()
+{
+	Locations.Empty();
+}
+
+TArray<FVector> USNEqsLocationList::GetHighScoreLocations() const
+{
+	if (Locations.IsEmpty() == true){
+		return TArray<FVector>();
+	}
+
+	return GetLocationsHigherThanScore(Locations[0].W);
+}
+
+TArray<FVector> USNEqsLocationList::GetLocationsHigherThanScore(float Score) const
+{
+	if (Locations.IsEmpty() == true){
+		return TArray<FVector>();
+	}
+		
+	TArray<FVector> Result;
+
+	for (auto& Location : Locations)
+	{
+		if (Location.W >= Score)
+		{
+			Result.Add(Location);
+		} else
+		{
+			break;
+		}
+	}
+
+	return Result;
 }
 

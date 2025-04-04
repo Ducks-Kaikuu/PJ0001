@@ -4,7 +4,8 @@
 #include "PJ0000/System/PJGameInstance.h"
 
 #include "PJTimerManager.h"
-#include "Character/NPC/PJEnemyManager.h"
+#include "AI/EQS/PJEqsManager.h"
+#include "Character/Enemy/PJEnemyManager.h"
 #include "PJ0000/Damage/PJDamageData.h"
 
 void UPJGameInstance::Init()
@@ -27,7 +28,7 @@ void UPJGameInstance::Init()
 
 		if (Class != nullptr)
 		{
-			EnemyManager = NewObject<UPJEnemyManager>(UClass::StaticClass());
+			EnemyManager = NewObject<UPJEnemyManager>(this, Class);
 		}
 	}
 
@@ -37,12 +38,23 @@ void UPJGameInstance::Init()
 
 		if (Class != nullptr)
 		{
-			TimerManager = NewObject<UPJTimerManager>(UClass::StaticClass());
+			TimerManager = NewObject<UPJTimerManager>(this, Class);
+		}
+	}
+
+	if (EqsManagerClass.IsNull() == false)
+	{
+		UClass* Class = EqsManagerClass.LoadSynchronous();
+
+		if (Class != nullptr)
+		{
+			EqsManager = NewObject<UPJEqsManager>(this, Class);
+
+			if (EqsManager != nullptr)
+			{
+				EqsManager->Initialize();
+			}
 		}
 	}
 }
 
-UDamageData* UPJGameInstance::GetDamageData()
-{
-	return DamageData;
-}

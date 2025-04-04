@@ -6,9 +6,8 @@
 #include "AIController.h"
 #include "PlayMontageCallbackProxy.h"
 #include "SNDef.h"
-#include "BehaviorTree/BlackboardData.h"
 #include "Character/Base/SNPlayerBase.h"
-#include "Character/NPC/PJEnemy.h"
+#include "Character/Enemy/PJEnemy.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Utility/SNUtility.h"
 

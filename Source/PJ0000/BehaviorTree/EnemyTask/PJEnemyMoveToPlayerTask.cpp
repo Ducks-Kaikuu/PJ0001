@@ -6,7 +6,7 @@
 #include "AIController.h"
 #include "SNDef.h"
 #include "Character/Base/SNPlayerBase.h"
-#include "Character/NPC/PJEnemy.h"
+#include "Character/Enemy/PJEnemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Utility/SNUtility.h"

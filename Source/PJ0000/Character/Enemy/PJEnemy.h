@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PJEnemyBase.h"
 #include "Character/Base/SNCharacterBase.h"
-#include "UI/Widget/SNUserWidgetBase.h"
 #include "PJEnemy.generated.h"
 
 class UPlayMontageCallbackProxy;
@@ -22,7 +22,7 @@ class UAbilitySystemComponent;
  * 
  */
 UCLASS()
-class PJ0000_API APJEnemy : public ASNCharacterBase
+class PJ0000_API APJEnemy : public APJEnemyBase
 {
 	GENERATED_BODY()
 public:

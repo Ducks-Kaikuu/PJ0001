@@ -12,7 +12,7 @@
 #include "Character/Components/PJDamageWithChooserComponent.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNDamageWithChooserComponent.h"
-#include "Character/NPC/PJEnemy.h"
+#include "Character/Enemy/PJEnemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PJ0000/Damage/PJDamageData.h"

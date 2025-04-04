@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PJ0000/Character/NPC/PJEnemy.h"
+#include "PJ0000/Character/Enemy/PJEnemy.h"
 
 #include "AbilitySystemComponent.h"
 #include "PJEnemyManager.h"
@@ -9,7 +9,6 @@
 #include "SNDef.h"
 #include "Animation/Components/SNMovePositionComponent.h"
 #include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
-#include "Character/Base/SNPlayerBase.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNMaterialComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -91,13 +90,6 @@ void APJEnemy::BeginPlay()
 			AIController->SetPlayerKey(PlayerController->GetPawn());
 		}
 	}
-
-	UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
-
-	if (GameInstance != nullptr)
-	{
-		GameInstance->GetEnemyManager()->AddEnemy(this);
-	}
 }
 
 void APJEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -105,13 +97,6 @@ void APJEnemy::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	PerceptionComponent->OnPerceptionUpdated.RemoveDynamic(this, &APJEnemy::OnPerceptionUpdated);
-
-	UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
-
-	if (GameInstance != nullptr)
-	{
-		GameInstance->GetEnemyManager()->RemoveEnemy(this);
-	}
 }
 
 void APJEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)

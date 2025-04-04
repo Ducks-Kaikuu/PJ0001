@@ -7,6 +7,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/Base/SNPlayerBase.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 APJAIEnemy000::APJAIEnemy000(const FObjectInitializer& ObjectInitializer)
 {
@@ -33,6 +35,20 @@ ASNPlayerBase* APJAIEnemy000::GetPlayerKey()
 	}
 
 	return nullptr;
+}
+
+USNEqsLocationList* APJAIEnemy000::GetEqsLocationList()
+{
+	USNEqsLocationList* LocationList = nullptr;
+	
+	if (BlackboardComponent != nullptr)
+	{
+		UObject* Object = BlackboardComponent->GetValueAsObject(LocationName);
+		
+		LocationList = Cast<USNEqsLocationList>(BlackboardComponent->GetValueAsObject(LocationName));
+	}
+
+	return LocationList;
 }
 
 void APJAIEnemy000::OnPossess(APawn* InPawn)
@@ -91,4 +107,30 @@ void APJAIEnemy000::Restart()
 	{
 		BehaviorComponent->RestartTree();
 	}
+}
+
+void APJAIEnemy000::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+#if WITH_EDITORONLY_DATA
+
+	if (bEqsDebugDraw == true)
+	{
+		float Duration = GetActorTickInterval();
+
+		const TArray<FVector4>& Locations(EqsLocationList->GetLocations());
+
+		int Index = 0;
+		
+		for (auto& Location : Locations)
+		{
+			float Score = Location.W;
+
+			FLinearColor Color = UKismetMathLibrary::LinearColorLerp(FLinearColor::Red, FLinearColor::Green, Score);
+		
+			UKismetSystemLibrary::DrawDebugSphere(GetWorld(), Location, 50.0f, 3, Color, Duration, 5.0f);
+		}
+	}
+#endif
 }
