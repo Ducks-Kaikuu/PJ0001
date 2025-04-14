@@ -47,6 +47,8 @@ private:
 	UFUNCTION()
 	void OnEnemyGone();
 	
+	void Destruction();
+	
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<APJEnemy>> SpawnClass;
 	

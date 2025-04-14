@@ -15,7 +15,7 @@ class SNPLUGIN_API USNEqsLocationList : public UObject
 	GENERATED_BODY()
 
 public:
-
+	
 	void AddLocation(float Score, const FVector& Location);
 
 	void SortLocations();
@@ -31,7 +31,7 @@ public:
 	TArray<FVector> GetLocationsHigherThanScore(float Score) const ;
 private:
 	// EQSで生成されたクエリをロケーションとして保持。
-	// W値にスコアが入っていて、スコアが高い順にソートされています。
+	// W値にスコアが入っていて、スコアが高い順にソートされています。→SortLocationsを呼んでください…。
 	UPROPERTY()
 	TArray<FVector4> Locations;
 };

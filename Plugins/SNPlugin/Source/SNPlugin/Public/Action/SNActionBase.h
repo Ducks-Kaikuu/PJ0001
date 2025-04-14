@@ -152,6 +152,8 @@ protected:
 	//! @{@name BehaiviorTreeのExecTaskからの呼び出し処理
 	virtual bool ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory){ return false; };
 	//! @}
+
+	virtual void ExclusiveAction(const FGameplayTagContainer& Tag){}
 	
 	//! @{@name サーバーでアクションを実行するかのフラグを設定
 	void SetExecOnServer(bool bFlag);

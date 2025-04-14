@@ -29,10 +29,7 @@ bool UPJEnemyAttackTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* 
 			{
 				float Distance = FVector::Distance(Character->GetActorLocation(), Player->GetActorLocation());
 
-				if (Distance >= AttackRagen)
-				{
-					return false;
-				}
+				Character->SetDistanceToPlayer(Distance);
 			}
 			
 			if (GetActionTag().IsValid())

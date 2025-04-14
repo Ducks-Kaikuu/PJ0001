@@ -44,7 +44,7 @@ void APJCharacter::Tick(float DeltaSeconds)
 
 	if (EqsManager != nullptr)
 	{
-		EqsManager->RunEqs(GetWorld(), FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("EQS.Player.Simple"))));
+		EqsManager->RunEqs(GetWorld(), FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("EQS.Player"))));
 	}
 }
 

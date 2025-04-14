@@ -59,7 +59,7 @@ bool UPJTurnToPlayerTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8*
 		
 		Character->SetActorRotation(NewRotate);
 
-		Result = false;
+		Result = true;
 	} else
 	{
 		Result = true;

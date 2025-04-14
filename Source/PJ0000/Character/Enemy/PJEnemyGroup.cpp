@@ -34,6 +34,7 @@ FGameplayTag UPJEnemyGroup::GetEqsName(FGenericTeamId TeamId)
 	switch (ID)
 	{
 		case ETeamID::Enemy_AdJoin: Result = FGameplayTag::RequestGameplayTag(TEXT("EQS.Player.Simple")); break;
+		case ETeamID::Enemy_Middle: Result = FGameplayTag::RequestGameplayTag(TEXT("EQS.Player.Middle")); break;
 		default: break;
 	}
 	

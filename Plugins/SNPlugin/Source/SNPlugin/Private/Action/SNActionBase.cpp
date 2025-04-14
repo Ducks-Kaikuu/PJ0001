@@ -92,7 +92,8 @@ void	USNActionBase::InputAction(const FInputActionValue& InputActionValue){
 	bool bExclusive = Character->GetActionTags().HasAny(ExclusiveTags);
 	
 	if(bExclusive == true){
-		
+
+		ExclusiveAction(Character->GetActionTags());
 #if WITH_EDITORONLY_DATA
 		
 		if(bDebugDraw == true){
@@ -162,9 +163,8 @@ EBTNodeResult::Type USNActionBase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 			bool bExclusive = Character->GetActionTags().HasAny(ExclusiveTags);
 			
 			if (bExclusive == false){
-				
+
 #if WITH_EDITORONLY_DATA
-				
 				if(bDebugDraw == true){
 					SNPLUGIN_LOG(TEXT("USNActionBase::ExecuteTask : %s"), *GetName());
 				}
@@ -177,6 +177,8 @@ EBTNodeResult::Type USNActionBase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 					Character->AddActionTag(GetActionTag());
 				}
 			} else {
+
+				ExclusiveAction(Character->GetActionTags());
 				
 #if WITH_EDITORONLY_DATA
 				if(bDebugDraw == true){

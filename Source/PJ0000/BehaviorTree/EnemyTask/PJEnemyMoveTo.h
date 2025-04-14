@@ -17,7 +17,11 @@ class PJ0000_API UPJEnemyMoveTo : public USNActionBase
 public:
 	virtual bool ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	virtual void ExclusiveAction(const FGameplayTagContainer& Tag) override;
+
 private:
+
+	void SetOwnerSpeed(ACharacter* Character);
 
 	FVector TargetLocation;
 	
@@ -38,6 +42,9 @@ private:
 	FGameplayTag IdleTag;
 	
 	UPROPERTY(EditAnywhere)
-	float ChaseDistance=-1.0f;
-	
+	float ChaseDistance=100.0f;
+
+	FVector TargetPosition = FVector::ZeroVector;
 };
+
+

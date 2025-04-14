@@ -14,53 +14,57 @@
 #include "Utility/SNUtility.h"
 
 // Sets default values
-APJSpawner::APJSpawner()
-{
+//----------------------------------------------------------------------//
+//
+//! @brief デフォルトコンストラクタ
+//
+//----------------------------------------------------------------------//
+APJSpawner::APJSpawner(){
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	PrimaryActorTick.bStartWithTickEnabled = false;
-
+	//破壊コンポーネントを生成
 	GeometryCollectionComponent = CreateDefaultSubobject<UGeometryCollectionComponent>("GeometryCollectionComponent");
-
-	if (GeometryCollectionComponent != nullptr)
-	{
+	
+	if(GeometryCollectionComponent != nullptr){
+		
 		SetRootComponent(GeometryCollectionComponent);
-
+		
 		TArray<float> DamageThreshold;
-
+		
 		DamageThreshold.Add(99999.0f);
-
-		GeometryCollectionComponent->SetGenerateOverlapEvents(true);
-		
+		// ダメージの閾値を設定
 		GeometryCollectionComponent->SetDamageThreshold(DamageThreshold);
-		
+		// オーバーラップイベントを有効化(これをtrueにしないとオーバーラップイベントが発生しない)
+		GeometryCollectionComponent->SetGenerateOverlapEvents(true);
+		// オーバーラップイベントを設定
 		GeometryCollectionComponent->OnComponentBeginOverlap.AddDynamic(this, &APJSpawner::OnComponentBeginOverlap);
 	}
-
+	// マテリアル操作用のコンポーネントを生成
 	MaterialComponent = CreateDefaultSubobject<USNMaterialComponent>("MaterialComponent");
 }
 
 // Called when the game starts or when spawned
-void APJSpawner::BeginPlay()
-{
+void APJSpawner::BeginPlay(){
+	
 	Super::BeginPlay();
-
+	// Tickを無効化
 	SetActorTickEnabled(false);
-
-	if (MaterialComponent != nullptr)
-	{
+	
+	if(MaterialComponent != nullptr){
+		// ダイナミックマテリアルインスタンスを生成
 		MaterialComponent->CreateMaterialInstanceDynamic();
 	}
-
+	
 	UPJGameInstance* GameInstance = SNUtility::GetGameInstance<UPJGameInstance>();
-
-	if (GameInstance != nullptr)
-	{
+	
+	if(GameInstance != nullptr){
+		
 		UPJEnemyManager* EnemyManager = GameInstance->GetEnemyManager();
-
-		if (EnemyManager != nullptr)
-		{
+		
+		if(EnemyManager != nullptr){
+			// 敵が全滅した場合のデリゲートを登録
 			EnemyManager->OnEnemyGone.AddUObject(this, &APJSpawner::OnAllEnemyDie);
 		}
 	}
@@ -69,21 +73,21 @@ void APJSpawner::BeginPlay()
 void APJSpawner::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APJEnemy* Enemy = Cast<APJEnemy>(OtherActor);
-
-	if (Enemy != nullptr)
-	{
-		if (CollideActor.Contains(Enemy) == false)
-		{
-			if (Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage")))))
-			{
-				if (AnimTimerHandle.IsValid() == false)
-				{
+	
+	if(Enemy != nullptr){
+		
+		if(CollideActor.Contains(Enemy) == false){
+			
+			if(Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage"))))){
+				
+				if(AnimTimerHandle.IsValid() == false){
+					// スポナーにぶつかったことがわかるようにアニメーションを生成
 					GetWorldTimerManager().SetTimer(AnimTimerHandle, this, &APJSpawner::OnAnimationTimer, 1.0f/60.0f, true);
-
-					CollideActor.Add(Enemy);
-
+					
 					SNPLUGIN_LOG(TEXT("APJSpawner::OnComponentBeginOverlap : %d"), CollideActor.Num());
 				}
+				// ぶつかった敵を登録
+				CollideActor.Add(Enemy);
 			}
 		}
 	}
@@ -102,26 +106,7 @@ void APJSpawner::OnAllEnemyDie()
 
 	if (NoEnemyAndSpawnNum <= 0)
 	{
-		if (GeometryCollectionComponent != nullptr)
-		{
-			GeometryCollectionComponent->SetSimulatePhysics(true);
-
-			GeometryCollectionComponent->AddImpulse(FVector(0, 0, 0));
-
-			GeometryCollectionComponent->SetNotifyBreaks(true);
-			
-			GeometryCollectionComponent->OnChaosBreakEvent.AddDynamic(this, &APJSpawner::OnBreakEvent);
-			
-			GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-			GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
-			GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
-
-			FVector Locate = GetActorLocation();
-			
-			AFieldSystemActor* FieldActor = Cast<AFieldSystemActor>(GetWorld()->SpawnActor(FieldSystemClass, &Locate));
-			
-			//FieldActor->Destroy();
-		}
+		Destruction();
 	}
 }
 
@@ -140,22 +125,49 @@ void APJSpawner::OnAnimationTimer()
 			Scale = FVector::OneVector;
 			
 			GetWorldTimerManager().ClearTimer(AnimTimerHandle);
-
+			
 			AnimTimer = 0.0f;
-
+			
 			AnimTimerHandle.Invalidate();
-
-			for (int i= 0 ; i<CollideActor.Num() ; i++)
-			{
-				OnEnemyGone();	
+			// スポナーにヒットしたアクター数分敵をスポーン
+			for(int i= 0 ; i<CollideActor.Num() ; i++){
+				OnEnemyGone();
 			}
-
-			HitAndSpawnNum =- 1;
 			
 			CollideActor.Empty();
+			
+			--HitAndSpawnNum;
+			
+			if(HitAndSpawnNum <= 0){
+				Destruction();
+			}
 		}
 
 		SetActorScale3D(Scale);
+	}
+}
+
+void APJSpawner::Destruction(){
+	
+	if (GeometryCollectionComponent != nullptr)
+	{
+		GeometryCollectionComponent->SetSimulatePhysics(true);
+
+		GeometryCollectionComponent->AddImpulse(FVector(0, 0, 0));
+
+		GeometryCollectionComponent->SetNotifyBreaks(true);
+		
+		GeometryCollectionComponent->OnChaosBreakEvent.AddDynamic(this, &APJSpawner::OnBreakEvent);
+		
+		GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+		GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Ignore);
+
+		FVector Locate = GetActorLocation();
+		
+		AFieldSystemActor* FieldActor = Cast<AFieldSystemActor>(GetWorld()->SpawnActor(FieldSystemClass, &Locate));
+		
+		//FieldActor->Destroy();
 	}
 }
 

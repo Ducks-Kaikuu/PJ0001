@@ -40,7 +40,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
 	float GetMaxWaldSpeed() const ;
-	
+
+	void SetDistanceToPlayer(float Distance);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
+	float GetDistanceToPlayer() const;
 
 	DECLARE_DELEGATE_OneParam(FLandedDelegate, const FHitResult&);
 	FLandedDelegate OnLanded;
@@ -72,8 +76,17 @@ private:
 	UPROPERTY()
 	TMap<FName, TObjectPtr<UMaterialInstanceDynamic>> MaterialInstanceDynamicInstArray;
 
+	float ToPlayerDistance = 0.0f;
+
 	FTimerHandle DissolveTimerHandle;
 };
 
+FORCEINLINE void APJEnemy::SetDistanceToPlayer(float Distance)
+{
+	ToPlayerDistance = Distance;
+}
 
-
+FORCEINLINE float APJEnemy::GetDistanceToPlayer() const
+{
+	return ToPlayerDistance;
+}

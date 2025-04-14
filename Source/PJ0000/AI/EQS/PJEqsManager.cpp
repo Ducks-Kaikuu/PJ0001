@@ -81,20 +81,20 @@ void UEQSRequestInstance::PostLoad()
 
 void UEQSRequestInstance::OnQueryFinished(TSharedPtr<FEnvQueryResult> EnvQueryResult)
 {
-	if (EqsLocationList == nullptr)
-	{
-		SNPLUGIN_WARNING(TEXT("EQS Location List is nullptr."));
+	if(EqsLocationList == nullptr){
+		
+		SNPLUGIN_WARNING(TEXT("EQS Location List is nullptr.[%s]"), *GetPathName());
 		
 		return;
 	}
-
-	if (EnvQueryResult->IsSuccessful() == false)
-	{
-		SNPLUGIN_WARNING(TEXT("EQS Query is Failed."));
+	
+	if(EnvQueryResult->IsSuccessful() == false){
+		
+		SNPLUGIN_WARNING(TEXT("EQS Query is Failed.[%s]"), *GetPathName());
 		
 		return;
 	}
-
+	
 	TArray<FVector> Points;
 	
 	EnvQueryResult->GetAllAsLocations(Points);
@@ -160,13 +160,14 @@ void UPJEqsManager::RunEqs(UWorld* World, const FGameplayTagContainer& EqsTags)
 		return;
 	}
 	
-	for (auto& Tag : EqsTags)
+//	for (auto& Tag : EqsTags)
 	{
-		if (EQSInstanceMap.Contains(Tag))
+		for (auto& EQSInstance : EQSInstanceMap)
 		{
-			UEQSRequestInstance* EqsInstance(EQSInstanceMap[Tag]);
-			
-			EqsInstance->EQSRequest.Execute(*this, nullptr, EqsInstance->OnQueryFinishedEvent);
+			if (EQSInstance.Key.MatchesAny(EqsTags))
+			{
+				EQSInstance.Value->EQSRequest.Execute(*this, nullptr, EQSInstance.Value->OnQueryFinishedEvent);
+			}
 		}
 	}
 }

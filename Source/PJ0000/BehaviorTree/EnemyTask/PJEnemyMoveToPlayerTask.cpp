@@ -79,25 +79,24 @@ bool UPJEnemyMoveToPlayerTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, u
 					}
 #endif
 				} else
-					if(MoveResult == EPathFollowingRequestResult::Type::AlreadyAtGoal){
-
-						Character->RemoveActionTag(GetActionTag());
-						Character->AddActionTag(IdleTag);
+				if(MoveResult == EPathFollowingRequestResult::Type::AlreadyAtGoal){
 					
-						Result = true;
+					Character->RemoveActionTag(GetActionTag());
+					Character->AddActionTag(IdleTag);
+					
+					Result = true;
 #if WITH_EDITORONLY_DATA
-						if (bDebugDraw == true)
-						{
-							SNPLUGIN_LOG(TEXT("Move Task is Finished."));
-						}
-#endif
-					} else
+					if (bDebugDraw == true)
 					{
-						Character->RemoveActionTag(IdleTag);
-						Character->AddActionTag(GetActionTag());
-					
-						Result = false;
+						SNPLUGIN_LOG(TEXT("Move Task is Finished."));
 					}
+#endif
+				} else {
+					Character->RemoveActionTag(IdleTag);
+					Character->AddActionTag(GetActionTag());
+					
+					Result = false;
+				}
 				
 				Character->PlayAnimMontageByActionTag();
 			}
