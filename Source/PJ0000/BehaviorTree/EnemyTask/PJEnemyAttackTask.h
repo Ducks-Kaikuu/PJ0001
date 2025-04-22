@@ -6,6 +6,7 @@
 #include "Action/SNActionBase.h"
 #include "PJEnemyAttackTask.generated.h"
 
+class UPlayMontageCallbackProxy;
 /**
  * 
  */
@@ -22,7 +23,4 @@ private:
 
 	UFUNCTION()
 	void OnEndplayMontage(FName NotifyName);
-	
-	UPROPERTY(EditAnywhere)
-	float AttackRagen=100.0f;
 };

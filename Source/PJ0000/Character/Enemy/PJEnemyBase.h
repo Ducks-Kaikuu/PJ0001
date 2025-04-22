@@ -38,6 +38,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 private:
+	UPROPERTY()
 	TObjectPtr<UPJEnemyGroup> GroupManager = nullptr;
 };
 

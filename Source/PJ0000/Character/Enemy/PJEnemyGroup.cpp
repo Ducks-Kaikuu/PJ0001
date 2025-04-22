@@ -4,6 +4,7 @@
 #include "Character/Enemy/PJEnemyGroup.h"
 
 #include "PJEnemyBase.h"
+#include "Developer/Windows/LiveCoding/Private/External/LC_Process.h"
 #include "PJ0000/Character/PJCharacterDef.h"
 
 void UPJEnemyGroup::SpawnGroupsEnemy(const TSubclassOf<APJEnemyBase>& EnemyClass, int Num, const FVector& SpawnLocation, float SpawnRadius)
@@ -84,5 +85,13 @@ void UPJEnemyGroup::SetupGroup(APJEnemyBase* Enemy)
 		Enemy->SetGroupManager(this);
 
 		Members.Add(Enemy);
+	}
+}
+
+void UPJEnemyGroup::RemoveMember(APJEnemyBase* Member)
+{
+	if (Member != nullptr)
+	{
+		Members.Remove(Member);
 	}
 }

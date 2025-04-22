@@ -10,6 +10,7 @@
 #include "Character/AbilitySystem/SNAttributeSet.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Online/Auth.h"
 #include "Utility/SNUtility.h"
 
 //----------------------------------------------------------------------//
@@ -64,6 +65,12 @@ void ASNCharacterBase::AddActionTagContainer(const FGameplayTagContainer& TagCon
 	
 	if(IsLocallyControlled() == true){
 		ActionTags.AppendTags(TagContainer);
+#if WITH_EDITORONLY_DATA
+		if (bDrawActionTag == true)
+		{
+			SNPLUGIN_LOG(TEXT("[%s] - [%s] - %s."), *GetActorLabel(), TEXT(__FUNCTION__), *TagContainer.ToString());
+		}
+#endif
 	}
 }
 
@@ -80,6 +87,12 @@ void ASNCharacterBase::AddActionTag(const FGameplayTag& Tag){
 		
 		if(ActionTags.HasTag(Tag) == false){
 			ActionTags.AddTag(Tag);
+#if WITH_EDITORONLY_DATA
+			if (bDrawActionTag == true)
+			{
+				SNPLUGIN_LOG(TEXT("[%s] - [%s] - %s."), *GetActorLabel(), TEXT(__FUNCTION__), *Tag.ToString());
+			}
+#endif
 		}
 	}
 }
@@ -98,7 +111,7 @@ void ASNCharacterBase::RemoveActionTagContainer(const FGameplayTagContainer& Tag
 #if WITH_EDITORONLY_DATA
 		if (bDrawActionTag == true)
 		{
-			SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *TagContainer.ToString());
+			SNPLUGIN_LOG(TEXT("[%s] - [%s] - %s."), *GetActorLabel(), TEXT(__FUNCTION__), *TagContainer.ToString());
 		}
 #endif
 	}
@@ -120,7 +133,7 @@ void ASNCharacterBase::RemoveActionTag(const FGameplayTag& Tag){
 #if WITH_EDITORONLY_DATA
 		if (bDrawActionTag == true)
 		{
-			SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *Tag.ToString());
+			SNPLUGIN_LOG(TEXT("[%s] - [%s] - %s."), *GetActorLabel(), TEXT(__FUNCTION__), *Tag.ToString());
 		}
 #endif
 	}
@@ -612,7 +625,7 @@ void ASNCharacterBase::SetActinTag(const FGameplayTag& Tag)
 #if WITH_EDITORONLY_DATA
 	if (bDrawActionTag == true)
 	{
-		SNPLUGIN_LOG(TEXT("[%s] - %s."), TEXT(__FUNCTION__), *Tag.ToString());
+		SNPLUGIN_LOG(TEXT("[%s] - [%s] - %s."), *GetActorLabel(), TEXT(__FUNCTION__), *Tag.ToString());
 	}
 #endif
 }

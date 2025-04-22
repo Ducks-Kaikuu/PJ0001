@@ -58,6 +58,24 @@ bool UPJEnemyAttackTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* 
 						MontagePlayProxy->OnInterrupted.AddDynamic(this, &UPJEnemyAttackTask::OnEndplayMontage);
 					}
 					
+					if (MontagePlayProxy->OnBlendOut.Contains(this, TEXT("OnEndplayMontage")) == false)
+					{
+						MontagePlayProxy->OnBlendOut.AddDynamic(this, &UPJEnemyAttackTask::OnEndplayMontage);
+					}
+					
+#if WITH_EDITORONLY_DATA
+					if (bDebugDraw == true)
+					{
+			
+						FString Name = Character->GetActorLabel();
+
+						FString TagName = GetActionTag().ToString();
+
+						FString ErrorStr = FString::Printf(TEXT("Add Attack Tags.[%s] - [%s]"), *Name, *TagName);
+			
+						UKismetSystemLibrary::PrintString(GetWorld(), *ErrorStr);
+					}
+#endif
 				} else
 				{
 					SNPLUGIN_LOG(TEXT("UPJEnemyAttackTask : Motion Can't Find."));
@@ -78,16 +96,18 @@ bool UPJEnemyAttackTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 void UPJEnemyAttackTask::OnEndplayMontage(FName NotifyName)
 {
-	ASNCharacterBase* Character = GetOwner<ASNCharacterBase>();
+	APJEnemy* Character = GetOwner<APJEnemy>();
 
 	if (Character != nullptr)
 	{
 		Character->RemoveActionTag(GetActionTag());
+
+		Character->ResetMontagePlayProxy();
 #if WITH_EDITORONLY_DATA
 		if (bDebugDraw == true)
 		{
 			
-			FString Name = Character->GetName();
+			FString Name = Character->GetActorLabel();
 
 			FString TagName = GetActionTag().ToString();
 
@@ -96,5 +116,8 @@ void UPJEnemyAttackTask::OnEndplayMontage(FName NotifyName)
 			UKismetSystemLibrary::PrintString(GetWorld(), *ErrorStr);
 		}
 #endif
+	} else
+	{
+		SNPLUGIN_LOG(TEXT("Character is Null."));
 	}
 }

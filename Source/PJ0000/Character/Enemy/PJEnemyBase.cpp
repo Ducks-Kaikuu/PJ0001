@@ -3,6 +3,7 @@
 
 #include "Character/Enemy/PJEnemyBase.h"
 
+#include "PJEnemyGroup.h"
 #include "PJEnemyManager.h"
 #include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
 #include "Character/PJCharacterDef.h"
@@ -79,5 +80,12 @@ void APJEnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (GameInstance != nullptr)
 	{
 		GameInstance->GetEnemyManager()->RemoveEnemy(this);
+	}
+
+	if (GroupManager != nullptr)
+	{
+		GroupManager->RemoveMember(this);
+
+		GroupManager = nullptr;
 	}
 }

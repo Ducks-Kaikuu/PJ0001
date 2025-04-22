@@ -24,6 +24,8 @@ public:
 	static FGenericTeamId GetTeamId();
 
 	static FGameplayTag GetEqsName(FGenericTeamId TeamId);
+
+	void RemoveMember(APJEnemyBase* Member);
 	
 private:
 

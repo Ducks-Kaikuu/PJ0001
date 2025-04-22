@@ -49,6 +49,8 @@ public:
 	DECLARE_DELEGATE_OneParam(FLandedDelegate, const FHitResult&);
 	FLandedDelegate OnLanded;
 
+	void ResetMontagePlayProxy(){ MontageProxy = nullptr; }
+
 protected:
 	virtual void BeginPlay() override;
 
