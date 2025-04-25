@@ -58,6 +58,8 @@ bool UPJEnemyMoveTo::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* Node
 						int Index = FMath::RandRange(0, EqsLocations.Num() - 1);
 						// 目的地を設定
 						TargetPosition = EqsLocations[Index];
+
+						EqsLocationList->RemoveAt(Index);
 					} else {
 						TargetPosition = Player->GetActorLocation();
 					}

@@ -165,6 +165,11 @@ void APJEnemy::Landed(const FHitResult& Hit)
 void APJEnemy::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue)
 {
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage"));
+
+	if (NewValue <= 0.0f)
+	{
+		SNPLUGIN_LOG(TEXT("HP is 0 : %s"), *DamageInstigator->GetActorLabel());
+	}
 }
 
 bool APJEnemy::IsDead() const

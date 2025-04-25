@@ -27,7 +27,7 @@ bool UPJCameraActionGamepad::ExecAction(const FInputActionValue& InputActionValu
 		Yaw   *= CameraActor->GetXAxisSpeed();
 		Pitch *= CameraActor->GetYAxisSpeed();
 		
-		FRotator rot(CameraActor->GetCameraRotator()), aaa(rot);
+		FRotator rot(CameraActor->GetCameraRotator()), aaa(FRotator::ZeroRotator)/*aaa(rot)*/;
 		
 		rot.Yaw   += Yaw;
 		rot.Pitch += Pitch;

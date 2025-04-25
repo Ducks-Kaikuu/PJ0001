@@ -26,8 +26,17 @@ bool UPJAvoidAction::ExecAction(const FInputActionValue& InputActionValue)
 	}
 
 	FVector ForwardVector(Character->GetActorForwardVector());
-	
-	FVector Velocity(Character->GetVelocity().GetSafeNormal());
+
+	FVector2D InputValue = Character->GetMoveInput();
+
+	FVector Velocity(InputValue.Y, InputValue.X, 0.0f);
+
+	Velocity = Character->GetActorRotation().RotateVector(Velocity);
+
+	Velocity = Velocity.GetSafeNormal();
+
+	Character->SetMoveInput(FVector2D::ZeroVector);
+	//FVector Velocity(Character->GetVelocity().GetSafeNormal());
 
 	if (Velocity.IsNearlyZero())
 	{

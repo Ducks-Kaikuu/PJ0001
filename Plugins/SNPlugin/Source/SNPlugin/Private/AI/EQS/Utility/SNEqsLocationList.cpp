@@ -25,6 +25,14 @@ void USNEqsLocationList::ClearLocations()
 	Locations.Empty();
 }
 
+void USNEqsLocationList::RemoveAt(int32 Index)
+{
+	if (Locations.Num() > Index)
+	{
+		Locations.RemoveAt(Index);
+	}
+}
+
 TArray<FVector> USNEqsLocationList::GetHighScoreLocations() const
 {
 	if (Locations.IsEmpty() == true){

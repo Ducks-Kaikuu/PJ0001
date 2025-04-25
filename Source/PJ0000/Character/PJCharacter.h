@@ -69,6 +69,10 @@ public:
 
 	void SetNoDamage(bool bNoDamage);
 
+	void SetMoveInput(const FVector2D& Value);
+
+	const FVector2D& GetMoveInput() const;
+	
 	bool IsNoDamage() const;
 
 
@@ -80,6 +84,8 @@ protected:
 private:
 
 	void HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue);
+
+	FVector2D MoveInput = FVector2D::ZeroVector;
 	
 	SNAtomicFlag<1> StatusFlag;
 };
@@ -98,4 +104,14 @@ FORCEINLINE void APJCharacter::SetNoDamage(bool bNoDamage)
 FORCEINLINE bool APJCharacter::IsNoDamage() const
 {
 	return StatusFlag.Is(static_cast<int>(EPlayerStatusFlag::NoDamage));
+}
+
+FORCEINLINE void APJCharacter::SetMoveInput(const FVector2D& Value)
+{
+	MoveInput = Value;
+}
+
+FORCEINLINE const FVector2D& APJCharacter::GetMoveInput() const
+{
+	return MoveInput;
 }

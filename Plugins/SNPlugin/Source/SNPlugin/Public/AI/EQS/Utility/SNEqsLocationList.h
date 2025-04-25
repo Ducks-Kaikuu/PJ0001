@@ -24,6 +24,8 @@ public:
 
 	void ClearLocations();
 
+	void RemoveAt(int32 Index);
+
 	FVector GetHighScoreLocation() const ;
 
 	TArray<FVector> GetHighScoreLocations() const ;
