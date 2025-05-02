@@ -4,7 +4,6 @@
 #include "PJ0000/Character/Enemy/PJEnemy.h"
 
 #include "AbilitySystemComponent.h"
-#include "PJEnemyManager.h"
 #include "PlayMontageCallbackProxy.h"
 #include "SNDef.h"
 #include "Animation/Components/SNMovePositionComponent.h"
@@ -15,7 +14,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "PJ0000/Character/Abilities/Attributes/PJHealthSet.h"
-#include "System/PJGameInstance.h"
 #include "System/SNBlueprintFunctionLibrary.h"
 #include "Utility/SNUtility.h"
 
