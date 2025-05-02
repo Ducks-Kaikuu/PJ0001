@@ -78,7 +78,8 @@ void APJSpawner::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponen
 		
 		if(CollideActor.Contains(Enemy) == false){
 			
-			if(Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage"))))){
+			if(Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage"))))
+			|| Enemy->GetActionTags().HasAny(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Abilities.Damage"))))){
 				
 				if(AnimTimerHandle.IsValid() == false){
 					// スポナーにぶつかったことがわかるようにアニメーションを生成
