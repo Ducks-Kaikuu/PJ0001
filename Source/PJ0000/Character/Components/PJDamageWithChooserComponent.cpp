@@ -8,11 +8,50 @@
 #include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Base/SNCharacterBase.h"
 #include "Character/Components/SNMaterialComponent.h"
+#include "Character/Interface/PJFighterInterface.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Scene/SNSceneBase.h"
 #include "UI/Widget/PJDamageWidget.h"
 #include "UI/Widget/SNMasterWidget.h"
 #include "UniversalObjectLocators/AnimInstanceLocatorFragment.h"
 #include "Utility/SNUtility.h"
+
+void UPJDamageWithChooserComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	ASNCharacterBase* Character(Cast<ASNCharacterBase>(GetOwner()));
+
+	if (Character == nullptr)
+	{
+		SNPLUGIN_ERROR(TEXT("PJDamageWithChooserComponent::TickComponent - Character is nullptr."));
+
+		return;
+	}
+
+	if (Character->GetActionTags().HasTag(FGameplayTag::RequestGameplayTag(TEXT("Abilities.State.Damage"))) == true)
+	{
+		if (UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement())
+		{
+			if((MovementComponent->MovementMode != MOVE_Flying)
+			&& (MovementComponent->MovementMode != MOVE_Falling))
+			{
+				UAnimInstance* AnimInstance(Character->GetAnimInstance());
+				
+				if(AnimInstance != nullptr)
+				{
+					IPJFighterInterface* Fighter = Cast<IPJFighterInterface>(Character);
+
+					if ((Fighter != nullptr) && (Fighter->IsDead() == false))
+					{
+						AnimInstance->Montage_Resume(nullptr);;
+					}
+				}
+			}
+		}
+	}
+	
+}
 
 void UPJDamageWithChooserComponent::DrawDamage(int Damage)
 {
@@ -103,11 +142,6 @@ void UPJDamageWithChooserComponent::Death()
 	}
 
 	DissolveStart();
-}
-
-void UPJDamageWithChooserComponent::StartStrike()
-{
-	
 }
 
 void UPJDamageWithChooserComponent::BeginPlay()

@@ -34,8 +34,6 @@ bool UPJEnemyAttackTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* 
 			
 			if (GetActionTag().IsValid())
 			{
-				SetOwner(Character);
-
 				Character->SetActinTag(GetActionTag());
 
 				UPlayMontageCallbackProxy* MontagePlayProxy = Character->PlayAnimMontageByActionTag();
@@ -48,21 +46,7 @@ bool UPJEnemyAttackTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* 
 						UKismetSystemLibrary::PrintString(GetWorld(), "Attacking");
 					}
 #endif
-					if (MontagePlayProxy->OnCompleted.Contains(this, TEXT("OnEndplayMontage")) == false)
-					{
-						MontagePlayProxy->OnCompleted.AddDynamic(this, &UPJEnemyAttackTask::OnEndplayMontage);
-					}
-
-					if (MontagePlayProxy->OnInterrupted.Contains(this, TEXT("OnEndplayMontage")) == false)
-					{
-						MontagePlayProxy->OnInterrupted.AddDynamic(this, &UPJEnemyAttackTask::OnEndplayMontage);
-					}
-					
-					if (MontagePlayProxy->OnBlendOut.Contains(this, TEXT("OnEndplayMontage")) == false)
-					{
-						MontagePlayProxy->OnBlendOut.AddDynamic(this, &UPJEnemyAttackTask::OnEndplayMontage);
-					}
-					
+					Character->SetAttackMotionDelegate(MontagePlayProxy, GetActionTag());
 #if WITH_EDITORONLY_DATA
 					if (bDebugDraw == true)
 					{
@@ -118,6 +102,6 @@ void UPJEnemyAttackTask::OnEndplayMontage(FName NotifyName)
 #endif
 	} else
 	{
-		SNPLUGIN_LOG(TEXT("Character is Null."));
+		SNPLUGIN_ERROR(TEXT("[UPJEnemyAttackTask::OnEndplayMontage] - Character is Null."));
 	}
 }

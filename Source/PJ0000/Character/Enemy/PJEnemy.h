@@ -36,9 +36,6 @@ public:
 	virtual void Landed(const FHitResult& Hit) override;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
-	bool IsDead() const;
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
 	float GetMaxWaldSpeed() const ;
 
 	void SetDistanceToPlayer(float Distance);
@@ -51,6 +48,11 @@ public:
 
 	void ResetMontagePlayProxy(){ MontageProxy = nullptr; }
 
+	void SetAttackMotionDelegate(UPlayMontageCallbackProxy* Proxy, const FGameplayTag& Tag);
+
+	UFUNCTION()
+	void OnAttackMotionEndplayMontage(FName NotifyName);
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -81,6 +83,8 @@ private:
 	float ToPlayerDistance = 0.0f;
 
 	FTimerHandle DissolveTimerHandle;
+
+	FGameplayTag AttackTag;
 };
 
 FORCEINLINE void APJEnemy::SetDistanceToPlayer(float Distance)

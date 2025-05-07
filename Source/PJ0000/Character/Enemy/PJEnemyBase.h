@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "Character/Base/SNCharacterBase.h"
+#include "Character/Interface/PJFighterInterface.h"
 #include "PJEnemyBase.generated.h"
 
 class UPJEnemyGroup;
@@ -14,7 +16,7 @@ struct FGenericTeamId;
  * 
  */
 UCLASS()
-class PJ0000_API APJEnemyBase : public ASNCharacterBase
+class PJ0000_API APJEnemyBase : public ASNCharacterBase, public IPJFighterInterface
 {
 	GENERATED_BODY()
 
@@ -31,6 +33,9 @@ public:
 
 	FGenericTeamId GetTeamID() const ;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
+	bool IsDead() const;
+	
 protected:
 
 	virtual void BeginPlay() override;

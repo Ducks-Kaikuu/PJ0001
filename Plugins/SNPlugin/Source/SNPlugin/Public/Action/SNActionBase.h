@@ -92,7 +92,7 @@ public:
 	//! @{@name BehaiviorTreeから呼ばれるExecuteTaskのオーバーライド
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	//! @}
-	
+
 	//! @{@name 初期化処理
 	virtual void Initialize(UEnhancedInputComponent* InputComponent, const UInputAction* InputAction, UObject* Object);
 	//! @}

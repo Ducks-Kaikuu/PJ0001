@@ -89,3 +89,20 @@ void APJEnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		GroupManager = nullptr;
 	}
 }
+
+bool APJEnemyBase::IsDead() const
+{
+	return IPJFighterInterface::IsDead();
+#if 0
+	const UPJHealthSet* HealthSet = GetGameAttribute<UPJHealthSet>();
+	
+	if (HealthSet != nullptr)
+	{
+		int HP = HealthSet->GetHealth();
+
+		return (HP <= 0) ? true : false;
+	}
+
+	return false;
+#endif
+}

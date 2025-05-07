@@ -159,6 +159,11 @@ EBTNodeResult::Type USNActionBase::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 		ASNCharacterBase* Character(Cast<ASNCharacterBase>(Controller->GetPawn()));
 		
 		if(Character != nullptr){
+			// オーナーが設定されていない場合は設定
+			if (Owner == nullptr)
+			{
+				Owner = Character;
+			}
 			// 排他チェック
 			bool bExclusive = Character->GetActionTags().HasAny(ExclusiveTags);
 			

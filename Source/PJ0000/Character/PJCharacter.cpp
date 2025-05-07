@@ -67,3 +67,8 @@ void APJCharacter::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageC
 {
 	
 }
+
+bool APJCharacter::IsDead() const
+{
+	return IPJFighterInterface::IsDead();
+}

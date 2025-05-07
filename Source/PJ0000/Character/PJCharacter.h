@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interface/PJFighterInterface.h"
 #include "MotionMatching/Character/SNMotionMatchingPlayerBase.h"
 #include "Utility/SNAtomicFlag.h"
 #include "PJCharacter.generated.h"
@@ -43,7 +44,7 @@ enum class EPlayerStatusFlag : uint8
  * 
  */
 UCLASS()
-class PJ0000_API APJCharacter : public ASNMotionMatchingPlayerBase
+class PJ0000_API APJCharacter : public ASNMotionMatchingPlayerBase, public IPJFighterInterface
 {
 	GENERATED_BODY()
 
@@ -78,6 +79,8 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
+	virtual bool IsDead() const;
 protected:
 	virtual void BeginPlay() override;
 	

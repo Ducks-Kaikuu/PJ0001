@@ -18,6 +18,8 @@ class PJ0000_API UPJDamageWithChooserComponent : public USNDamageWithChooserComp
 	GENERATED_BODY()
 
 public:
+
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	UFUNCTION(BlueprintCallable, Category="Damage")
 	void DrawDamage(int Damage);
@@ -39,8 +41,6 @@ public:
 	bool IsAirDamage(float Time) const ;
 
 	void SetDamageAbilityTags(const FGameplayTagContainer& DamageAbilityTags);
-
-	void StartStrike();
 
 protected:
 	

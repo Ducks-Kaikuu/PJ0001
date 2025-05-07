@@ -53,6 +53,39 @@ void APJEnemy::Tick(float DeltaSeconds)
 	}
 }
 
+void APJEnemy::SetAttackMotionDelegate(UPlayMontageCallbackProxy* Proxy, const FGameplayTag& Tag)
+{
+	if (Proxy != nullptr)
+	{
+		if (Proxy->OnCompleted.Contains(this, TEXT("OnAttackMotionEndplayMontage")) == false)
+		{
+			Proxy->OnCompleted.AddDynamic(this, &APJEnemy::OnAttackMotionEndplayMontage);
+		}
+
+		if (Proxy->OnInterrupted.Contains(this, TEXT("OnAttackMotionEndplayMontage")) == false)
+		{
+			Proxy->OnInterrupted.AddDynamic(this, &APJEnemy::OnAttackMotionEndplayMontage);
+		}
+					
+		if (Proxy->OnBlendOut.Contains(this, TEXT("OnAttackMotionEndplayMontage")) == false)
+		{
+			Proxy->OnBlendOut.AddDynamic(this, &APJEnemy::OnAttackMotionEndplayMontage);
+		}
+	}
+	
+	AttackTag = Tag;
+}
+
+void APJEnemy::OnAttackMotionEndplayMontage(FName NotifyName)
+{
+	if (AttackTag.IsValid() == true)
+	{
+		RemoveActionTag(AttackTag);
+	}
+
+	ResetMontagePlayProxy();
+}
+
 void APJEnemy::BeginPlay()
 {
 	Super::BeginPlay();
@@ -168,20 +201,6 @@ void APJEnemy::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCause
 	{
 		SNPLUGIN_LOG(TEXT("HP is 0 : %s"), *DamageInstigator->GetActorLabel());
 	}
-}
-
-bool APJEnemy::IsDead() const
-{
-	const UPJHealthSet* HealthSet = GetGameAttribute<UPJHealthSet>();
-	
-	if (HealthSet != nullptr)
-	{
-		int HP = HealthSet->GetHealth();
-
-		return (HP <= 0) ? true : false;
-	}
-
-	return false;
 }
 
 float APJEnemy::GetMaxWaldSpeed() const

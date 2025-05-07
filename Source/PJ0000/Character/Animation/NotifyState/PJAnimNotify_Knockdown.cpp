@@ -16,6 +16,7 @@ void UPJAnimNotify_Knockdown::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 
 	if (AnimInstance != nullptr)
 	{
+		// モンタージュを一時停止
 		AnimInstance->Montage_Pause();
 	}
 
@@ -25,6 +26,12 @@ void UPJAnimNotify_Knockdown::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 	{
 		Character->GetCharacterMovement()->GravityScale = FallSpeed;
 
+		UPJDamageWithChooserComponent* DamageComponent(Character->FindComponentByClass<UPJDamageWithChooserComponent>());
+
+		if (DamageComponent != nullptr)
+		{
+			DamageComponent->SetComponentTickEnabled(true);
+		}
 	}
 
 	SNPLUGIN_LOG(TEXT("Strike is coming."));
