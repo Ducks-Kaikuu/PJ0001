@@ -8,6 +8,7 @@
 #include "SNDef.h"
 #include "Animation/Components/SNMovePositionComponent.h"
 #include "BehaviorTree/EnemyTask/PJAIEnemy000.h"
+#include "Character/Components/PJDamageWithChooserComponent.h"
 #include "Character/Components/SNAbilitySystemComponent.h"
 #include "Character/Components/SNMaterialComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -199,7 +200,12 @@ void APJEnemy::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCause
 
 	if (NewValue <= 0.0f)
 	{
-		SNPLUGIN_LOG(TEXT("HP is 0 : %s"), *DamageInstigator->GetActorLabel());
+		UPJDamageWithChooserComponent* DamageComponent(Cast<UPJDamageWithChooserComponent>(DamageCauser->FindComponentByClass<UPJDamageWithChooserComponent>()));
+
+		if (DamageComponent != nullptr)
+		{
+			DamageComponent->Death();
+		}
 	}
 }
 
