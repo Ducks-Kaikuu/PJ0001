@@ -19,7 +19,7 @@ bool UPJEnemyMoveToPlayerTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, u
 	
 	if(AiController != nullptr){
 		
-		APJEnemy* Character = Cast<APJEnemy>(AiController->GetPawn());
+		APJEnemyBase* Character = Cast<APJEnemyBase>(AiController->GetPawn());
 		
 		if(Character != nullptr)
 		{

@@ -19,19 +19,10 @@ bool UPJEnemyAttackTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 	if(AiController != nullptr)
 	{
-		APJEnemy* Character = Cast<APJEnemy>(AiController->GetPawn());
+		APJEnemyBase* Character = Cast<APJEnemyBase>(AiController->GetPawn());
 
 		if(Character != nullptr)
 		{
-			ASNPlayerBase* Player(SNUtility::GetCurrentPlayer<ASNPlayerBase>());
-
-			if (Player != nullptr)
-			{
-				float Distance = FVector::Distance(Character->GetActorLocation(), Player->GetActorLocation());
-
-				Character->SetDistanceToPlayer(Distance);
-			}
-			
 			if (GetActionTag().IsValid())
 			{
 				Character->SetActinTag(GetActionTag());
@@ -80,7 +71,7 @@ bool UPJEnemyAttackTask::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* 
 
 void UPJEnemyAttackTask::OnEndplayMontage(FName NotifyName)
 {
-	APJEnemy* Character = GetOwner<APJEnemy>();
+	APJEnemyBase* Character = GetOwner<APJEnemyBase>();
 
 	if (Character != nullptr)
 	{

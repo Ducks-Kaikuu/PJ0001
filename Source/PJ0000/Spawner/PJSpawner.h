@@ -7,6 +7,7 @@
 #include "Physics/Experimental/ChaosEventType.h"
 #include "PJSpawner.generated.h"
 
+class APJEnemyBase;
 class USNMaterialComponent;
 class AFieldSystemActor;
 class APJEnemy;
@@ -50,7 +51,7 @@ private:
 	void Destruction();
 	
 	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<APJEnemy>> SpawnClass;
+	TArray<TSubclassOf<APJEnemyBase>> SpawnClass;
 	
 	UPROPERTY(EditAnywhere)
 	int SpawnNum = 4;

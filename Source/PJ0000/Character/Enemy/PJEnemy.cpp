@@ -40,51 +40,6 @@ void APJEnemy::Tick(float DeltaSeconds)
 		//UKismetSystemLibrary::PrintString(GetWorld(), *Str);
 	}
 #endif
-
-	APJAIEnemy000* AIController = Cast<APJAIEnemy000>(GetController());
-
-	if (AIController != nullptr)
-	{
-		//AIController->Restart();
-	}
-
-	if (IsDead())
-	{
-		//Dissolve(10.0f);
-	}
-}
-
-void APJEnemy::SetAttackMotionDelegate(UPlayMontageCallbackProxy* Proxy, const FGameplayTag& Tag)
-{
-	if (Proxy != nullptr)
-	{
-		if (Proxy->OnCompleted.Contains(this, TEXT("OnAttackMotionEndplayMontage")) == false)
-		{
-			Proxy->OnCompleted.AddDynamic(this, &APJEnemy::OnAttackMotionEndplayMontage);
-		}
-
-		if (Proxy->OnInterrupted.Contains(this, TEXT("OnAttackMotionEndplayMontage")) == false)
-		{
-			Proxy->OnInterrupted.AddDynamic(this, &APJEnemy::OnAttackMotionEndplayMontage);
-		}
-					
-		if (Proxy->OnBlendOut.Contains(this, TEXT("OnAttackMotionEndplayMontage")) == false)
-		{
-			Proxy->OnBlendOut.AddDynamic(this, &APJEnemy::OnAttackMotionEndplayMontage);
-		}
-	}
-	
-	AttackTag = Tag;
-}
-
-void APJEnemy::OnAttackMotionEndplayMontage(FName NotifyName)
-{
-	if (AttackTag.IsValid() == true)
-	{
-		RemoveActionTag(AttackTag);
-	}
-
-	ResetMontagePlayProxy();
 }
 
 void APJEnemy::BeginPlay()
@@ -96,31 +51,10 @@ void APJEnemy::BeginPlay()
 		PerceptionComponent->OnPerceptionUpdated.AddDynamic(this, &APJEnemy::OnPerceptionUpdated);
 	}
 	
+	const UPJHealthSet* Health(GetGameAttribute<UPJHealthSet>());
 	
-	const UPJHealthSet* Health = GetGameAttribute<UPJHealthSet>();
-
-	if (Health != nullptr)
-	{
+	if(Health != nullptr){
 		Health->OnHealthChanged.AddUObject(this, &ThisClass::HandleHealthChanged);
-	}
-
-	USNMaterialComponent* MaterialComponent = FindComponentByClass<USNMaterialComponent>();
-
-	if (MaterialComponent != nullptr)
-	{
-		MaterialComponent->CreateMaterialInstanceDynamic();
-	}
-
-	APJAIEnemy000* AIController = Cast<APJAIEnemy000>(GetController());
-
-	if (AIController != nullptr)
-	{
-		APlayerController* PlayerController = Cast<APlayerController>(SNUtility::GetPlayerController<APlayerController>());
-
-		if (PlayerController != nullptr)
-		{
-			AIController->SetPlayerKey(PlayerController->GetPawn());
-		}
 	}
 }
 
@@ -152,48 +86,6 @@ void APJEnemy::OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	}
 }
 
-UPlayMontageCallbackProxy* APJEnemy::PlayAnimMontageByActionTag()
-{
-	if (ChooserTable == nullptr)
-	{
-		return nullptr;
-	}
-
-	float PlayRate = 1.0f;
-	float StartTime = 0.0f;
-	
- 	UAnimMontage* AnimMontage = USNBlueprintFunctionLibrary::GetAnimMontageFromChooser(this, ChooserTable, this, PlayRate, StartTime);
-
-	if (AnimMontage != nullptr)
-	{
-		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-		if (AnimInstance != nullptr)
-		{
-			if (AnimInstance->Montage_IsPlaying(AnimMontage) == false)
-			{
-				MontageProxy = UPlayMontageCallbackProxy::CreateProxyObjectForPlayMontage(GetMesh(), AnimMontage, 1.0f, 0.0f);
-				
-				SNPLUGIN_LOG(TEXT("Motion is %s"), *AnimMontage->GetName());
-			}
-		}
-		
-		return MontageProxy;
-	}
-
-	return nullptr;
-}
-
-void APJEnemy::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
-
-	if (OnLanded.IsBound() == true)
-	{
-		OnLanded.Execute(Hit);
-	}
-}
-
 void APJEnemy::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser, const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue, float NewValue)
 {
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Damage"));
@@ -208,16 +100,3 @@ void APJEnemy::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCause
 		}
 	}
 }
-
-float APJEnemy::GetMaxWaldSpeed() const
-{
-	UCharacterMovementComponent* Component = GetCharacterMovement();
-
-	if (Component != nullptr)
-	{
-		return Component->MaxWalkSpeed;
-	}
-
-	return 0.0f;
-}
-

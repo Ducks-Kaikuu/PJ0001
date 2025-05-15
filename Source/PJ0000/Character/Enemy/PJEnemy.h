@@ -31,28 +31,6 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 	
-	UPlayMontageCallbackProxy* PlayAnimMontageByActionTag();
-
-	virtual void Landed(const FHitResult& Hit) override;
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
-	float GetMaxWaldSpeed() const ;
-
-	void SetDistanceToPlayer(float Distance);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
-	float GetDistanceToPlayer() const;
-
-	DECLARE_DELEGATE_OneParam(FLandedDelegate, const FHitResult&);
-	FLandedDelegate OnLanded;
-
-	void ResetMontagePlayProxy(){ MontageProxy = nullptr; }
-
-	void SetAttackMotionDelegate(UPlayMontageCallbackProxy* Proxy, const FGameplayTag& Tag);
-
-	UFUNCTION()
-	void OnAttackMotionEndplayMontage(FName NotifyName);
-	
 protected:
 	virtual void BeginPlay() override;
 
@@ -71,28 +49,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UAIPerceptionComponent> PerceptionComponent = nullptr;;
 	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UChooserTable> ChooserTable = nullptr;
-
-	UPROPERTY()
-	TObjectPtr<UPlayMontageCallbackProxy> MontageProxy = nullptr;
-
 	UPROPERTY()
 	TMap<FName, TObjectPtr<UMaterialInstanceDynamic>> MaterialInstanceDynamicInstArray;
 
-	float ToPlayerDistance = 0.0f;
-
 	FTimerHandle DissolveTimerHandle;
-
-	FGameplayTag AttackTag;
 };
-
-FORCEINLINE void APJEnemy::SetDistanceToPlayer(float Distance)
-{
-	ToPlayerDistance = Distance;
-}
-
-FORCEINLINE float APJEnemy::GetDistanceToPlayer() const
-{
-	return ToPlayerDistance;
-}

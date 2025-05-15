@@ -38,7 +38,7 @@ bool UPJEnemyMoveTo::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* Node
 					// EQSManagerを取得
 					if(UPJEqsManager* EqsManager = GameInstance->GetEqsManager()){
 						// オーナーキャラクターを取得
-						if(APJEnemy* OwnerCharacter = Cast<APJEnemy>(AIController->GetPawn())){
+						if(APJEnemyBase* OwnerCharacter = Cast<APJEnemyBase>(AIController->GetPawn())){
 							// TeamIDからタグを取得(TeamIDと紐づけて大丈夫なのか…。要検討。)
 							FGameplayTag EqsTag =UPJEnemyGroup::GetEqsName(OwnerCharacter->GetTeamID());
 							// EQSの結果を取得
@@ -66,7 +66,7 @@ bool UPJEnemyMoveTo::ExecAIAction(UBehaviorTreeComponent& OwnerComp, uint8* Node
 				}
 			}
 			// オーナーキャラクターを取得
-			if(APJEnemy* OwnerCharacter = Cast<APJEnemy>(AIController->GetPawn())){
+			if(APJEnemyBase* OwnerCharacter = Cast<APJEnemyBase>(AIController->GetPawn())){
 				// 移動スピードを設定
 				SetOwnerSpeed(OwnerCharacter);
 				// 目的地へ移動

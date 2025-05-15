@@ -192,7 +192,7 @@ void UPJDamageAbilityTask::OnDamageFinished()
 {
 	FGameplayAbilityActorInfo ActorInfo(GetActorInfo());
 	
-	APJEnemy* Character(Cast<APJEnemy>(ActorInfo.OwnerActor));
+	APJEnemyBase* Character(Cast<APJEnemyBase>(ActorInfo.OwnerActor));
 
 	if (Character != nullptr)
 	{

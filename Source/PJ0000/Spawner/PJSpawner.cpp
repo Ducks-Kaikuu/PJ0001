@@ -72,7 +72,7 @@ void APJSpawner::BeginPlay(){
 
 void APJSpawner::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	APJEnemy* Enemy = Cast<APJEnemy>(OtherActor);
+	APJEnemyBase* Enemy = Cast<APJEnemyBase>(OtherActor);
 	
 	if(Enemy != nullptr){
 		
@@ -215,7 +215,7 @@ void APJSpawner::OnEnemyGone()
 	{
 		FVector SpawnLocation = GetActorLocation();
 		
-		TSubclassOf<APJEnemy>& EnemyClass = SpawnClass[static_cast<int>(FMath::RandRange(0.0f, static_cast<float>(SpawnClass.Num()-1)))];
+		TSubclassOf<APJEnemyBase>& EnemyClass = SpawnClass[static_cast<int>(FMath::RandRange(0.0f, static_cast<float>(SpawnClass.Num()-1)))];
 		
 		Group->SpawnGroupsEnemy(EnemyClass, SpawnNum, SpawnLocation, SpawnRadius);
 	}
