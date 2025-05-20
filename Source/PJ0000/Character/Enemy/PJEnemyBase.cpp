@@ -11,6 +11,7 @@
 #include "Character/PJCharacterDef.h"
 #include "Character/Abilities/Attributes/PJHealthSet.h"
 #include "Character/Components/SNMaterialComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "System/PJGameInstance.h"
 #include "System/SNBlueprintFunctionLibrary.h"
 #include "Utility/SNUtility.h"
@@ -202,5 +203,17 @@ void APJEnemyBase::OnAttackMotionEndplayMontage(FName NotifyName)
 	}
 
 	ResetMontagePlayProxy();
+}
+
+float APJEnemyBase::GetMaxWaldSpeed() const
+{
+	UCharacterMovementComponent* Component = GetCharacterMovement();
+
+	if (Component != nullptr)
+	{
+		return Component->MaxWalkSpeed;
+	}
+
+	return 0.0f;
 }
 

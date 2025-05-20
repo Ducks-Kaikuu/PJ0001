@@ -56,6 +56,12 @@ public:
 	
 	UFUNCTION()
 	virtual void OnAttackMotionEndplayMontage(FName NotifyName);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
+	float GetMaxWaldSpeed() const ;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta=(BlueprintThreadSafe))
+	float GetDistanceToPlayer() const ;	
 	
 protected:
 
@@ -89,3 +95,7 @@ FORCEINLINE void APJEnemyBase::SetDistanceToPlayer(float Distance)
 	ToPlayerDistance = Distance;
 }
 
+FORCEINLINE float APJEnemyBase::GetDistanceToPlayer() const
+{
+	return ToPlayerDistance;
+} 

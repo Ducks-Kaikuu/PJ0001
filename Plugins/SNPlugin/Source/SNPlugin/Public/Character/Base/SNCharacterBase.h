@@ -136,7 +136,7 @@ public:
 	//! @}
 	
 	//!@ Satoshi Nishimura 2025/01/31 アクセッサ(GetActionTags)を用意してもうまく動作せず、変数をBlueprintに出してやるとうまくいく…意味不明なChooser
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category="SN|Action")
 	FGameplayTagContainer ActionTags;
 
 protected:
